@@ -31,7 +31,7 @@
 const path = require('path')
 const Server = require(path.join(__dirname, 'lib', 'Server.js'))
 const Logger = require(path.join(__dirname, 'lib', 'logger.js'))
-const program = require('commander')
+const { program } = require('commander')
 const os = require('os')
 const fs = require('fs')
 
@@ -47,44 +47,48 @@ var ccuHost = '127.0.0.1'
 var rpcUser
 var rpcPass
 
-program.option('-D, --debug', 'turn on debug level logging', () => {
-  log.setDebugEnabled(true)
-})
-
-program.option('-C, --configuration [path]', 'set configuration path', (configuration) => {
-  configurationPath = configuration
-})
-
-program.option('--reset', 'reset configuration', () => {
-  resetSettings = true
-})
-
-program.option('-S, --simulate [path]', 'simulate with a devices file', (devFile) => {
-  console.log('Running a simulation with %s', devFile)
-  simulation = devFile
-})
-
-program.option('-R, --dryrun', 'only use cached files', () => {
-  dryRun = true
-})
-
-program.option('-L, --log [path]', 'set the path where the log will be created', (logpath) => {
-  logPath = logpath
-})
-
-program.option('-H, --host [ccuhost]', 'set the host ip for your ccu', (ccuhost) => {
-  ccuHost = ccuhost
-})
-
-program.option('-U, --user [rpcuser]', 'set the username for XML-RPC basic auth (remote mode)', (user) => {
-  rpcUser = user
-})
-
-program.option('-P, --password [rpcpassword]', 'set the password for XML-RPC basic auth (remote mode)', (password) => {
-  rpcPass = password
-})
-
+program
+  .name('homekit-ccu')
+  .option('-D, --debug', 'turn on debug level logging')
+  .option('-C, --configuration <path>', 'set configuration path')
+  .option('--reset', 'reset configuration')
+  .option('-S, --simulate <path>', 'simulate with a devices file')
+  .option('-R, --dryrun', 'only use cached files')
+  .option('-L, --log <path>', 'set the path where the log will be created')
+  .option('-H, --host <ccuhost>', 'set the host ip for your ccu')
+  .option('-U, --user <rpcuser>', 'set the username for XML-RPC basic auth (remote mode)')
+  .option('-P, --password <rpcpassword>', 'set the password for XML-RPC basic auth (remote mode)')
   .parse(process.argv)
+
+const opts = program.opts()
+if (opts.debug) {
+  log.setDebugEnabled(true)
+}
+if (opts.configuration) {
+  configurationPath = opts.configuration
+}
+if (opts.reset) {
+  resetSettings = true
+}
+if (opts.simulate) {
+  console.log('Running a simulation with %s', opts.simulate)
+  simulation = opts.simulate
+}
+if (opts.dryrun) {
+  dryRun = true
+}
+if (opts.log) {
+  logPath = opts.log
+}
+if (opts.host) {
+  ccuHost = opts.host
+}
+if (opts.user) {
+  rpcUser = opts.user
+}
+if (opts.password) {
+  rpcPass = opts.password
+}
 
 process.on('unhandledRejection', (reason, promise) => {
   log.error('[HAP Server] unhandledRejection: %s', reason && reason.stack ? reason.stack : reason)
