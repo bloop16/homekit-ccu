@@ -24,6 +24,11 @@ Verifizierte Brüche beim Sprung auf `@homebridge/hap-nodejs` 2.2.3:
 | `Characteristic.Formats/Perms/Units` | 82 | Undefined; Enums liegen jetzt auf Top-Level (`hap.Formats` usw.) |
 | `hap.StreamController` in `ffmpeg.js` | 1 Modul | Entfernt, Ersatz ist `CameraController` mit `CameraStreamingDelegate` |
 | `on('get')`/`on('set')` | 263 | Funktioniert in 2.x weiterhin, keine Änderung nötig |
+| `Characteristic.getValue(cb)` | ~110 (nur Tests) | Entfernt; Test-Helfer `test/helpers/characteristicValue.js` auf Basis von `handleGetRequest()` |
+| `Service.BatteryService` | lib + Tests | Heißt jetzt `Service.Battery` (gleiche UUID 00000096) |
+| `Accessory.setPrimaryService(s)` | 2 Motion-Accessories | Jetzt `service.setPrimaryService()` |
+| `Accessory.updateReachability(v)` | HomeMaticAccessory | Entfernt; Zuweisung an `accessory.reachable` |
+| Default-Wert von Custom-Characteristics | CustomHomeKitTypes | 2.x setzt keinen Default; Konstruktor setzt `this.value = this.getDefaultValue()` selbst |
 
 iOS 27 bringt für HAP-Bridges keine Protokolländerungen. Der neue Energie-Tab wird ausschließlich aus Matter-Clustern gespeist; HAP kennt keine Energie-Characteristics. Matter ist bewusst nicht Teil dieser Iteration.
 

@@ -10,6 +10,8 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-23-core-upgrade-design.md`
 
+**Erkenntnisse aus Stufe 2 (für spätere Tasks):** In 2.x fehlen zusätzlich `Characteristic.getValue(cb)` (Tests nutzen `test/helpers/characteristicValue.js`), `Service.BatteryService` (jetzt `Service.Battery`), `Accessory.setPrimaryService()` (jetzt `service.setPrimaryService()`) und `Accessory.updateReachability()`. `new Characteristic(name, uuid, props)` setzt keinen Default-Wert; `CustomHomeKitTypes` setzt ihn selbst. 2.x loggt `characteristic value expected valid finite number and received "NaN"` für einige Blind-, Window-, ClosedDuration- und Humidity-Characteristics; das ist ein vorbestehender Datenfehler (NaN-Werte vor der ersten Abfrage) und ein Kandidat für ein Folgeprojekt, nicht Teil dieser Iteration.
+
 **Arbeitsweise:** Jede Task auf einem eigenen Branch `feat/<task>` von `master`, Commits im Format `<type>: <description>` mit Zeile `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`. Nach jeder Task `npm test` grün. Repo: `/home/martin/homekit-ccu`. Commits mit `git -c user.name="Martin Rauscher" -c user.email="martin.rauscher@amring.xyz"` ausführen, falls kein globaler Git-User gesetzt ist.
 
 ---
