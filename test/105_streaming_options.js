@@ -2,7 +2,7 @@ const path = require('path')
 const expect = require('expect.js')
 const hap = require('@homebridge/hap-nodejs')
 const { buildStreamingOptions } = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'streamingOptions.js'))
-const { reserveUdpPort, bindUdpSocket } = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'udpPort.js'))
+const { reserveUdpPortPair, bindUdpSocket } = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'udpPort.js'))
 
 describe('HomeKit-CCU streamingOptions', () => {
   it('offers video with all profiles and levels', () => {
@@ -43,9 +43,19 @@ describe('HomeKit-CCU streamingOptions', () => {
 })
 
 describe('HomeKit-CCU udpPort', () => {
-  it('reserves a free port', async () => {
-    const port = await reserveUdpPort('ipv4')
-    expect(port).to.be.within(1024, 65535)
+  it('binds a socket on a free port', async () => {
+    const socket = await bindUdpSocket('ipv4')
+    expect(socket.address().port).to.be.within(1024, 65535)
+    socket.close()
+  })
+
+  it('reserves an even/odd port pair for RTP and RTCP', async () => {
+    const pair = await reserveUdpPortPair('ipv4')
+    expect(pair.rtp % 2).to.be(0)
+    expect(pair.rtcp).to.be(pair.rtp + 1)
+    // both ports are free again for ffmpeg
+    const sockets = await Promise.all([bindUdpSocket('ipv4', pair.rtp), bindUdpSocket('ipv4', pair.rtcp)])
+    sockets.forEach(socket => socket.close())
   })
 
   it('rejects and closes the socket when the port is taken', async () => {

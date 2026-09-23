@@ -50,7 +50,7 @@ describe('HomeKit-CCU ffmpegArgs', () => {
   describe('buildStreamArgs', () => {
     it('builds a video-only stream', () => {
       const a = args.buildStreamArgs(settings, session, { video: videoRequest, audio: null }).join(' ')
-      expect(a).to.contain('-re -i rtsp://cam/stream')
+      expect(a).to.contain('-nostdin -re -i rtsp://cam/stream')
       expect(a).to.contain('-an -sn -dn -codec:v libx264')
       expect(a).to.contain('-codec:v libx264 -pix_fmt yuv420p -color_range mpeg -r 15 -preset ultrafast -tune zerolatency')
       expect(a).to.contain('-filter:v scale=1280:720')

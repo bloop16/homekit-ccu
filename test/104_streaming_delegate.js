@@ -4,6 +4,7 @@ const hap = require('@homebridge/hap-nodejs')
 const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
 const StreamingDelegate = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'StreamingDelegate.js'))
 const { recordingLog } = require(path.join(__dirname, 'helpers', 'recordingLog.js'))
+const dgram = require('dgram')
 
 const FAKE = path.join(__dirname, 'fixtures', 'fake-ffmpeg.sh')
 const log = new Logger('HAP Test')
@@ -83,6 +84,105 @@ describe('HomeKit-CCU StreamingDelegate', () => {
     await delegate.shutdown()
   })
 
+  function snapshot (d) {
+    return new Promise((resolve, reject) => d.handleSnapshotRequest({ width: 640, height: 480 }, (err, buffer) => err ? reject(err) : resolve(buffer)))
+  }
+
+  function countingCollector () {
+    const collector = () => {
+      collector.calls++
+      return new Promise(resolve => setTimeout(() => resolve(Buffer.from('JPEG' + collector.calls)), 30))
+    }
+    collector.calls = 0
+    return collector
+  }
+
+  it('shares one ffmpeg run between concurrent snapshot requests', async () => {
+    const collectStdout = countingCollector()
+    const d = new StreamingDelegate('Snap', settings, log, { collectStdout })
+    const buffers = await Promise.all([snapshot(d), snapshot(d), snapshot(d)])
+    expect(collectStdout.calls).to.be(1)
+    expect(buffers.map(String)).to.eql(['JPEG1', 'JPEG1', 'JPEG1'])
+  })
+
+  it('serves a cached snapshot and refreshes it after the cache time', async () => {
+    const collectStdout = countingCollector()
+    const d = new StreamingDelegate('Snap', settings, log, { collectStdout, snapshotCacheMs: 100 })
+    expect(String(await snapshot(d))).to.be('JPEG1')
+    expect(String(await snapshot(d))).to.be('JPEG1')
+    expect(collectStdout.calls).to.be(1)
+    await new Promise(resolve => setTimeout(resolve, 120))
+    expect(String(await snapshot(d))).to.be('JPEG2')
+    expect(collectStdout.calls).to.be(2)
+  })
+
+  it('caches snapshots for 5 seconds by default and does not cache failures', async () => {
+    expect(StreamingDelegate.SNAPSHOT_CACHE_MS).to.be(5000)
+    let calls = 0
+    const d = new StreamingDelegate('Snap', settings, log, { collectStdout: () => { calls++; return Promise.reject(new Error('no image')) } })
+    expect(d.snapshotCacheMs).to.be(5000)
+    let error
+    try { await snapshot(d) } catch (e) { error = e }
+    expect(error.message).to.be('no image')
+    try { await snapshot(d) } catch (e) { error = e }
+    expect(calls).to.be(2)
+  })
+
+  it('stops the session when no RTCP arrives from the viewer', async () => {
+    const rec = recordingLog()
+    await delegate.shutdown()
+    delegate = new StreamingDelegate('Test Door', settings, rec, { watchdogFloorSeconds: 0 })
+    delegate.attachController({ forceStopStreamingSession: (id) => forced.push(id) })
+    await prepare(delegate, 'sess-w1')
+    const request = startRequest('sess-w1', false)
+    request.video.rtcp_interval = 0.05
+    await stream(delegate, request)
+    await waitFor(() => forced.length > 0)
+    expect(forced).to.eql(['sess-w1'])
+    expect(delegate.ongoingSessions.has('sess-w1')).to.be(false)
+    expect(rec.text('warn')).to.contain('no RTCP from viewer for 0.25s, stopping session sess-w1')
+  })
+
+  it('keeps the session while RTCP arrives on the video return port', async () => {
+    await delegate.shutdown()
+    delegate = new StreamingDelegate('Test Door', settings, log, { watchdogFloorSeconds: 0 })
+    delegate.attachController({ forceStopStreamingSession: (id) => forced.push(id) })
+    const response = await prepare(delegate, 'sess-w2')
+    const request = startRequest('sess-w2', false)
+    request.video.rtcp_interval = 0.05
+    await stream(delegate, request)
+    const sender = dgram.createSocket('udp4')
+    const timer = setInterval(() => sender.send('rtcp', response.video.port, '127.0.0.1'), 40)
+    await new Promise(resolve => setTimeout(resolve, 600))
+    clearInterval(timer)
+    sender.close()
+    expect(forced).to.eql([])
+    expect(delegate.ongoingSessions.get('sess-w2').main.isRunning()).to.be(true)
+    const socket = delegate.ongoingSessions.get('sess-w2').session.videoReturnSocket
+    await stream(delegate, { sessionID: 'sess-w2', type: hap.StreamRequestTypes.STOP })
+    let closedError
+    try { socket.address() } catch (e) { closedError = e }
+    expect(closedError).to.be.an(Error)
+  })
+
+  it('computes the watchdog timeout with floor and cap', () => {
+    expect(delegate.watchdogSeconds(0.5)).to.be(10)
+    expect(delegate.watchdogSeconds(5)).to.be(25)
+    expect(delegate.watchdogSeconds(30)).to.be(60)
+    expect(delegate.watchdogSeconds(undefined)).to.be(10)
+  })
+
+  it('stops the processes of a session in parallel', async () => {
+    await delegate.shutdown()
+    delegate = new StreamingDelegate('Test Door', { ...settings, returnAudioTarget: 'rtsp://cam/talk' }, log, { env: { FAKE_IGNORE_TERM: '1' }, killTimeoutMs: 300 })
+    await prepare(delegate, 'sess-p')
+    await stream(delegate, startRequest('sess-p', true))
+    await new Promise(resolve => setTimeout(resolve, 100))
+    const started = Date.now()
+    await stream(delegate, { sessionID: 'sess-p', type: hap.StreamRequestTypes.STOP })
+    expect(Date.now() - started).to.be.below(900)
+  })
+
   it('answers snapshot requests with the image from ffmpeg', (done) => {
     delegate.handleSnapshotRequest({ width: 640, height: 480 }, (err, buffer) => {
       expect(err).to.be(undefined)
@@ -106,6 +206,7 @@ describe('HomeKit-CCU StreamingDelegate', () => {
     expect(response.audio.ssrc).to.be.a('number')
     expect(response.video.ssrc).to.not.be(response.audio.ssrc)
     expect(response.video.port).to.be.within(1024, 65535)
+    expect(response.audio.port % 2).to.be(0)
     expect(response.video.srtp_key).to.eql(key)
     expect(response.audio.srtp_salt).to.eql(salt)
     expect(delegate.pendingSessions.has('sess-1')).to.be(true)

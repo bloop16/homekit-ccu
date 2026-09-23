@@ -67,10 +67,52 @@ describe('HomeKit-CCU FfmpegProcess', () => {
     const proc = new FfmpegProcess('video', FAKE, ['-i', 'x'], log, { onExit: (code, signal) => exits.push({ code, signal }) })
     proc.start()
     expect(proc.isRunning()).to.be(true)
+    const started = Date.now()
     await proc.stop()
+    expect(Date.now() - started).to.be.below(1000)
     expect(proc.isRunning()).to.be(false)
     expect(exits.length).to.be(1)
-    expect(exits[0].signal).to.be('SIGKILL')
+    // the fake traps SIGTERM and exits cleanly
+    expect(exits[0].code).to.be(0)
+    expect(exits[0].signal).to.be(null)
+  })
+
+  it('kills with SIGKILL when SIGTERM is ignored', async () => {
+    const exits = []
+    const proc = new FfmpegProcess('video', FAKE, ['-i', 'x'], log, {
+      env: { FAKE_IGNORE_TERM: '1' },
+      killTimeoutMs: 200,
+      onExit: (code, signal, expected) => exits.push({ code, signal, expected })
+    })
+    proc.start()
+    await new Promise(resolve => setTimeout(resolve, 100))
+    const started = Date.now()
+    await proc.stop()
+    expect(Date.now() - started).to.be.within(180, 1000)
+    expect(exits).to.eql([{ code: null, signal: 'SIGKILL', expected: true }])
+  })
+
+  it('waits 1500 ms for SIGTERM by default', () => {
+    expect(FfmpegProcess.KILL_TIMEOUT_MS).to.be(1500)
+    expect(new FfmpegProcess('video', FAKE, [], log).killTimeoutMs).to.be(1500)
+  })
+
+  it('tracks live children for orphan protection', async () => {
+    const proc = new FfmpegProcess('video', FAKE, ['-i', 'x'], log, {})
+    proc.start()
+    const child = proc.child
+    expect(FfmpegProcess.liveChildren.has(child)).to.be(true)
+    await proc.stop()
+    expect(FfmpegProcess.liveChildren.has(child)).to.be(false)
+    expect(FfmpegProcess.liveChildren.size).to.be(0)
+  })
+
+  it('does not open stdin unless asked to', async () => {
+    const proc = new FfmpegProcess('video', FAKE, ['-i', 'x'], log, {})
+    proc.start()
+    expect(proc.child.stdin).to.be(null)
+    proc.writeStdin('ignored')
+    await proc.stop()
   })
 
   it('reports unexpected exit with code', (done) => {
@@ -130,7 +172,7 @@ describe('HomeKit-CCU FfmpegProcess', () => {
   })
 
   it('writes stdin and closes it', async () => {
-    const proc = new FfmpegProcess('return', FAKE, ['-f', 'sdp', '-i', 'pipe:'], log, {})
+    const proc = new FfmpegProcess('return', FAKE, ['-f', 'sdp', '-i', 'pipe:'], log, { stdin: true })
     proc.start()
     proc.writeStdin('v=0\r\n')
     expect(proc.isRunning()).to.be(true)
