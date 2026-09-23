@@ -23,7 +23,6 @@
 		"fakegato-history": "^0.6.7",
 		"formidable": "^3.5.4",
 		"homematic-xmlrpc": "1.0.2",
-		"moment": "2.29.4",
 		"sockjs": "^0.3.20"
 	},
 	"husky": {
