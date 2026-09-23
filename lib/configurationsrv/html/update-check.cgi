@@ -6,17 +6,14 @@
 set version_url "https://api.github.com/repos/bloop16/homekit-ccu/releases/latest"
 set package_url "https://github.com/bloop16/homekit-ccu/releases/latest"
 
+# Only cmd is read; other parameters (version, ...) are ignored so a query string can never
+# change the URLs above or any other variable of this script.
+set cmd ""
 catch {
-  set input $env(QUERY_STRING)
-  set pairs [split $input &]
-  foreach pair $pairs {
-    if {0 != [regexp "^(\[^=]*)=(.*)$" $pair dummy varname val]} {
-      set $varname $val
-    }
-  }
+  regexp {(?:^|&)cmd=([^&]*)} $env(QUERY_STRING) -> cmd
 }
 
-if { [info exists cmd ] && $cmd == "download"} {
+if { $cmd == "download" } {
   puts -nonewline "Content-Type: text/html; charset=utf-8\r\n\r\n"
   puts -nonewline "<html><head><meta http-equiv='refresh' content='0; url=$package_url' /></head><body></body></html>"
 } else {

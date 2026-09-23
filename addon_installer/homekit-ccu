@@ -9,7 +9,7 @@ ADDONWWW_DIR=${CONFIG_DIR}/addons/www/${ADDON_NAME}
 NPMCACHE_DIR=/tmp/homekit-ccu-cache
 RCD_DIR=${CONFIG_DIR}/rc.d
 PIDFILE=/var/run/homekit-ccu.pid
-VER=0.0.16
+VER=0.1.0-dev
 REQUIRED_MAJOR=22
 LOGFILE=/var/log/homekit-ccu.log
 
@@ -92,7 +92,7 @@ install() {
   rm -rf ${NPMCACHE_DIR}
 
   log "install" "Installing WebUI files."
-  mkdir -p ${ADDONWWW_DIR}/${ADDONNAME}
+  mkdir -p ${ADDONWWW_DIR}
   cp -af ${MODULE_DIR}/lib/configurationsrv/html/* ${ADDONWWW_DIR}
 
   log "install" "Installing lighttpd config."
@@ -290,11 +290,12 @@ info() {
 		OPS="uninstall start"
 	fi
 
+	INFO_HTML="${INFO_HTML}<br />Node.js $(node --version 2>/dev/null || echo 'missing')"
 	INFO_HTML="${INFO_HTML}<br /><a href='https://github.com/bloop16/homekit-ccu/'>https://github.com/bloop16/homekit-ccu/</a>"
 
 	echo "Info: ${INFO_HTML}"
 	echo "Name: HomeKit-CCU"
-	echo "Version: $VER (Node $(node --version 2>/dev/null || echo 'missing'))"
+	echo "Version: $VER"
 	echo "Operations: ${OPS}"
 	[ -n "${OPS}" ] && echo "Config-Url: $CONFIG_URL"
 	echo "Update: /addons/${ADDON_NAME}/update-check.cgi"

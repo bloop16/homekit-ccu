@@ -142,7 +142,7 @@ if (fs.existsSync(fdebug)) {
 }
 
 log.info('---- launching ----')
-log.info('Welcome to HAP Homematic. Use your HomeMatic devices in HomeKit')
+log.info('Welcome to homekit-ccu. Use your HomeMatic devices in HomeKit')
 log.info('(c) 2020-2026 thkl, britz, bloop16 - https://github.com/bloop16/homekit-ccu')
 log.info('Logging into %s', log.getLogFile())
 let server

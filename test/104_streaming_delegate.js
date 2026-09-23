@@ -237,6 +237,24 @@ describe('HomeKit-CCU StreamingDelegate', function () {
     expect(rec.text('error')).to.contain('no free ports')
   })
 
+  it('logs errors on the bound video socket while the audio ports are still being reserved', async () => {
+    const rec = recordingLog()
+    const bound = []
+    let releaseReserve
+    delegate = new StreamingDelegate('Test Door', settings, rec, {
+      bindUdpSocket: (v) => bindUdpSocket(v).then(socket => { bound.push(socket); return socket }),
+      reserveUdpPortPair: () => new Promise(resolve => { releaseReserve = resolve })
+    })
+    const preparing = prepare(delegate, 'sess-r3')
+    await waitFor(() => bound.length === 1)
+    // without a listener this emit would throw and crash the process
+    bound[0].emit('error', new Error('early socket failure'))
+    releaseReserve({ rtp: 50100, rtcp: 50101 })
+    await preparing
+    expect(rec.text('warn')).to.contain('early socket failure')
+    expect(bound[0].listenerCount('error')).to.be(1)
+  })
+
   it('closes the sockets and fails when shut down while preparing', async () => {
     const bound = []
     delegate = new StreamingDelegate('Test Door', settings, log, {

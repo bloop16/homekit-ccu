@@ -72,10 +72,9 @@ echo "  -> ${ADDON_DIR}/node_modules/${ADDONNAME} -> ${WORKSPACE}"
 
 # ---- 4. Install web UI files ----
 echo "[4/6] Installing WebUI files..."
-# Copy config UI static files (HTML/JS/CSS) so lighttpd serves them at /addons/homekit-ccu/
+# Copy config UI static files (HTML/JS/CSS, update-check.cgi, logo) so lighttpd serves them
+# at /addons/homekit-ccu/, same as the rc.d install
 cp -rf "${WORKSPACE}/lib/configurationsrv/html/"* "${ADDONWWW_DIR}/"
-cp -f "${WORKSPACE}/addon_installer/etc/www/update-check.cgi" "${ADDONWWW_DIR}/"
-cp -f "${WORKSPACE}/addon_installer/etc/www/homekit-ccu-logo.png" "${ADDONWWW_DIR}/"
 chmod +x "${ADDONWWW_DIR}/update-check.cgi"
 # Install lighttpd proxy config (proxies external ports to config server)
 mkdir -p /etc/config/lighttpd
@@ -103,16 +102,16 @@ echo "  /etc/config/lighttpd/${ADDONNAME}.conf"
 
 # ---- 5. Install rc.d init script ----
 echo "[5/6] Installing rc.d init script..."
-cp -f "${WORKSPACE}/addon_installer/rc.d/${ADDONNAME}" "${RCD_DIR}/${ADDONNAME}"
+cp -f "${WORKSPACE}/addon_installer/${ADDONNAME}" "${RCD_DIR}/${ADDONNAME}"
 chmod +x "${RCD_DIR}/${ADDONNAME}"
 echo "  ${RCD_DIR}/${ADDONNAME}"
 
 # ---- 6. Register addon button in CCU WebUI ----
 echo "[6/6] Registering addon in CCU WebUI..."
-# Ensure the hm_addons.cfg.cfg exists
-touch /etc/config/hm_addons.cfg.cfg
-node "${WORKSPACE}/etc/hm_addon.js" homekit-ccu "${WORKSPACE}/etc/hm_addons.cfg.cfg"
-echo "  Registered 'homekit-ccu' in /etc/config/hm_addons.cfg.cfg"
+# Ensure the hm_addons.cfg exists
+touch /etc/config/hm_addons.cfg
+node "${WORKSPACE}/etc/hm_addon.js" homekit-ccu "${WORKSPACE}/etc/homekit_ccu_addon.cfg"
+echo "  Registered 'homekit-ccu' in /etc/config/hm_addons.cfg"
 
 echo ""
 echo "=== Installation complete ==="

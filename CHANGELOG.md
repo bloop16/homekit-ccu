@@ -13,6 +13,7 @@ Changelog for 0.1.0:
 * Restart from the configuration UI calls the rc.d script directly; configuration restore checks the CCU session when authentication is on and removes rejected uploads
 * **Upgrade note, video doorbell:** the doorbell gets a new HomeKit identity (derived from its UUID instead of the fixed `00:00:11:22:22:11`) and the old default PIN `123-45-678` is now rejected as trivial. After upgrading: set a non-trivial PIN in the doorbell settings, remove the old doorbell in Apple Home, add it again. Renaming the doorbell also changes its identity.
 * Video doorbell: streams end automatically when no RTCP from the viewer arrives (watchdog: 30 s for the first packet, then ~10 s); ffmpeg errors are shown in the log with credentials (URL userinfo, `user`/`password` query parameters) and SRTP keys masked; snapshots cached 5 s
+* Hardware verification on OpenCCU + iOS 27: pending (pairing migration from 0.0.x, bridges, video doorbell)
 * Known: 2 low `npm audit` findings via binrpc 3.3.1 (`put`), fix needs a binrpc 4.x upgrade tested against a real CCU
 
 Changelog for 0.0.16:
