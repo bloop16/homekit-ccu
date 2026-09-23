@@ -452,13 +452,13 @@
   "Use Color Temp": "Farbtemperatur verwenden",
   "This will enable the color temperature feature. Please check in your CCU if your device supports this.": "Dies wird die Farbtemperatureinstellung verwenden. Bitte prüfe in der CCU, ob das Gerät dies unterstützt",
   "Video codec": "Video-Codec",
-  "Use copy when the camera already delivers H.264": "copy verwenden, wenn die Kamera bereits H.264 liefert",
   "Max width": "Maximale Breite",
   "Max height": "Maximale Höhe",
   "Max FPS": "Maximale Bildrate",
   "Max bitrate (kbit/s)": "Maximale Bitrate (kbit/s)",
   "Audio": "Audio",
   "Talkback target": "Gegensprech-Ziel",
-  "RTSP URL, or raw ffmpeg input args starting with - (e.g. -f lavfi -i testsrc)": "RTSP-URL oder rohe ffmpeg-Eingabeargumente, beginnend mit - (z. B. -f lavfi -i testsrc)",
-  "ffmpeg output for talkback, empty disables two-way audio": "ffmpeg-Ausgabe für Gegensprechen, leer deaktiviert Zwei-Wege-Audio"
+  "RTSP URL, or raw ffmpeg input args starting with - (e.g. -re -f lavfi -i testsrc); no quoting supported, arguments are split on spaces": "RTSP-URL oder rohe ffmpeg-Eingabeargumente, beginnend mit - (z. B. -re -f lavfi -i testsrc); keine Anführungszeichen, Argumente werden an Leerzeichen getrennt",
+  "'copy' when the camera delivers H.264 (recommended on the CCU itself); libx264 transcodes and needs a fast CPU": "'copy', wenn die Kamera H.264 liefert (empfohlen direkt auf der CCU); libx264 transkodiert und braucht eine schnelle CPU",
+  "ffmpeg output for talkback, empty disables two-way audio; raw options starting with - override codec, e.g. -codec:a pcm_mulaw -ar 8000 -f rtsp rtsp://cam/talk": "ffmpeg-Ausgabe für Gegensprechen, leer deaktiviert Zwei-Wege-Audio; rohe Optionen beginnend mit - überschreiben den Codec, z. B. -codec:a pcm_mulaw -ar 8000 -f rtsp rtsp://cam/talk"
 }

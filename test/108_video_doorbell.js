@@ -87,10 +87,12 @@ describe('HomeKit-CCU video doorbell accessory', () => {
     expect(doorbell.isPrimaryService).to.be(true)
     expect(accessory.registered.length).to.be(1)
     const events = []
-    doorbell.getCharacteristic(hap.Characteristic.ProgrammableSwitchEvent).on('change', (change) => events.push(change.newValue))
+    doorbell.getCharacteristic(hap.Characteristic.ProgrammableSwitchEvent).on('change', (change) => events.push([change.newValue, change.reason]))
     accessory.registered[0].callback(true)
     accessory.registered[0].callback(true)
-    expect(events).to.eql([0])
+    accessory.registered[0].callback(true)
+    // every ring is sent as event notification, also when the value does not change
+    expect(events).to.eql([[0, 'event'], [0, 'event']])
   })
 
   it('is not published when the ffmpeg binary is missing', () => {
@@ -162,11 +164,35 @@ describe('HomeKit-CCU video doorbell accessory', () => {
     expect(rec.text('error')).to.contain('video source')
   })
 
+  it('publishes with a username derived from its uuid and the configured pin', () => {
+    const front = make({ ffmpegpath: FAKE, video_source: 'rtsp://x', 'pin-code': '482-91-736' })
+    const info = front.getPublishInfo()
+    expect(info.username).to.match(/^[0-9A-F]{2}(:[0-9A-F]{2}){5}$/)
+    expect(info.username).to.not.be('00:00:11:22:22:11')
+    expect(info.pincode).to.be('482-91-736')
+    expect(info.category).to.be(hap.Categories.VIDEO_DOORBELL)
+    const back = createDoorBell({ ffmpegpath: FAKE, video_source: 'rtsp://x' })
+    back._accessoryUUID = hap.uuid.generate('SPECIAL:Back door')
+    accessories.push(back)
+    expect(back.getPublishInfo().username).to.not.be(info.username)
+    expect(back.getPublishInfo().pincode).to.be('031-45-154')
+  })
+
+  it('is not published with a trivial or malformed pin', () => {
+    for (const pin of ['123-45-678', '1234']) {
+      const rec = recordingLog()
+      const accessory = make({ ffmpegpath: FAKE, video_source: 'rtsp://x', 'pin-code': pin }, rec)
+      expect(accessory.cameraUnavailable).to.be(true)
+      expect(rec.text('error')).to.contain(pin)
+    }
+  })
+
   it('offers every configuration item with a default for the new camera settings', () => {
     const items = VideoDoorBell.configurationItems()
     for (const key of ['vcodec', 'maxWidth', 'maxHeight', 'maxFPS', 'maxBitrate', 'audio', 'audio_return_target']) {
       expect(items[key]).to.have.property('default')
     }
+    expect(items['pin-code'].default).to.be('031-45-154')
     expect(VideoDoorBell.channelTypes()).to.eql(['SPECIAL'])
   })
 })
