@@ -1993,6 +1993,14 @@ const { buildStreamingOptions } = require(path.join(__dirname, 'camera', 'stream
 
 const DEFAULTS = { maxWidth: 1280, maxHeight: 720, maxFPS: 15, maxBitrate: 1000, vcodec: 'libx264' }
 
+/**
+ * A plain URL gets the given prefix ("-re -i "); a value that already starts with "-" is taken as raw ffmpeg input args.
+ */
+function inputArgs (value, prefix) {
+  const trimmed = String(value || '').trim()
+  return trimmed.startsWith('-') ? trimmed : prefix + trimmed
+}
+
 module.exports = class HomeMaticSPVideoDoorBellAccessory extends HomeMaticAccessory {
   createHomeKitAccessory () {
     this.debugLog('publishing services for %s', this.getName())
@@ -2009,8 +2017,8 @@ module.exports = class HomeMaticSPVideoDoorBellAccessory extends HomeMaticAccess
   cameraSettings () {
     return {
       ffmpegPath: this.getDeviceSettings('ffmpegpath') || '/usr/local/bin/ffmpeg',
-      source: '-re -i ' + this.getDeviceSettings('video_source'),
-      stillImageSource: this.getDeviceSettings('video_stillImageSource') ? '-i ' + this.getDeviceSettings('video_stillImageSource') : undefined,
+      source: inputArgs(this.getDeviceSettings('video_source'), '-re -i '),
+      stillImageSource: this.getDeviceSettings('video_stillImageSource') ? inputArgs(this.getDeviceSettings('video_stillImageSource'), '-i ') : undefined,
       vcodec: this.getDeviceSettings('vcodec') || DEFAULTS.vcodec,
       maxWidth: this.numberSetting('maxWidth'),
       maxHeight: this.numberSetting('maxHeight'),
@@ -2102,7 +2110,7 @@ module.exports = class HomeMaticSPVideoDoorBellAccessory extends HomeMaticAccess
         options: { filterChannels: ['KEY', 'VIRTUAL_KEY', 'MULTI_MODE_INPUT_TRANSMITTER'] },
         mandatory: true
       },
-      video_source: { type: 'text', hint: '', label: 'URL RTSP video', mandatory: true },
+      video_source: { type: 'text', hint: 'RTSP URL, or raw ffmpeg input args starting with - (e.g. -f lavfi -i testsrc)', label: 'URL RTSP video', mandatory: true },
       video_stillImageSource: { type: 'text', hint: '', label: 'URL still image', default: '' },
       'pin-code': { type: 'text', hint: '', label: 'PinCode', default: '123-45-678' },
       ffmpegpath: { type: 'text', hint: '', label: 'Path to ffmpg', default: '/usr/local/bin/ffmpeg' },
@@ -2138,6 +2146,7 @@ Object.assign(j,{
  'Max width':'Maximale Breite','Max height':'Maximale Höhe','Max FPS':'Maximale Bildrate',
  'Max bitrate (kbit/s)':'Maximale Bitrate (kbit/s)','Audio':'Audio',
  'Talkback target':'Gegensprech-Ziel',
+ 'RTSP URL, or raw ffmpeg input args starting with - (e.g. -f lavfi -i testsrc)':'RTSP-URL oder rohe ffmpeg-Eingabeargumente, beginnend mit - (z. B. -f lavfi -i testsrc)',
  'ffmpeg output for talkback, empty disables two-way audio':'ffmpeg-Ausgabe für Gegensprechen, leer deaktiviert Zwei-Wege-Audio'
 });
 fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n');console.log('ok')"
@@ -2176,14 +2185,14 @@ git checkout master && git merge --ff-only feat/camera && git push
 
 - [ ] **Step 6: Zweiter Test auf der OpenCCU (manuell, mit Martin)**
 
-Tarball wie in Task 4 Step 7 bauen und installieren. Für die Klingel im Remote-Modus auf diesem Rechner testen:
+Tarball wie in Task 4 Step 7 bauen und installieren. Es gibt keine echte Kamera; die Klingel wird im Remote-Modus auf diesem Rechner mit einer synthetischen ffmpeg-Quelle getestet (Testbild plus Sinuston):
 
 ```bash
 which ffmpeg && ffmpeg -hide_banner -encoders 2>/dev/null | grep -E "libopus|libfdk_aac|libx264"
 node index.js -D -H <ccu-host> -C /tmp/hk-remote
 ```
 
-In Apple Home: Klingel hinzufügen, Standbild sichtbar, Live-Stream startet, Ton hörbar. Mit gesetztem Gegensprech-Ziel: Sprechen-Taste, Ton kommt am Ziel an. Beobachtungen im CHANGELOG-Entwurf festhalten.
+In der Config-UI eine Video-Klingel anlegen mit *URL RTSP video* `-f lavfi -i testsrc=size=1280x720:rate=15 -f lavfi -i sine=frequency=440` (das Feld wird als ffmpeg-Eingabe übernommen, daher funktionieren lavfi-Quellen; `-re -i` wird dann nicht vorangestellt, siehe Task 13 `cameraSettings`), *URL still image* leer, *Path to ffmpeg* auf das lokale Binary. In Apple Home: Klingel hinzufügen, Testbild als Standbild sichtbar, Live-Stream läuft, 440-Hz-Ton hörbar. Gegensprechen kann ohne Ziel nicht geprüft werden; stattdessen `audio_return_target` auf `-f null -` setzen und im Debug-Log prüfen, dass der Rückkanal-Prozess startet und SDP empfängt. Beobachtungen im CHANGELOG-Entwurf festhalten.
 
 ---
 
@@ -2260,6 +2269,7 @@ The video doorbell (special accessory) needs an `ffmpeg` binary. OpenCCU does no
 - **On the CCU**: copy a static build (for example the johnvansickle.com builds for arm64/amd64) to `/usr/local/bin/ffmpeg`, make it executable and set *Path to ffmpeg* in the doorbell settings. Audio is offered only for encoders the binary actually has; without `libopus`/`libfdk_aac` the doorbell is published video-only.
 - *Video codec* `copy` avoids transcoding when the camera already delivers H.264. This is the only realistic option on a Raspberry Pi based CCU.
 - *Talkback target* is an ffmpeg output (for example `rtsp://camera/talk`); when set, Apple Home shows the talk button.
+- *URL RTSP video* accepts a plain RTSP/HTTP URL or, when it starts with `-`, raw ffmpeg input arguments. `-f lavfi -i testsrc=size=1280x720:rate=15 -f lavfi -i sine=frequency=440` gives a test pattern with a tone and needs no camera at all.
 
 # mDNS advertiser
 

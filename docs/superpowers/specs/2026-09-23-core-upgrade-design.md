@@ -118,4 +118,4 @@ Abnahme auf Martins produktiver OpenCCU nach Stufe 2 und nach Stufe 4 (SSH-Zugan
 - Tarball installiert sich über die WebUI, Button erscheint in der Systemsteuerung.
 - Bridge wird in Apple Home unter iOS 27 gefunden, Pairing gelingt.
 - Bestehende Geräte reagieren, Events kommen an.
-- Video-Klingel liefert im Remote-Modus mit ffmpeg Standbild, Stream und Ton; mit gesetztem `audio_return_target` kommt Sprache am Ziel an.
+- Video-Klingel liefert im Remote-Modus mit ffmpeg Standbild, Stream und Ton. Da keine echte Kamera vorhanden ist, dient eine synthetische lavfi-Quelle (Testbild plus Sinuston) als Kamera; das Feld `video_source` akzeptiert dafür rohe ffmpeg-Eingabeargumente. Gegensprechen wird nur bis zum Start des Rückkanal-Prozesses geprüft (Ziel `-f null -`), nicht bis zu einer Kamera.
