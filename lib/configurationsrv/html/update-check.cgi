@@ -1,7 +1,10 @@
 #!/bin/tclsh
 
-set version_url "https://raw.githubusercontent.com/britz/homekit-ccu/master/package.json"
-set package_url "https://github.com/britz/homekit-ccu/releases/latest"
+# The CCU's add-on page calls ?cmd=check_version&version=<installed> and shows the plain
+# text answer as the available version; ?cmd=download opens the download page.
+# The latest GitHub release (prereleases excluded) is the source, its tag is v<version>.
+set version_url "https://api.github.com/repos/bloop16/homekit-ccu/releases/latest"
+set package_url "https://github.com/bloop16/homekit-ccu/releases/latest"
 
 catch {
   set input $env(QUERY_STRING)
@@ -20,7 +23,7 @@ if { [info exists cmd ] && $cmd == "download"} {
   puts -nonewline "Content-Type: text/plain; charset=utf-8\r\n\r\n"
   catch {
     set json [ exec /usr/bin/wget -qO- --no-check-certificate $version_url ]
-    regexp {"version"\s*:\s*"([^"]+)"} $json -> newversion
+    regexp {"tag_name"\s*:\s*"v([^"]+)"} $json -> newversion
   }
   if { [info exists newversion] } {
     puts $newversion

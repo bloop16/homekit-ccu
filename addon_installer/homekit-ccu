@@ -291,7 +291,7 @@ info() {
 		OPS="uninstall start"
 	fi
 
-	INFO_HTML="${INFO_HTML}<br /><a href='https://github.com/britz/homekit-ccu/'>https://github.com/britz/homekit-ccu/</a>"
+	INFO_HTML="${INFO_HTML}<br /><a href='https://github.com/bloop16/homekit-ccu/'>https://github.com/bloop16/homekit-ccu/</a>"
 
 	echo "Info: ${INFO_HTML}"
 	echo "Name: HomeKit-CCU"
