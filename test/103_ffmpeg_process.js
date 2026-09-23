@@ -2,6 +2,9 @@ const path = require('path')
 const expect = require('expect.js')
 const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
 const FfmpegProcess = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'FfmpegProcess.js'))
+const { recordingLog } = require(path.join(__dirname, 'helpers', 'recordingLog.js'))
+const fs = require('fs')
+const os = require('os')
 
 const FAKE = path.join(__dirname, 'fixtures', 'fake-ffmpeg.sh')
 const log = new Logger('HAP Test')
@@ -16,9 +19,32 @@ describe('HomeKit-CCU FfmpegProcess', () => {
     expect(encoders.has('nope')).to.be(false)
   })
 
-  it('returns an empty set when the binary is missing', () => {
-    const encoders = FfmpegProcess.probeEncoders('/nonexistent/ffmpeg', log)
-    expect(encoders.size).to.be(0)
+  it('returns null and names ENOENT when the binary is missing', () => {
+    const rec = recordingLog()
+    expect(FfmpegProcess.probeEncoders('/nonexistent/ffmpeg', rec)).to.be(null)
+    expect(rec.text('error')).to.contain('ENOENT')
+    expect(rec.text('error')).to.contain('/nonexistent/ffmpeg')
+  })
+
+  it('returns null and suggests chmod +x when the binary is not executable', () => {
+    const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'hkccu-')), 'ffmpeg')
+    fs.writeFileSync(file, '#!/bin/sh\nexit 0\n', { mode: 0o644 })
+    const rec = recordingLog()
+    expect(FfmpegProcess.probeEncoders(file, rec)).to.be(null)
+    expect(rec.text('error')).to.contain('EACCES')
+    expect(rec.text('error')).to.contain('chmod +x ' + file)
+  })
+
+  it('returns null with the stderr tail when ffmpeg exits non-zero', () => {
+    const rec = recordingLog()
+    process.env.FAKE_EXIT_CODE = '4'
+    try {
+      expect(FfmpegProcess.probeEncoders(FAKE, rec)).to.be(null)
+    } finally {
+      delete process.env.FAKE_EXIT_CODE
+    }
+    expect(rec.text('error')).to.contain('code 4')
+    expect(rec.text('error')).to.contain('fake ffmpeg failing')
   })
 
   it('collects stdout for snapshots', async () => {
@@ -70,13 +96,37 @@ describe('HomeKit-CCU FfmpegProcess', () => {
     proc.start()
   })
 
-  it('rejects collectStdout when ffmpeg fails', async () => {
+  it('rejects collectStdout with the redacted stderr tail when ffmpeg fails', async () => {
     let error
     try {
       await FfmpegProcess.collectStdout(FAKE, ['-i', 'x'], log, 2000, { FAKE_EXIT_CODE: '1' })
     } catch (e) { error = e }
     expect(error).to.be.an(Error)
-    expect(error.message).to.contain('code 1')
+    expect(error.message).to.be('ffmpeg snapshot exited with code 1: fake ffmpeg failing | rtsp://***@cam/stream: Connection refused')
+  })
+
+  it('appends the stderr tail to the unexpected exit warning', (done) => {
+    const rec = recordingLog()
+    const proc = new FfmpegProcess('video', FAKE, ['-i', 'x'], rec, {
+      env: { FAKE_EXIT_CODE: '3' },
+      onExit: () => {
+        expect(rec.text('warn')).to.contain('code 3')
+        expect(rec.text('warn')).to.contain('fake ffmpeg failing | rtsp://***@cam/stream: Connection refused')
+        expect(rec.text()).to.not.contain('secret')
+        done()
+      }
+    })
+    proc.start()
+  })
+
+  it('redacts credentials and SRTP keys in the logged command line', async () => {
+    const rec = recordingLog()
+    const proc = new FfmpegProcess('video', FAKE, ['-i', 'rtsp://admin:secret@cam/x', '-srtp_out_params', 'S3CR3TKEY', 'srtp://1.2.3.4:5'], rec, {})
+    proc.start()
+    await proc.stop()
+    expect(rec.text('debug')).to.contain('-i rtsp://***@cam/x -srtp_out_params *** srtp://1.2.3.4:5')
+    expect(rec.text()).to.not.contain('secret')
+    expect(rec.text()).to.not.contain('S3CR3TKEY')
   })
 
   it('writes stdin and closes it', async () => {

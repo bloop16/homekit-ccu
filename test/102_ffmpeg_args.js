@@ -33,13 +33,17 @@ describe('HomeKit-CCU ffmpegArgs', () => {
   describe('buildSnapshotArgs', () => {
     it('uses the still image source and requested size', () => {
       const a = args.buildSnapshotArgs(settings, { width: 640, height: 480 })
-      expect(a.join(' ')).to.be('-i http://cam/snap.jpg -frames:v 1 -filter:v scale=640:480 -f image2 - -hide_banner -loglevel error')
+      expect(a.join(' ')).to.be('-hide_banner -loglevel error -i http://cam/snap.jpg -frames:v 1 -filter:v scale=640:480:force_original_aspect_ratio=decrease -f image2 -')
     })
 
-    it('falls back to the video source when no still image source is set', () => {
-      const a = args.buildSnapshotArgs({ source: '-i rtsp://cam/stream' }, { width: 320, height: 240 })
-      expect(a[0]).to.be('-i')
-      expect(a[1]).to.be('rtsp://cam/stream')
+    it('falls back to the video source without -re when no still image source is set', () => {
+      const a = args.buildSnapshotArgs({ source: '-re -i rtsp://cam/stream' }, { width: 320, height: 240 })
+      expect(a.join(' ')).to.be('-hide_banner -loglevel error -i rtsp://cam/stream -frames:v 1 -filter:v scale=320:240:force_original_aspect_ratio=decrease -f image2 -')
+    })
+
+    it('drops -re in front of every input of a raw source', () => {
+      const a = args.buildSnapshotArgs({ source: '-re -f lavfi -i testsrc -re -f lavfi -i sine' }, { width: 320, height: 240 }).join(' ')
+      expect(a).to.contain('-loglevel error -f lavfi -i testsrc -f lavfi -i sine -frames:v 1')
     })
   })
 
@@ -50,7 +54,7 @@ describe('HomeKit-CCU ffmpegArgs', () => {
       expect(a).to.contain('-an -sn -dn -codec:v libx264')
       expect(a).to.contain('-codec:v libx264 -pix_fmt yuv420p -color_range mpeg -r 15 -preset ultrafast -tune zerolatency')
       expect(a).to.contain('-filter:v scale=1280:720')
-      expect(a).to.contain('-b:v 800k')
+      expect(a).to.contain('-b:v 800k -bufsize 1600k -maxrate 800k -g 30')
       expect(a).to.contain('-payload_type 99 -ssrc 1234 -f rtp -srtp_out_suite AES_CM_128_HMAC_SHA1_80 -srtp_out_params ' + session.videoSRTP.toString('base64'))
       expect(a).to.contain('srtp://192.168.1.20:50000?rtcpport=50000&pkt_size=1316')
       expect(a).to.not.contain('libopus')
@@ -60,7 +64,14 @@ describe('HomeKit-CCU ffmpegArgs', () => {
       const a = args.buildStreamArgs(settings, session, { video: { ...videoRequest, width: 1920, height: 1080, fps: 30, max_bit_rate: 4000 }, audio: null }).join(' ')
       expect(a).to.contain('-r 15')
       expect(a).to.contain('scale=1280:720')
-      expect(a).to.contain('-b:v 1000k')
+      expect(a).to.contain('-b:v 1000k -bufsize 2000k -maxrate 1000k -g 30')
+    })
+
+    it('brackets ipv6 target addresses', () => {
+      const v6 = { ...session, addressVersion: 'ipv6', address: 'fe80::1' }
+      const a = args.buildStreamArgs(settings, v6, { video: videoRequest, audio: opusRequest }).join(' ')
+      expect(a).to.contain('srtp://[fe80::1]:50000?rtcpport=50000&pkt_size=1316')
+      expect(a).to.contain('srtp://[fe80::1]:50002?rtcpport=50002&pkt_size=188')
     })
 
     it('uses copy without transcoding flags', () => {
@@ -68,12 +79,13 @@ describe('HomeKit-CCU ffmpegArgs', () => {
       expect(a).to.contain('-codec:v copy')
       expect(a).to.not.contain('-filter:v')
       expect(a).to.not.contain('-preset')
+      expect(a).to.not.contain('-bufsize')
     })
 
     it('adds an opus audio stream', () => {
       const a = args.buildStreamArgs(settings, session, { video: videoRequest, audio: opusRequest }).join(' ')
       expect(a).to.contain('-an -sn -dn -codec:v libx264')
-      expect(a).to.contain('-vn -sn -dn -codec:a libopus -application lowdelay -flags +global_header -ar 16k -b:a 24k -ac 1 -payload_type 110 -ssrc 5678 -f rtp -srtp_out_suite AES_CM_128_HMAC_SHA1_80 -srtp_out_params ' + session.audioSRTP.toString('base64'))
+      expect(a).to.contain('-vn -sn -dn -codec:a libopus -application lowdelay -frame_duration 20 -flags +global_header -ar 16k -b:a 24k -ac 1 -payload_type 110 -ssrc 5678 -f rtp -srtp_out_suite AES_CM_128_HMAC_SHA1_80 -srtp_out_params ' + session.audioSRTP.toString('base64'))
       expect(a).to.contain('srtp://192.168.1.20:50002?rtcpport=50002&pkt_size=188')
     })
 
@@ -105,7 +117,7 @@ describe('HomeKit-CCU ffmpegArgs', () => {
 
     it('builds the return audio ffmpeg args', () => {
       const a = args.buildReturnAudioArgs('rtsp://cam/talk', opusRequest).join(' ')
-      expect(a).to.be('-hide_banner -protocol_whitelist pipe,udp,rtp,file,crypto -f sdp -c:a libopus -i pipe: -codec:a aac -f rtsp rtsp://cam/talk')
+      expect(a).to.be('-hide_banner -protocol_whitelist pipe,udp,rtp,crypto -f sdp -c:a libopus -i pipe: -codec:a aac -f rtsp rtsp://cam/talk')
     })
 
     it('takes a return target starting with - as raw ffmpeg output args', () => {

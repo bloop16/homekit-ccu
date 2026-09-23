@@ -3,6 +3,7 @@ const expect = require('expect.js')
 const hap = require('@homebridge/hap-nodejs')
 const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
 const StreamingDelegate = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'StreamingDelegate.js'))
+const { recordingLog } = require(path.join(__dirname, 'helpers', 'recordingLog.js'))
 
 const FAKE = path.join(__dirname, 'fixtures', 'fake-ffmpeg.sh')
 const log = new Logger('HAP Test')
@@ -194,11 +195,37 @@ describe('HomeKit-CCU StreamingDelegate', () => {
     expect(error).to.be.an(Error)
   })
 
-  it('fails a start request for an unknown session', async () => {
+  it('fails and warns on a start request for an unknown session', async () => {
+    const rec = recordingLog()
+    delegate = new StreamingDelegate('Test Door', settings, rec)
     let error
     try {
       await stream(delegate, startRequest('unknown', false))
     } catch (e) { error = e }
     expect(error).to.be.an(Error)
+    expect(rec.text('warn')).to.contain('unknown')
+  })
+
+  it('still answers STOP when stopping fails', async () => {
+    const rec = recordingLog()
+    delegate = new StreamingDelegate('Test Door', settings, rec)
+    delegate.stopStream = () => Promise.reject(new Error('boom'))
+    await stream(delegate, { sessionID: 'sess-9', type: hap.StreamRequestTypes.STOP })
+    expect(rec.text('error')).to.contain('boom')
+    delegate = new StreamingDelegate('Test Door', settings, log)
+  })
+
+  it('still forces the session to stop when cleanup after a crash fails', async () => {
+    const rec = recordingLog()
+    delegate = new StreamingDelegate('Test Door', settings, rec, { env: { FAKE_EXIT_CODE: '2' } })
+    delegate.attachController({ forceStopStreamingSession: (id) => forced.push(id) })
+    await prepare(delegate, 'sess-10')
+    await stream(delegate, startRequest('sess-10', false))
+    const realStop = delegate.stopStream.bind(delegate)
+    delegate.stopStream = () => Promise.reject(new Error('cleanup failed'))
+    await waitFor(() => forced.length > 0)
+    expect(forced).to.eql(['sess-10'])
+    expect(rec.text('error')).to.contain('cleanup failed')
+    delegate.stopStream = realStop
   })
 })

@@ -2,7 +2,7 @@ const path = require('path')
 const expect = require('expect.js')
 const hap = require('@homebridge/hap-nodejs')
 const { buildStreamingOptions } = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'streamingOptions.js'))
-const { reserveUdpPort } = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'udpPort.js'))
+const { reserveUdpPort, bindUdpSocket } = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'udpPort.js'))
 
 describe('HomeKit-CCU streamingOptions', () => {
   it('offers video with all profiles and levels', () => {
@@ -46,5 +46,16 @@ describe('HomeKit-CCU udpPort', () => {
   it('reserves a free port', async () => {
     const port = await reserveUdpPort('ipv4')
     expect(port).to.be.within(1024, 65535)
+  })
+
+  it('rejects and closes the socket when the port is taken', async () => {
+    const taken = await bindUdpSocket('ipv4')
+    let error
+    try {
+      await bindUdpSocket('ipv4', taken.address().port)
+    } catch (e) { error = e }
+    taken.close()
+    expect(error).to.be.an(Error)
+    expect(error.code).to.be('EADDRINUSE')
   })
 })

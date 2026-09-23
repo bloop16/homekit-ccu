@@ -3,16 +3,19 @@ const expect = require('expect.js')
 const hap = require('@homebridge/hap-nodejs')
 const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
 const VideoDoorBell = require(path.join(__dirname, '..', 'lib', 'services', 'HomeMaticSPVideoDoorBellAccessory.js'))
+const { recordingLog } = require(path.join(__dirname, 'helpers', 'recordingLog.js'))
+const fs = require('fs')
+const os = require('os')
 
 const FAKE = path.join(__dirname, 'fixtures', 'fake-ffmpeg.sh')
 const log = new Logger('HAP Test')
 log.setDebugEnabled(false)
 
-function createDoorBell (settings) {
+function createDoorBell (settings, logger = log) {
   const registered = []
   const server = {
     isTestMode: true,
-    log,
+    log: logger,
     _ccu: {
       variableWithName: () => undefined,
       registerAddressForEventProcessingAtAccessory: (address, callback) => registered.push({ address, callback })
@@ -27,8 +30,8 @@ function createDoorBell (settings) {
 
 describe('HomeKit-CCU video doorbell accessory', () => {
   const accessories = []
-  const make = (settings) => {
-    const accessory = createDoorBell(settings)
+  const make = (settings, logger) => {
+    const accessory = createDoorBell(settings, logger)
     accessories.push(accessory)
     return accessory
   }
@@ -98,6 +101,65 @@ describe('HomeKit-CCU video doorbell accessory', () => {
     accessory.homeKitAccessory.publish = () => { published = true }
     accessory.publishSingleAccessory(51000)
     expect(published).to.be(false)
+  })
+
+  it('is not published when ffmpeg cannot be executed, with an actionable hint', () => {
+    const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'hkccu-')), 'ffmpeg')
+    fs.writeFileSync(file, '#!/bin/sh\nexit 0\n', { mode: 0o644 })
+    const rec = recordingLog()
+    const accessory = make({ ffmpegpath: file, video_source: 'rtsp://x' }, rec)
+    expect(accessory.cameraUnavailable).to.be(true)
+    expect(accessory.cameraController).to.be(undefined)
+    expect(rec.text('error')).to.contain('chmod +x ' + file)
+    expect(rec.text('error')).to.contain('will not be published')
+  })
+
+  it('is not published when ffmpeg lacks the configured video encoder', () => {
+    const rec = recordingLog()
+    process.env.FAKE_ENCODERS = ' A..... libopus            libopus Opus'
+    let accessory
+    try {
+      accessory = make({ ffmpegpath: FAKE, video_source: 'rtsp://x' }, rec)
+    } finally {
+      delete process.env.FAKE_ENCODERS
+    }
+    expect(accessory.cameraUnavailable).to.be(true)
+    expect(rec.text('error')).to.contain('libx264')
+    expect(rec.text('error')).to.contain('copy')
+  })
+
+  it('accepts copy without a video encoder', () => {
+    process.env.FAKE_ENCODERS = ' A..... libopus            libopus Opus'
+    let accessory
+    try {
+      accessory = make({ ffmpegpath: FAKE, video_source: 'rtsp://x', vcodec: 'copy' })
+    } finally {
+      delete process.env.FAKE_ENCODERS
+    }
+    expect(accessory.cameraUnavailable).to.be(undefined)
+    expect(accessory.cameraController).to.be.a(hap.CameraController)
+  })
+
+  it('resolves a bare ffmpeg name via PATH', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hkccu-'))
+    fs.symlinkSync(FAKE, path.join(dir, 'hkccu-fake-ffmpeg'))
+    const oldPath = process.env.PATH
+    process.env.PATH = dir + path.delimiter + oldPath
+    let accessory
+    try {
+      accessory = make({ ffmpegpath: 'hkccu-fake-ffmpeg', video_source: 'rtsp://x' })
+    } finally {
+      process.env.PATH = oldPath
+    }
+    expect(accessory.cameraUnavailable).to.be(undefined)
+    expect(accessory.cameraController).to.be.a(hap.CameraController)
+  })
+
+  it('is not published without a video source', () => {
+    const rec = recordingLog()
+    const accessory = make({ ffmpegpath: FAKE, video_source: '  ' }, rec)
+    expect(accessory.cameraUnavailable).to.be(true)
+    expect(rec.text('error')).to.contain('video source')
   })
 
   it('offers every configuration item with a default for the new camera settings', () => {
