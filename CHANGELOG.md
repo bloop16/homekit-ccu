@@ -19,6 +19,7 @@ Changelog for 0.1.0:
 * RPC event servers: errors of the socket servers are logged instead of ending the process, a remote call named `error` no longer crashes it, and the CUxD BIN-RPC server is closed on shutdown (it was never closed)
 * RPC smoke test: XML-RPC and BIN-RPC calls in both directions against fake CCU daemons; a test on a real CCU is still pending
 * fakegato-history (Eve history) is vendored in `lib/vendor/fakegato-history` without its Google-Drive storage, which homekit-ccu never used (history is stored on the filesystem); googleapis and its dependencies are no longer bundled, the addon tarball shrinks from ~23 MB to ~3.5 MB (~240 MB to ~15 MB installed). A test keeps googleapis out of the bundle
+* Security: config API requires a valid CCU session by default, also on the CCU; CORS restricted to same origin; update-check.cgi no longer accepts query-string variable injection. The websocket needs the session too, the session check in remote mode asks the CCU given with `-H` instead of localhost, and a failed session renewal no longer ends the config server
 
 Changelog for 0.0.16:
 ====================

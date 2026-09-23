@@ -31,6 +31,7 @@ Requires OpenCCU 3.89 or newer, which ships Node.js 22. The addon does not bundl
 - Dependencies refreshed (binrpc 4, homematic-xmlrpc 2, commander 14, formidable 3, moment removed; fakegato-history 0.6 vendored without its Google-Drive storage, so googleapis is gone), `npm audit` clean
 - GitHub Actions CI and release pipeline; the addon tarball is built on every `v*` tag
 - Requires Node.js 22 (OpenCCU 3.89+)
+- The configuration UI requires a CCU administrator session, also on the CCU, and refuses pages of other hosts (see [Authentication](#authentication))
 
 See [CHANGELOG.md](CHANGELOG.md) for the details and for older versions.
 
@@ -38,7 +39,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the details and for older versions.
 
 - **Bridges should keep their pairings.** The HomeKit storage format is unchanged, so bridges and their accessories are expected to stay in Apple Home, including rooms and automations. This has not yet been verified on OpenCCU hardware with current iOS; make a CCU backup before upgrading.
 - **The video doorbell has to be added again.** It now gets its own HomeKit identity (derived from its UUID instead of the fixed `00:00:11:22:22:11`), and the old default PIN `123-45-678` is rejected as trivial. If the doorbell still uses that PIN, set a different one in the doorbell settings; otherwise the doorbell is not published and the log says why. Then remove the old doorbell in Apple Home and add it again with the new PIN. Renaming the doorbell also changes its identity.
-- **Restoring a configuration backup** in the configuration UI requires a valid CCU session when authentication is turned on, like every other change. Open the configuration page from the CCU's system control, not from a bookmark.
+- **The configuration UI requires a CCU administrator session**, also on the CCU itself (0.0.x checked the session only in remote mode, and only when turned on). Log in to the CCU WebUI as an administrator and open the configuration page with the HomeKit button in the control panel; a bookmark without the session id gets "No valid CCU session". This covers every change, backup and restore. See [Authentication](#authentication).
 - **Restart** in the configuration UI now calls `/etc/config/rc.d/homekit-ccu restart` directly (the old npm script is gone). In remote mode there is no rc.d script; restart the process yourself.
 
 # Installation
@@ -150,7 +151,15 @@ OpenCCU (formerly RaspberryMatic v3.87+) introduced several changes that affect 
 If you are using the https version of your ccu WebUI page, the configuration page is automatically available on port 49874 via the lighttpd HTTPS proxy. homekit-ccu will use the same self signed tls certificate as your ccu.
 
 # Authentication
-You can use your ccu user management as an optional authentication for homekit-ccu. If you turn on this feature, you have to call the configuration page from your ccu webUI system preference page to use a valid session. Only ccu admins are allowed to use the homekit-ccu configuration page if authentication was turned on.
+The configuration UI and its API (ports 9874/49874 on the CCU, 9874 in remote mode) can be reached by every device in your network. They show the HomeKit pairing codes, download backups that contain the HomeKit keys, and change and restart homekit-ccu. That is why every API call, the backup/restore and the live connection (websocket) need a valid session of a CCU administrator:
+
+- Log in to the CCU WebUI as an administrator and open the configuration with the HomeKit button under *Settings → Control panel → Additional software*. The CCU passes its session id (`?sid=@…@`) to the page, and the page sends it with every request. A bookmark or a typed URL carries no session id and shows "No valid CCU session".
+- homekit-ccu checks the session against the CCU (ReGaHss session of a user with administrator level) and renews it on use; a checked session is remembered for 30 seconds.
+- Pages of other hosts are refused: the API answers browser requests only when the page comes from the same hostname (any port or scheme), so no other web site can use your CCU session.
+
+**Remote mode:** the session is checked against the CCU given with `-H` (ReGaHss on port 8181, JSON-RPC `/api/homematic.cgi` on port 80). The page on `http://<remote-host>:9874/` gets no session id by itself, because the CCU's HomeKit button only exists for the addon on the CCU. Log in to the CCU WebUI, copy the session id from its address bar (the `@…@` value of `sid=`) and open `http://<remote-host>:9874/index.html?sid=@…@`. Remote access with authentication does not work without a CCU login.
+
+To turn the check off, uncheck *Require a CCU administrator session* in the settings or set `"useCCCAuthentication": false` in `config.json`. This is not recommended: everyone in your network can then read the pairing codes, download the HomeKit keys and change the configuration.
 
 # Concept of rooms
 HAP the homekit accessory protocol does not know a room concept. So when you add one or more devices to a bridge they will appear at the same room as the bridge in your homekit client application. Therefore homekit-ccu is able to fire up multiple bridges (hap instances). During the installation wizard you may add an instance for each of your rooms, add these instances to homekit and put them into rooms. From this time on adding a new device to an instance will place this device into the same room as your bridge.
