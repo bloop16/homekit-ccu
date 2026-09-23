@@ -8,7 +8,7 @@ const { getCharacteristicValue } = require(path.join(__dirname, 'helpers', 'char
 const expect = require('expect.js')
 
 const fs = require('fs')
-let log = new Logger('HAP Test')
+const log = new Logger('HAP Test')
 log.setDebugEnabled(false)
 
 const testCase = 'HmIP-BSL.json'
@@ -16,12 +16,12 @@ const levelDP = 'HmIP.7068778492ABCD:8.LEVEL'
 const colorDP = 'HmIP.7068778492ABCD:8.COLOR'
 
 describe('HomeKit-CCU Tests ' + testCase, () => {
-  let that = this
+  const that = this
 
   before(async () => {
     log.debug('preparing tests')
-    let datapath = path.join(__dirname, 'devices', testCase)
-    let strData = fs.readFileSync(datapath).toString()
+    const datapath = path.join(__dirname, 'devices', testCase)
+    const strData = fs.readFileSync(datapath).toString()
     if (strData) {
       that.data = JSON.parse(strData)
 
@@ -44,7 +44,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   after(() => {
     Object.keys(that.server._publishedAccessories).map(key => {
-      let accessory = that.server._publishedAccessories[key]
+      const accessory = that.server._publishedAccessories[key]
       accessory.shutdown()
     })
   })
@@ -66,7 +66,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   it('HomeKit-CCU check assigned services', (done) => {
     Object.keys(that.server._publishedAccessories).map(key => {
-      let accessory = that.server._publishedAccessories[key]
+      const accessory = that.server._publishedAccessories[key]
       expect(accessory.serviceClass).to.be(that.data.ccu[accessory.address()])
     })
     done()
@@ -74,10 +74,10 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   it('HomeKit-CCU check LEVEL 0', (done) => {
     that.server._ccu.fireEvent(levelDP, 0)
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.Lightbulb, 'TestDevice', false, '', true)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.Lightbulb, 'TestDevice', false, '', true)
     assert.ok(service, 'Lightbulb Service not found')
-    let ch = service.getCharacteristic(Characteristic.Brightness)
+    const ch = service.getCharacteristic(Characteristic.Brightness)
     assert.ok(ch, 'Brightness Characteristics not found')
     getCharacteristicValue(ch, (context, value) => {
       try {
@@ -91,10 +91,10 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   it('HomeKit-CCU check LEVEL 100', (done) => {
     that.server._ccu.fireEvent(levelDP, 1)
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.Lightbulb)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.Lightbulb)
     assert.ok(service, 'Lightbulb Service not found')
-    let ch = service.getCharacteristic(Characteristic.Brightness)
+    const ch = service.getCharacteristic(Characteristic.Brightness)
     assert.ok(ch, 'Brightness Characteristics not found')
     getCharacteristicValue(ch, (context, value) => {
       try {
@@ -108,10 +108,10 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   it('HomeKit-CCU check LEVEL 50%', (done) => {
     that.server._ccu.fireEvent(levelDP, 0.5)
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.Lightbulb)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.Lightbulb)
     assert.ok(service, 'Lightbulb Service not found')
-    let ch = service.getCharacteristic(Characteristic.Brightness)
+    const ch = service.getCharacteristic(Characteristic.Brightness)
     assert.ok(ch, 'Brightness Characteristics not found')
     getCharacteristicValue(ch, (context, value) => {
       try {
@@ -124,14 +124,14 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HAP-Homematic set LEVEL 25%', (done) => {
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     accessory.delayOnSet = 10
-    let service = accessory.getService(Service.Lightbulb)
+    const service = accessory.getService(Service.Lightbulb)
     assert.ok(service, 'Lightbulb not found')
-    let chTar = service.getCharacteristic(Characteristic.Brightness)
+    const chTar = service.getCharacteristic(Characteristic.Brightness)
     chTar.setValue(25, () => {
       setTimeout(async () => {
-        let value = await that.server._ccu.getValue(levelDP)
+        const value = await that.server._ccu.getValue(levelDP)
         try {
           expect(value).to.be(0.25)
           done()
@@ -143,14 +143,14 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HAP-Homematic set LEVEL 100%', (done) => {
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     accessory.delayOnSet = 10
-    let service = accessory.getService(Service.Lightbulb)
+    const service = accessory.getService(Service.Lightbulb)
     assert.ok(service, 'Lightbulb not found')
-    let chTar = service.getCharacteristic(Characteristic.Brightness)
+    const chTar = service.getCharacteristic(Characteristic.Brightness)
     chTar.setValue(100, () => {
       setTimeout(async () => {
-        let value = await that.server._ccu.getValue(levelDP)
+        const value = await that.server._ccu.getValue(levelDP)
         try {
           expect(value).to.be(1)
           done()
@@ -162,14 +162,14 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HAP-Homematic set LEVEL 0%', (done) => {
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     accessory.delayOnSet = 10
-    let service = accessory.getService(Service.Lightbulb)
+    const service = accessory.getService(Service.Lightbulb)
     assert.ok(service, 'Lightbulb not found')
-    let chTar = service.getCharacteristic(Characteristic.Brightness)
+    const chTar = service.getCharacteristic(Characteristic.Brightness)
     chTar.setValue(0, () => {
       setTimeout(async () => {
-        let value = await that.server._ccu.getValue(levelDP)
+        const value = await that.server._ccu.getValue(levelDP)
         try {
           expect(value).to.be(0)
           done()
@@ -180,16 +180,15 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     })
   })
 
-
   it('HAP-Homematic set HK COLOR Blue', (done) => {
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     accessory.delayOnSet = 10
-    let service = accessory.getService(Service.Lightbulb)
+    const service = accessory.getService(Service.Lightbulb)
     assert.ok(service, 'Lightbulb not found')
-    let chTar = service.getCharacteristic(Characteristic.Hue)
+    const chTar = service.getCharacteristic(Characteristic.Hue)
     chTar.setValue(241, () => {
       setTimeout(async () => {
-        let value = await that.server._ccu.getValue(colorDP)
+        const value = await that.server._ccu.getValue(colorDP)
         try {
           expect(value).to.be(1)
           done()
@@ -201,14 +200,14 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HAP-Homematic set HK COLOR REDish', (done) => {
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     accessory.delayOnSet = 10
-    let service = accessory.getService(Service.Lightbulb)
+    const service = accessory.getService(Service.Lightbulb)
     assert.ok(service, 'Lightbulb not found')
-    let chTar = service.getCharacteristic(Characteristic.Hue)
+    const chTar = service.getCharacteristic(Characteristic.Hue)
     chTar.setValue(10, () => {
       setTimeout(async () => {
-        let value = await that.server._ccu.getValue(colorDP)
+        const value = await that.server._ccu.getValue(colorDP)
         try {
           expect(value).to.be(4) // this is the 4th color
           done()
@@ -219,13 +218,12 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     })
   })
 
-
   it('HomeKit-CCU check HK Color for CCU Purple', (done) => {
     that.server._ccu.fireEvent(colorDP, 5)
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.Lightbulb)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.Lightbulb)
     assert.ok(service, 'Lightbulb Service not found')
-    let ch = service.getCharacteristic(Characteristic.Hue)
+    const ch = service.getCharacteristic(Characteristic.Hue)
     assert.ok(ch, 'Hue Characteristics not found')
     getCharacteristicValue(ch, (context, value) => {
       try {
@@ -239,10 +237,10 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   it('HomeKit-CCU check HK Color for CCU White', (done) => {
     that.server._ccu.fireEvent(colorDP, 7)
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.Lightbulb)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.Lightbulb)
     assert.ok(service, 'Lightbulb Service not found')
-    let ch = service.getCharacteristic(Characteristic.Saturation)
+    const ch = service.getCharacteristic(Characteristic.Saturation)
     assert.ok(ch, 'Sat Characteristics not found')
     getCharacteristicValue(ch, (context, value) => {
       try {
@@ -253,6 +251,4 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
       }
     })
   })
-
-
 })

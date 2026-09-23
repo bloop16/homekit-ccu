@@ -8,31 +8,32 @@ const { getCharacteristicValue } = require(path.join(__dirname, 'helpers', 'char
 const expect = require('expect.js')
 
 const fs = require('fs')
-let log = new Logger('HAP Test')
+const log = new Logger('HAP Test')
 log.setDebugEnabled(false)
 
 const testCase = 'HM-CC-TC.json'
 
 describe('HomeKit-CCU Tests ' + testCase, () => {
-  let that = this
+  const that = this
 
   before(async () => {
     log.debug('preparing tests')
-    let datapath = path.join(__dirname, 'devices', testCase)
-    let strData = fs.readFileSync(datapath).toString()
+    const datapath = path.join(__dirname, 'devices', testCase)
+    const strData = fs.readFileSync(datapath).toString()
     if (strData) {
       that.data = JSON.parse(strData)
 
       that.server = new Server(log)
 
-      await that.server.simulate(undefined, {config: {
-        channels: Object.keys(that.data.ccu)
-      },
-      devices: that.data.devices,
-      mappings: that.data.mappings,
-      values: {
-        'BidCos-RF.5120978032ABCD:1.HUMIDITY': 1
-      }
+      await that.server.simulate(undefined, {
+        config: {
+          channels: Object.keys(that.data.ccu)
+        },
+        devices: that.data.devices,
+        mappings: that.data.mappings,
+        values: {
+          'BidCos-RF.5120978032ABCD:1.HUMIDITY': 1
+        }
       })
     } else {
       assert.ok(false, 'Unable to load Test data')
@@ -41,7 +42,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   after(() => {
     Object.keys(that.server._publishedAccessories).map(key => {
-      let accessory = that.server._publishedAccessories[key]
+      const accessory = that.server._publishedAccessories[key]
       accessory.shutdown()
     })
   })
@@ -63,19 +64,19 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   it('HomeKit-CCU check assigned services', (done) => {
     Object.keys(that.server._publishedAccessories).map(key => {
-      let accessory = that.server._publishedAccessories[key]
+      const accessory = that.server._publishedAccessories[key]
       expect(accessory.serviceClass).to.be(that.data.ccu[accessory.address()])
     })
     done()
   })
 
   it('HomeKit-CCU check ACTUAL_TEMPERATURE with random value', (done) => {
-    let rnd = Math.floor(Math.random() * Math.floor(30))
+    const rnd = Math.floor(Math.random() * Math.floor(30))
     that.server._ccu.fireEvent('BidCos-RF.5120978032ABCD:1.TEMPERATURE', rnd)
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.Thermostat, 'TestDevice', false, '', true)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.Thermostat, 'TestDevice', false, '', true)
     assert.ok(service, 'Thermostat Service not found')
-    let ch = service.getCharacteristic(Characteristic.CurrentTemperature)
+    const ch = service.getCharacteristic(Characteristic.CurrentTemperature)
     assert.ok(ch, 'CurrentTemperature State Characteristics not found')
     getCharacteristicValue(ch, (context, value) => {
       try {
@@ -88,11 +89,11 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HomeKit-CCU check HUMIDITY with random value', (done) => {
-    let rnd = Math.floor(Math.random() * Math.floor(100))
+    const rnd = Math.floor(Math.random() * Math.floor(100))
     that.server._ccu.fireEvent('BidCos-RF.5120978032ABCD:1.HUMIDITY', rnd)
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.Thermostat)
-    let ch = service.getCharacteristic(Characteristic.CurrentRelativeHumidity)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.Thermostat)
+    const ch = service.getCharacteristic(Characteristic.CurrentRelativeHumidity)
     getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(rnd)
@@ -105,9 +106,9 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   it('HAP-Homematic set Targeet temperature', (done) => {
     that.server._ccu.fireEvent('BidCos-RF.5120978032ABCD:2.SETPOINT', 24)
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.Thermostat)
-    let ch = service.getCharacteristic(Characteristic.TargetTemperature)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.Thermostat)
+    const ch = service.getCharacteristic(Characteristic.TargetTemperature)
     getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(24)

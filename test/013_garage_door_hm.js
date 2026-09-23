@@ -7,28 +7,29 @@ const Characteristic = require('@homebridge/hap-nodejs').Characteristic
 const expect = require('expect.js')
 
 const fs = require('fs')
-let log = new Logger('HAP Test')
+const log = new Logger('HAP Test')
 log.setDebugEnabled(false)
 
 const testCase = 'HmIP-MOD-HO.json'
 
 describe('HomeKit-CCU Tests ' + testCase, () => {
-  let that = this
+  const that = this
 
   before(async () => {
     log.debug('preparing tests')
-    let datapath = path.join(__dirname, 'devices', testCase)
-    let strData = fs.readFileSync(datapath).toString()
+    const datapath = path.join(__dirname, 'devices', testCase)
+    const strData = fs.readFileSync(datapath).toString()
     if (strData) {
       that.data = JSON.parse(strData)
 
       that.server = new Server(log)
 
-      await that.server.simulate(undefined, {config: {
-        channels: Object.keys(that.data.ccu)
-      },
-      devices: that.data.devices,
-      mappings: that.data.mappings
+      await that.server.simulate(undefined, {
+        config: {
+          channels: Object.keys(that.data.ccu)
+        },
+        devices: that.data.devices,
+        mappings: that.data.mappings
       })
     } else {
       assert.ok(false, 'Unable to load Test data')
@@ -37,7 +38,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   after(() => {
     Object.keys(that.server._publishedAccessories).map(key => {
-      let accessory = that.server._publishedAccessories[key]
+      const accessory = that.server._publishedAccessories[key]
       accessory.shutdown()
     })
   })
@@ -59,7 +60,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   it('HomeKit-CCU check assigned services', (done) => {
     Object.keys(that.server._publishedAccessories).map(key => {
-      let accessory = that.server._publishedAccessories[key]
+      const accessory = that.server._publishedAccessories[key]
       expect(accessory.serviceClass).to.be(that.data.ccu[accessory.address()])
     })
     done()
@@ -68,11 +69,11 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   it('HAP-Homematic open the door', (done) => {
     that.server._ccu.fireEvent('HmIP.3123456789ABCD:1.DOOR_STATE', 3)
     that.server._ccu.fireEvent('HmIP.3123456789ABCD:1.PROCESS', 0)
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.GarageDoorOpener, 'TestDevice', false, '', true)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.GarageDoorOpener, 'TestDevice', false, '', true)
     assert.ok(service, 'GarageDoorOpener Service not found')
-    let chCur = service.getCharacteristic(Characteristic.CurrentDoorState)
-    let chTar = service.getCharacteristic(Characteristic.TargetDoorState)
+    const chCur = service.getCharacteristic(Characteristic.CurrentDoorState)
+    const chTar = service.getCharacteristic(Characteristic.TargetDoorState)
     assert.ok(chCur, 'CurrentDoorState Characteristics not found')
     assert.ok(chTar, 'TargetDoorState Characteristics not found')
     try {
@@ -89,11 +90,11 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   it('HAP-Homematic close the door', (done) => {
     that.server._ccu.fireEvent('HmIP.3123456789ABCD:1.DOOR_STATE', 0)
     that.server._ccu.fireEvent('HmIP.3123456789ABCD:1.PROCESS', 0)
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.GarageDoorOpener)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.GarageDoorOpener)
     assert.ok(service, 'GarageDoorOpener Service not found')
-    let chCur = service.getCharacteristic(Characteristic.CurrentDoorState)
-    let chTar = service.getCharacteristic(Characteristic.TargetDoorState)
+    const chCur = service.getCharacteristic(Characteristic.CurrentDoorState)
+    const chTar = service.getCharacteristic(Characteristic.TargetDoorState)
     assert.ok(chCur, 'CurrentDoorState Characteristics not found')
     assert.ok(chTar, 'TargetDoorState Characteristics not found')
     try {
@@ -109,13 +110,13 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HAP-Homematic test hk close the door', (done) => {
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.GarageDoorOpener)
-    let chTar = service.getCharacteristic(Characteristic.TargetDoorState)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.GarageDoorOpener)
+    const chTar = service.getCharacteristic(Characteristic.TargetDoorState)
     chTar.emit('set', Characteristic.TargetDoorState.CLOSED)
     try {
       setTimeout(async () => {
-        let value = await that.server._ccu.getValue('HmIP.3123456789ABCD:1.DOOR_COMMAND')
+        const value = await that.server._ccu.getValue('HmIP.3123456789ABCD:1.DOOR_COMMAND')
         expect(value).to.be(3)
         done()
       }, 10)
@@ -125,13 +126,13 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HAP-Homematic test hk open the door', (done) => {
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.GarageDoorOpener)
-    let chTar = service.getCharacteristic(Characteristic.TargetDoorState)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.GarageDoorOpener)
+    const chTar = service.getCharacteristic(Characteristic.TargetDoorState)
     chTar.emit('set', Characteristic.TargetDoorState.OPEN)
     try {
       setTimeout(async () => {
-        let value = await that.server._ccu.getValue('HmIP.3123456789ABCD:1.DOOR_COMMAND')
+        const value = await that.server._ccu.getValue('HmIP.3123456789ABCD:1.DOOR_COMMAND')
         expect(value).to.be(1)
         done()
       }, 10)
@@ -141,13 +142,13 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HAP-Homematic test hk ventilation', (done) => {
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.Switch)
-    let chTar = service.getCharacteristic(Characteristic.On)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.Switch)
+    const chTar = service.getCharacteristic(Characteristic.On)
     chTar.emit('set', true)
     try {
       setTimeout(async () => {
-        let value = await that.server._ccu.getValue('HmIP.3123456789ABCD:1.DOOR_COMMAND')
+        const value = await that.server._ccu.getValue('HmIP.3123456789ABCD:1.DOOR_COMMAND')
         expect(value).to.be(4)
         done()
       }, 10)

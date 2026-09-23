@@ -37,15 +37,15 @@ const fs = require('fs')
 
 process.name = 'homekit-ccu'
 
-let log = new Logger('HAP Server')
-var configurationPath = path.join('/usr/local/etc/config/addons/', process.name)
-var simulation
-var dryRun
-var logPath
-var resetSettings = false
-var ccuHost = '127.0.0.1'
-var rpcUser
-var rpcPass
+const log = new Logger('HAP Server')
+let configurationPath = path.join('/usr/local/etc/config/addons/', process.name)
+let simulation
+let dryRun
+let logPath
+let resetSettings = false
+let ccuHost = '127.0.0.1'
+let rpcUser
+let rpcPass
 
 program
   .name('homekit-ccu')
@@ -98,8 +98,8 @@ process.on('unhandledRejection', (reason, promise) => {
 process.on('uncaughtException', (err) => {
   // Write a crashlog
   const fs = require('fs')
-  let crashFile = path.join(configurationPath, Date.now() + '.crash')
-  var msg = 'Error log : ' + new Date() + '\n\n'
+  const crashFile = path.join(configurationPath, Date.now() + '.crash')
+  let msg = 'Error log : ' + new Date() + '\n\n'
   msg = msg + err.stack
   fs.writeFileSync(crashFile, msg)
   // gracefull shutdown ;o)
@@ -111,31 +111,31 @@ process.on('uncaughtException', (err) => {
 
 try {
   if ((logPath !== undefined) && (fs.existsSync(logPath)) && (fs.accessSync(logPath, fs.constants.W_OK))) {
-    log.info("Log into %s /homekit-ccu.log", logPath);
+    log.info('Log into %s /homekit-ccu.log', logPath)
     log.setLogFile(path.join(logPath, 'homekit-ccu.log'))
   } else
     if (fs.existsSync('/var/log') && (fs.accessSync('/var/log', fs.constants.W_OK))) {
-      log.info("Log into /var/log/homekit-ccu.log");
+      log.info('Log into /var/log/homekit-ccu.log')
       log.setLogFile(path.join('/var/log', 'homekit-ccu.log'))
     } else {
-      let tmpDir = fs.realpathSync(os.tmpdir())
-      log.info("Log into %s/homekit-ccu.log", tmpDir);
+      const tmpDir = fs.realpathSync(os.tmpdir())
+      log.info('Log into %s/homekit-ccu.log', tmpDir)
       log.setLogFile(path.join(tmpDir, 'homekit-ccu.log'))
     }
 } catch (e) {
-  log.error(e);
-  log.warn('cannot set persistent file for logger trying temp');
+  log.error(e)
+  log.warn('cannot set persistent file for logger trying temp')
   try {
-    let tmpDir = fs.realpathSync(os.tmpdir())
-    log.info("Log into %s/homekit-ccu.log", tmpDir);
+    const tmpDir = fs.realpathSync(os.tmpdir())
+    log.info('Log into %s/homekit-ccu.log', tmpDir)
     log.setLogFile(path.join(tmpDir, 'homekit-ccu.log'))
   } catch (e) {
-    log.error(e);
-    log.warn('cannot set persistent file for logger into temp. givin up');
+    log.error(e)
+    log.warn('cannot set persistent file for logger into temp. givin up')
   }
 }
 // check if there is a .hapdebug in /tmp and switch on the debug mode then
-let fdebug = path.join(fs.realpathSync(os.tmpdir()), '.hapdebug')
+const fdebug = path.join(fs.realpathSync(os.tmpdir()), '.hapdebug')
 if (fs.existsSync(fdebug)) {
   log.setDebugEnabled(true)
   fs.unlinkSync(fdebug) // remove the flag
@@ -145,10 +145,10 @@ log.info('---- launching ----')
 log.info('Welcome to HAP Homematic. Use your HomeMatic devices in HomeKit')
 log.info('(c) 2026 by @britz - https://github.com/britz/homekit-ccu')
 log.info('Logging into %s', log.getLogFile())
-var server
+let server
 
 if (simulation !== undefined) {
-  let simPath = path.join(configurationPath, simulation)
+  const simPath = path.join(configurationPath, simulation)
   log.warn('Doing a device file simulation with %s', simulation, simPath)
   server = new Server(log)
   server.simulate(simPath)

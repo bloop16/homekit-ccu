@@ -8,18 +8,18 @@ const { getCharacteristicValue } = require(path.join(__dirname, 'helpers', 'char
 const expect = require('expect.js')
 
 const fs = require('fs')
-let log = new Logger('HAP Test')
+const log = new Logger('HAP Test')
 log.setDebugEnabled(false)
 
 const testCase = 'HmIP-DLD.json'
 
 describe('HomeKit-CCU Tests ' + testCase, () => {
-  let that = this
+  const that = this
 
   before(async () => {
     log.debug('preparing tests')
-    let datapath = path.join(__dirname, 'devices', testCase)
-    let strData = fs.readFileSync(datapath).toString()
+    const datapath = path.join(__dirname, 'devices', testCase)
+    const strData = fs.readFileSync(datapath).toString()
     if (strData) {
       that.data = JSON.parse(strData)
 
@@ -38,7 +38,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   after(() => {
     Object.keys(that.server._publishedAccessories).map(key => {
-      let accessory = that.server._publishedAccessories[key]
+      const accessory = that.server._publishedAccessories[key]
       accessory.shutdown()
     })
   })
@@ -60,7 +60,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   it('HomeKit-CCU check assigned services', (done) => {
     Object.keys(that.server._publishedAccessories).map(key => {
-      let accessory = that.server._publishedAccessories[key]
+      const accessory = that.server._publishedAccessories[key]
       expect(accessory.serviceClass).to.be(that.data.ccu[accessory.address()])
     })
     done()
@@ -68,10 +68,10 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   it('HomeKit-CCU check LOCK_STATE 0 Cur sould be UNSECURED', (done) => {
     that.server._ccu.fireEvent('HmIP.7316163726ABCD:1.LOCK_STATE', 0)
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.LockMechanism, 'TestDevice', false, '', true)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.LockMechanism, 'TestDevice', false, '', true)
     assert.ok(service, 'LockMechanism Service not found')
-    let ch = service.getCharacteristic(Characteristic.LockCurrentState)
+    const ch = service.getCharacteristic(Characteristic.LockCurrentState)
     assert.ok(ch, 'LockCurrentState State Characteristics not found')
     getCharacteristicValue(ch, (context, value) => {
       try {
@@ -85,10 +85,10 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   it('HomeKit-CCU check LOCK_STATE 1 Cur sould be LOCKED', (done) => {
     that.server._ccu.fireEvent('HmIP.7316163726ABCD:1.LOCK_STATE', 1)
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.LockMechanism, 'TestDevice', false, '', true)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.LockMechanism, 'TestDevice', false, '', true)
     assert.ok(service, 'LockMechanism Service not found')
-    let ch = service.getCharacteristic(Characteristic.LockCurrentState)
+    const ch = service.getCharacteristic(Characteristic.LockCurrentState)
     assert.ok(ch, 'LockCurrentState State Characteristics not found')
     getCharacteristicValue(ch, (context, value) => {
       try {
@@ -102,10 +102,10 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
 
   it('HomeKit-CCU check LOCK_STATE 2 Cur sould be UNSECURED', (done) => {
     that.server._ccu.fireEvent('HmIP.7316163726ABCD:1.LOCK_STATE', 0)
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.LockMechanism, 'TestDevice', false, '', true)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.LockMechanism, 'TestDevice', false, '', true)
     assert.ok(service, 'LockMechanism Service not found')
-    let ch = service.getCharacteristic(Characteristic.LockCurrentState)
+    const ch = service.getCharacteristic(Characteristic.LockCurrentState)
     assert.ok(ch, 'LockCurrentState State Characteristics not found')
     getCharacteristicValue(ch, (context, value) => {
       try {
@@ -118,13 +118,13 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HAP-Homematic set LockTargetState to SECURED (-> 0 LOCKED)', (done) => {
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.LockMechanism)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.LockMechanism)
     assert.ok(service, 'LockMechanism not found')
-    let chTar = service.getCharacteristic(Characteristic.LockTargetState)
+    const chTar = service.getCharacteristic(Characteristic.LockTargetState)
     chTar.setValue(Characteristic.LockTargetState.SECURED, () => {
       setTimeout(async () => {
-        let value = await that.server._ccu.getValue('HmIP.7316163726ABCD:1.LOCK_TARGET_LEVEL')
+        const value = await that.server._ccu.getValue('HmIP.7316163726ABCD:1.LOCK_TARGET_LEVEL')
         try {
           expect(value).to.be(0)
           done()
@@ -136,13 +136,13 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HAP-Homematic set LockTargetState to UNSECURED (-> 1 LOCKED)', (done) => {
-    let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.LockMechanism)
+    const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
+    const service = accessory.getService(Service.LockMechanism)
     assert.ok(service, 'LockMechanism not found')
-    let chTar = service.getCharacteristic(Characteristic.LockTargetState)
+    const chTar = service.getCharacteristic(Characteristic.LockTargetState)
     chTar.setValue(Characteristic.LockTargetState.UNSECURED, () => {
       setTimeout(async () => {
-        let value = await that.server._ccu.getValue('HmIP.7316163726ABCD:1.LOCK_TARGET_LEVEL')
+        const value = await that.server._ccu.getValue('HmIP.7316163726ABCD:1.LOCK_TARGET_LEVEL')
         try {
           expect(value).to.be(1)
           done()
@@ -152,5 +152,4 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
       }, 15) // default delay is 500ms
     })
   })
-
 })
