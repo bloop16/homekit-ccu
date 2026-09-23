@@ -80,12 +80,14 @@ Neues Modul `lib/services/camera/`:
 - `FfmpegProcess.js` kapselt `child_process.spawn`, Start-Timeout, Beenden per SIGKILL bei STOP oder Fehler, Logging von stderr im Debug-Modus.
 - `buildFfmpegArgs.js` ist eine reine Funktion: aus `StartStreamRequest`, Session-Info und Einstellungen entsteht das Argument-Array. Keine Seiteneffekte, vollständig testbar.
 - `HomeMaticSPVideoDoorBellAccessory.js` erzeugt `new hap.CameraController({ cameraStreamCount: 2, delegate, streamingOptions })` und hängt ihn per `configureController` an das Accessory. Doorbell-Service und Klingel-Taster (`address_door_bell_key`) bleiben.
-- Streaming-Optionen: `supportedCryptoSuites` AES_CM_128_HMAC_SHA1_80, H.264 Profile Baseline/Main/High, Level 3.1/3.2/4.0, Auflösungen 320x180 bis 1920x1080, kein Audio in dieser Iteration.
-- Einstellungen: bestehend `video_source`, `video_stillImageSource`, `ffmpegpath`, `pin-code`; neu `maxWidth`, `maxHeight`, `maxFPS`, `maxBitrate` mit Defaults 1280, 720, 15, 1000.
-- Vorlage: Muster von homebridge-camera-ffmpeg, ohne dessen Audio- und HKSV-Teile.
+- Streaming-Optionen Video: `supportedCryptoSuites` AES_CM_128_HMAC_SHA1_80, H.264 Profile Baseline/Main/High, Level 3.1/3.2/4.0, Auflösungen 320x180 bis 1920x1080.
+- Audio: Der Controller bietet Opus und AAC-ELD an (Sample-Rate 16 kHz, mono). Die Kamera-Tonspur aus `video_source` wird per ffmpeg in den vom Request gewählten Codec transkodiert und als zweiter SRTP-Stream gesendet. Opus nutzt `libopus`, AAC-ELD `libfdk_aac`. Beim Start prüft `FfmpegProcess.probeEncoders()` einmalig per `ffmpeg -encoders`, welche Encoder vorhanden sind; nicht verfügbare Codecs werden nicht angeboten, fehlt beides, wird ohne Audio veröffentlicht und eine Warnung geloggt.
+- Zwei-Wege-Audio (Sprechen an der Klingel): aktiv, sobald `audio_return_target` gesetzt ist. Dann meldet der Controller `twoWayAudio: true`, `prepareStream` liefert einen Rückkanal-Port, und ein zweiter ffmpeg-Prozess empfängt den SRTP-Rückstrom per SDP-Datei und schreibt ihn an das Ziel (z. B. `rtsp://` oder `alsa`-Ausgabe der Kamera). Ohne `audio_return_target` bleibt es bei Einweg-Audio.
+- Einstellungen: bestehend `video_source`, `video_stillImageSource`, `ffmpegpath`, `pin-code`; neu `maxWidth`, `maxHeight`, `maxFPS`, `maxBitrate` mit Defaults 1280, 720, 15, 1000, sowie `audio` (bool, Default true) und `audio_return_target` (String, Default leer).
+- Vorlage: Muster von homebridge-camera-ffmpeg inklusive dessen Audio- und Return-Audio-Teil, ohne HKSV.
 - Dokumentation: OpenCCU bringt kein ffmpeg mit. README beschreibt, dass ein statisches ffmpeg-Binary (z. B. johnvansickle-Build) auf die CCU kopiert und der Pfad gesetzt werden muss, und dass der Remote-Modus die einfachere Wahl ist.
 
-Fehlerbehandlung: fehlendes Binary wird beim Start geloggt und das Accessory nicht veröffentlicht. ffmpeg-Absturz beendet nur die betroffene Session (`controller.forceStopStreamingSession`), nie den Server.
+Fehlerbehandlung: fehlendes Binary wird beim Start geloggt und das Accessory nicht veröffentlicht. ffmpeg-Absturz (Video, Audio oder Rückkanal) beendet nur die betroffene Session (`controller.forceStopStreamingSession`) und alle ihre Prozesse, nie den Server. Ein fehlender Audio-Encoder degradiert auf reines Video statt zu scheitern.
 
 ## 7. Installer
 
@@ -96,7 +98,7 @@ Fehlerbehandlung: fehlendes Binary wird beim Start geloggt und das Accessory nic
 ## 8. Tests
 
 - Bestehende 339 Tests laufen in CI.
-- Neu: `test/100_custom_types.js` (Klassen-Factory erzeugt Instanzen mit korrekten Props), `test/101_ffmpeg_args.js` (Argument-Builder für Snapshot, Start, verschiedene Auflösungen), `test/102_streaming_delegate.js` (Delegate mit Fake-ffmpeg-Skript unter `test/fixtures/fake-ffmpeg.sh`: Start, Stop, Timeout, Absturz).
+- Neu: `test/100_custom_types.js` (Klassen-Factory erzeugt Instanzen mit korrekten Props), `test/101_ffmpeg_args.js` (Argument-Builder für Snapshot, Start mit und ohne Audio, Opus und AAC-ELD, Rückkanal-SDP, verschiedene Auflösungen), `test/102_streaming_delegate.js` (Delegate mit Fake-ffmpeg-Skript unter `test/fixtures/fake-ffmpeg.sh`: Start, Stop, Timeout, Absturz).
 - Coverage mit c8, Ziel 80 % auf `lib/services/camera/` und `CustomHomeKitTypes.js`.
 - Lint mit standard ist Teil von `npm test` in CI.
 
@@ -116,4 +118,4 @@ Abnahme auf Martins produktiver OpenCCU nach Stufe 2 und nach Stufe 4 (SSH-Zugan
 - Tarball installiert sich über die WebUI, Button erscheint in der Systemsteuerung.
 - Bridge wird in Apple Home unter iOS 27 gefunden, Pairing gelingt.
 - Bestehende Geräte reagieren, Events kommen an.
-- Video-Klingel liefert im Remote-Modus mit ffmpeg Standbild und Stream.
+- Video-Klingel liefert im Remote-Modus mit ffmpeg Standbild, Stream und Ton; mit gesetztem `audio_return_target` kommt Sprache am Ziel an.
