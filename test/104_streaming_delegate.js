@@ -4,7 +4,10 @@ const hap = require('@homebridge/hap-nodejs')
 const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
 const StreamingDelegate = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'StreamingDelegate.js'))
 const { recordingLog } = require(path.join(__dirname, 'helpers', 'recordingLog.js'))
+const { bindUdpSocket } = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'udpPort.js'))
+const { startRtcpWatchdog } = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'rtcpWatchdog.js'))
 const dgram = require('dgram')
+const EventEmitter = require('events')
 
 const FAKE = path.join(__dirname, 'fixtures', 'fake-ffmpeg.sh')
 const log = new Logger('HAP Test')
@@ -54,7 +57,7 @@ function prepare (delegate, sessionID) {
   })
 }
 
-async function waitFor (condition, timeoutMs = 3000) {
+async function waitFor (condition, timeoutMs = 5000) {
   const start = Date.now()
   while (!condition()) {
     if (Date.now() - start > timeoutMs) {
@@ -70,7 +73,56 @@ function stream (delegate, request) {
   })
 }
 
-describe('HomeKit-CCU StreamingDelegate', () => {
+function sleep (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+function isClosed (socket) {
+  try {
+    socket.address()
+    return false
+  } catch (e) {
+    return true
+  }
+}
+
+describe('HomeKit-CCU rtcpWatchdog', () => {
+  it('waits the longer first window until the first datagram, then the normal window', async () => {
+    const socket = new EventEmitter()
+    const timeouts = []
+    const stop = startRtcpWatchdog(socket, 0.05, (seconds, first) => timeouts.push({ seconds, first }), 0.3)
+    try {
+      await sleep(150)
+      expect(timeouts).to.eql([])
+      socket.emit('message', Buffer.from('rtcp'))
+      await sleep(120)
+      expect(timeouts).to.eql([{ seconds: 0.05, first: false }])
+    } finally {
+      stop()
+    }
+    expect(socket.listenerCount('message')).to.be(0)
+  })
+
+  it('reports a timeout in the first window', async () => {
+    const timeouts = []
+    const stop = startRtcpWatchdog(new EventEmitter(), 0.02, (seconds, first) => timeouts.push({ seconds, first }), 0.05)
+    await sleep(100)
+    stop()
+    expect(timeouts).to.eql([{ seconds: 0.05, first: true }])
+  })
+
+  it('never uses a first window shorter than the normal one', async () => {
+    const timeouts = []
+    const stop = startRtcpWatchdog(new EventEmitter(), 0.05, (seconds, first) => timeouts.push({ seconds, first }), 0)
+    await sleep(100)
+    stop()
+    expect(timeouts).to.eql([{ seconds: 0.05, first: true }])
+  })
+})
+
+describe('HomeKit-CCU StreamingDelegate', function () {
+  // spawns fake ffmpeg processes; generous timeout so a slow machine fails with a message instead of a hang
+  this.timeout(10000)
   let delegate
   let forced
 
@@ -131,7 +183,7 @@ describe('HomeKit-CCU StreamingDelegate', () => {
   it('stops the session when no RTCP arrives from the viewer', async () => {
     const rec = recordingLog()
     await delegate.shutdown()
-    delegate = new StreamingDelegate('Test Door', settings, rec, { watchdogFloorSeconds: 0 })
+    delegate = new StreamingDelegate('Test Door', settings, rec, { watchdogFloorSeconds: 0, watchdogInitialSeconds: 0 })
     delegate.attachController({ forceStopStreamingSession: (id) => forced.push(id) })
     await prepare(delegate, 'sess-w1')
     const request = startRequest('sess-w1', false)
@@ -140,7 +192,65 @@ describe('HomeKit-CCU StreamingDelegate', () => {
     await waitFor(() => forced.length > 0)
     expect(forced).to.eql(['sess-w1'])
     expect(delegate.ongoingSessions.has('sess-w1')).to.be(false)
-    expect(rec.text('warn')).to.contain('no RTCP from viewer for 0.25s, stopping session sess-w1')
+    expect(rec.text('warn')).to.contain('no RTCP from viewer within 0.25s of stream start, stopping session sess-w1')
+  })
+
+  it('gives slow cameras the first window, then stops after silence following the first RTCP', async () => {
+    const rec = recordingLog()
+    await delegate.shutdown()
+    delegate = new StreamingDelegate('Test Door', settings, rec, { watchdogFloorSeconds: 0, watchdogInitialSeconds: 1 })
+    delegate.attachController({ forceStopStreamingSession: (id) => forced.push(id) })
+    const response = await prepare(delegate, 'sess-w3')
+    const request = startRequest('sess-w3', false)
+    request.video.rtcp_interval = 0.05
+    await stream(delegate, request)
+    await sleep(500)
+    expect(forced).to.eql([])
+    const sender = dgram.createSocket('udp4')
+    try {
+      await new Promise((resolve, reject) => sender.send('rtcp', response.video.port, '127.0.0.1', (err) => err ? reject(err) : resolve()))
+    } finally {
+      sender.close()
+    }
+    await waitFor(() => forced.length > 0)
+    expect(forced).to.eql(['sess-w3'])
+    expect(rec.text('warn')).to.contain('no RTCP from viewer for 0.25s, stopping session sess-w3')
+  })
+
+  it('uses a 30 second first watchdog window by default', () => {
+    expect(delegate.watchdogInitialSeconds).to.be(30)
+  })
+
+  it('closes the bound video socket when reserving the audio ports fails', async () => {
+    const rec = recordingLog()
+    const bound = []
+    delegate = new StreamingDelegate('Test Door', settings, rec, {
+      bindUdpSocket: (v) => bindUdpSocket(v).then(socket => { bound.push(socket); return socket }),
+      reserveUdpPortPair: () => Promise.reject(new Error('no free ports'))
+    })
+    let error
+    try { await prepare(delegate, 'sess-r1') } catch (e) { error = e }
+    expect(error.message).to.be('no free ports')
+    expect(bound.length).to.be(1)
+    expect(isClosed(bound[0])).to.be(true)
+    expect(delegate.pendingSessions.size).to.be(0)
+    expect(rec.text('error')).to.contain('no free ports')
+  })
+
+  it('closes the sockets and fails when shut down while preparing', async () => {
+    const bound = []
+    delegate = new StreamingDelegate('Test Door', settings, log, {
+      bindUdpSocket: (v) => bindUdpSocket(v).then(socket => { bound.push(socket); return socket })
+    })
+    const preparing = prepare(delegate, 'sess-r2')
+    await delegate.shutdown()
+    let error
+    try { await preparing } catch (e) { error = e }
+    expect(error).to.be.an(Error)
+    expect(error.message).to.contain('shutting down')
+    expect(bound.length).to.be(1)
+    expect(isClosed(bound[0])).to.be(true)
+    expect(delegate.pendingSessions.size).to.be(0)
   })
 
   it('keeps the session while RTCP arrives on the video return port', async () => {
@@ -153,9 +263,12 @@ describe('HomeKit-CCU StreamingDelegate', () => {
     await stream(delegate, request)
     const sender = dgram.createSocket('udp4')
     const timer = setInterval(() => sender.send('rtcp', response.video.port, '127.0.0.1'), 40)
-    await new Promise(resolve => setTimeout(resolve, 600))
-    clearInterval(timer)
-    sender.close()
+    try {
+      await sleep(600)
+    } finally {
+      clearInterval(timer)
+      sender.close()
+    }
     expect(forced).to.eql([])
     expect(delegate.ongoingSessions.get('sess-w2').main.isRunning()).to.be(true)
     const socket = delegate.ongoingSessions.get('sess-w2').session.videoReturnSocket
@@ -313,9 +426,12 @@ describe('HomeKit-CCU StreamingDelegate', () => {
     const rec = recordingLog()
     delegate = new StreamingDelegate('Test Door', settings, rec)
     delegate.stopStream = () => Promise.reject(new Error('boom'))
-    await stream(delegate, { sessionID: 'sess-9', type: hap.StreamRequestTypes.STOP })
-    expect(rec.text('error')).to.contain('boom')
-    delegate = new StreamingDelegate('Test Door', settings, log)
+    try {
+      await stream(delegate, { sessionID: 'sess-9', type: hap.StreamRequestTypes.STOP })
+      expect(rec.text('error')).to.contain('boom')
+    } finally {
+      delete delegate.stopStream
+    }
   })
 
   it('still forces the session to stop when cleanup after a crash fails', async () => {
@@ -324,11 +440,14 @@ describe('HomeKit-CCU StreamingDelegate', () => {
     delegate.attachController({ forceStopStreamingSession: (id) => forced.push(id) })
     await prepare(delegate, 'sess-10')
     await stream(delegate, startRequest('sess-10', false))
-    const realStop = delegate.stopStream.bind(delegate)
     delegate.stopStream = () => Promise.reject(new Error('cleanup failed'))
-    await waitFor(() => forced.length > 0)
-    expect(forced).to.eql(['sess-10'])
-    expect(rec.text('error')).to.contain('cleanup failed')
-    delegate.stopStream = realStop
+    try {
+      await waitFor(() => forced.length > 0)
+      expect(forced).to.eql(['sess-10'])
+      expect(rec.text('error')).to.contain('cleanup failed')
+    } finally {
+      // restore the prototype method so afterEach can clean up
+      delete delegate.stopStream
+    }
   })
 })

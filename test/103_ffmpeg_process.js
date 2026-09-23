@@ -10,18 +10,36 @@ const FAKE = path.join(__dirname, 'fixtures', 'fake-ffmpeg.sh')
 const log = new Logger('HAP Test')
 log.setDebugEnabled(false)
 
+const READY_TIMEOUT_MS = 5000
+
 // the fake announces on stderr once its SIGTERM handling is installed
 async function ready (proc) {
   const start = Date.now()
   while (!proc.stderrTail.text().includes('fake ffmpeg ready')) {
-    if (Date.now() - start > 3000) {
+    if (Date.now() - start > READY_TIMEOUT_MS) {
       throw new Error('fake ffmpeg did not get ready')
     }
     await new Promise(resolve => setTimeout(resolve, 10))
   }
 }
 
-describe('HomeKit-CCU FfmpegProcess', () => {
+describe('HomeKit-CCU FfmpegProcess', function () {
+  // spawns fake ffmpeg processes; generous timeout so a slow machine fails with a message instead of a hang
+  this.timeout(10000)
+  let spawned = []
+
+  // every long running process a test creates, so afterEach can stop it even when the test failed
+  function track (proc) {
+    spawned.push(proc)
+    return proc
+  }
+
+  afterEach(async () => {
+    const running = spawned.filter(proc => proc.isRunning())
+    spawned = []
+    await Promise.all(running.map(proc => proc.stop()))
+  })
+
   it('probes available encoders synchronously', () => {
     const encoders = FfmpegProcess.probeEncoders(FAKE, log)
     expect(encoders.has('libopus')).to.be(true)
@@ -75,7 +93,7 @@ describe('HomeKit-CCU FfmpegProcess', () => {
 
   it('starts, reports running and stops a long running process', async () => {
     const exits = []
-    const proc = new FfmpegProcess('video', FAKE, ['-i', 'x'], log, { onExit: (code, signal) => exits.push({ code, signal }) })
+    const proc = track(new FfmpegProcess('video', FAKE, ['-i', 'x'], log, { onExit: (code, signal) => exits.push({ code, signal }) }))
     proc.start()
     expect(proc.isRunning()).to.be(true)
     await ready(proc)
@@ -91,11 +109,11 @@ describe('HomeKit-CCU FfmpegProcess', () => {
 
   it('kills with SIGKILL when SIGTERM is ignored', async () => {
     const exits = []
-    const proc = new FfmpegProcess('video', FAKE, ['-i', 'x'], log, {
+    const proc = track(new FfmpegProcess('video', FAKE, ['-i', 'x'], log, {
       env: { FAKE_IGNORE_TERM: '1' },
       killTimeoutMs: 200,
       onExit: (code, signal, expected) => exits.push({ code, signal, expected })
-    })
+    }))
     proc.start()
     await ready(proc)
     const started = Date.now()
@@ -110,7 +128,7 @@ describe('HomeKit-CCU FfmpegProcess', () => {
   })
 
   it('tracks live children for orphan protection', async () => {
-    const proc = new FfmpegProcess('video', FAKE, ['-i', 'x'], log, {})
+    const proc = track(new FfmpegProcess('video', FAKE, ['-i', 'x'], log, {}))
     proc.start()
     const child = proc.child
     expect(FfmpegProcess.liveChildren.has(child)).to.be(true)
@@ -120,7 +138,7 @@ describe('HomeKit-CCU FfmpegProcess', () => {
   })
 
   it('does not open stdin unless asked to', async () => {
-    const proc = new FfmpegProcess('video', FAKE, ['-i', 'x'], log, {})
+    const proc = track(new FfmpegProcess('video', FAKE, ['-i', 'x'], log, {}))
     proc.start()
     expect(proc.child.stdin).to.be(null)
     proc.writeStdin('ignored')
@@ -128,25 +146,25 @@ describe('HomeKit-CCU FfmpegProcess', () => {
   })
 
   it('reports unexpected exit with code', (done) => {
-    const proc = new FfmpegProcess('video', FAKE, ['-i', 'x'], log, {
+    const proc = track(new FfmpegProcess('video', FAKE, ['-i', 'x'], log, {
       env: { FAKE_EXIT_CODE: '3' },
       onExit: (code, signal, expected) => {
         expect(code).to.be(3)
         expect(expected).to.be(false)
         done()
       }
-    })
+    }))
     proc.start()
   })
 
   it('reports a binary that cannot be spawned as unexpected exit', (done) => {
-    const proc = new FfmpegProcess('video', '/nonexistent/ffmpeg', ['-i', 'x'], log, {
+    const proc = track(new FfmpegProcess('video', '/nonexistent/ffmpeg', ['-i', 'x'], log, {
       onExit: (code, signal, expected) => {
         expect(expected).to.be(false)
         expect(proc.isRunning()).to.be(false)
         proc.stop().then(() => done())
       }
-    })
+    }))
     proc.start()
   })
 
@@ -161,7 +179,7 @@ describe('HomeKit-CCU FfmpegProcess', () => {
 
   it('appends the stderr tail to the unexpected exit warning', (done) => {
     const rec = recordingLog()
-    const proc = new FfmpegProcess('video', FAKE, ['-i', 'x'], rec, {
+    const proc = track(new FfmpegProcess('video', FAKE, ['-i', 'x'], rec, {
       env: { FAKE_EXIT_CODE: '3' },
       onExit: () => {
         expect(rec.text('warn')).to.contain('code 3')
@@ -169,13 +187,13 @@ describe('HomeKit-CCU FfmpegProcess', () => {
         expect(rec.text()).to.not.contain('secret')
         done()
       }
-    })
+    }))
     proc.start()
   })
 
   it('redacts credentials and SRTP keys in the logged command line', async () => {
     const rec = recordingLog()
-    const proc = new FfmpegProcess('video', FAKE, ['-i', 'rtsp://admin:secret@cam/x', '-srtp_out_params', 'S3CR3TKEY', 'srtp://1.2.3.4:5'], rec, {})
+    const proc = track(new FfmpegProcess('video', FAKE, ['-i', 'rtsp://admin:secret@cam/x', '-srtp_out_params', 'S3CR3TKEY', 'srtp://1.2.3.4:5'], rec, {}))
     proc.start()
     await proc.stop()
     expect(rec.text('debug')).to.contain('-i rtsp://***@cam/x -srtp_out_params *** srtp://1.2.3.4:5')
@@ -184,7 +202,7 @@ describe('HomeKit-CCU FfmpegProcess', () => {
   })
 
   it('writes stdin and closes it', async () => {
-    const proc = new FfmpegProcess('return', FAKE, ['-f', 'sdp', '-i', 'pipe:'], log, { stdin: true })
+    const proc = track(new FfmpegProcess('return', FAKE, ['-f', 'sdp', '-i', 'pipe:'], log, { stdin: true }))
     proc.start()
     proc.writeStdin('v=0\r\n')
     expect(proc.isRunning()).to.be(true)

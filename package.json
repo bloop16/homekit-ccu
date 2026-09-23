@@ -50,6 +50,7 @@
 	},
 	"mocha": {
 		"bail": true,
+		"exit": true,
 		"reporter": "spec",
 		"recursive": true
 	},

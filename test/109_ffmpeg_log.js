@@ -13,6 +13,13 @@ describe('HomeKit-CCU ffmpegLog', () => {
     expect(redact('a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:AQEBAQ==')).to.be('a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:***')
   })
 
+  it('redacts credentials in query strings', () => {
+    expect(redact('-i http://cam/snap.cgi?user=admin&pwd=s3cret&chn=1')).to.be('-i http://cam/snap.cgi?user=***&pwd=***&chn=1')
+    expect(redact('rtsp://cam/live?username=admin&password=pw -f rtsp')).to.be('rtsp://cam/live?username=***&password=*** -f rtsp')
+    expect(redact('http://cam/x?pass=secret')).to.be('http://cam/x?pass=***')
+    expect(redact('http://cam/x?PWD=secret')).to.be('http://cam/x?PWD=***')
+  })
+
   it('leaves harmless text alone', () => {
     expect(redact('-f lavfi -i testsrc')).to.be('-f lavfi -i testsrc')
   })
