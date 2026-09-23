@@ -81,7 +81,7 @@ In remote mode, homekit-ccu automatically remaps internal daemon ports (32001, 3
 | `-U <user>` | Username for XML-RPC basic auth (remote mode) |
 | `-P <password>` | Password for XML-RPC basic auth (remote mode) |
 | `-C <path>` | Configuration path |
-| `-L <path>` | Log file path |
+| `-L <dir>` | Directory for `homekit-ccu.log` (default `/var/log`; the temp directory if neither is writable) |
 | `-S <file>` | Simulate with a devices file |
 | `-R` | Dry run — only use cached files |
 

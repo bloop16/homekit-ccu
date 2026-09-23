@@ -202,6 +202,40 @@ describe('HomeKit-CCU config server authentication', () => {
     })
   })
 
+  describe('static files', () => {
+    let ctx
+    beforeEach(async () => { ctx = await startService() })
+    afterEach(() => ctx.close())
+
+    it('answers 404 for a directory and keeps serving', async () => {
+      for (const dir of ['/js', '/js/', '/assets']) {
+        const res = await request(ctx.port, { path: dir })
+        expect(res.status).to.be(404)
+      }
+      const res = await request(ctx.port, { path: '/index.html' })
+      expect(res.status).to.be(200)
+      expect(res.headers['content-type']).to.contain('text/html')
+    })
+
+    it('answers 500 and logs when the file cannot be read', async () => {
+      const origCreateReadStream = fs.createReadStream
+      fs.createReadStream = () => {
+        const stream = new (require('stream').PassThrough)()
+        setImmediate(() => stream.emit('error', new Error('EACCES: permission denied')))
+        return stream
+      }
+      try {
+        const res = await request(ctx.port, { path: '/index.html' })
+        expect(res.status).to.be(500)
+      } finally {
+        fs.createReadStream = origCreateReadStream
+      }
+      expect(ctx.service.log.text('error')).to.contain('EACCES')
+      const res = await request(ctx.port, { path: '/index.html' })
+      expect(res.status).to.be(200)
+    })
+  })
+
   describe('cors', () => {
     let ctx
     beforeEach(async () => { ctx = await startService() })

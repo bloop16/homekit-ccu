@@ -31,6 +31,7 @@
 const path = require('path')
 const Server = require(path.join(__dirname, 'lib', 'Server.js'))
 const Logger = require(path.join(__dirname, 'lib', 'logger.js'))
+const { selectLogDir } = require(path.join(__dirname, 'lib', 'util', 'logDir.js'))
 const { program } = require('commander')
 const os = require('os')
 const fs = require('fs')
@@ -110,18 +111,10 @@ process.on('uncaughtException', (err) => {
 })
 
 try {
-  if ((logPath !== undefined) && (fs.existsSync(logPath)) && (fs.accessSync(logPath, fs.constants.W_OK))) {
-    log.info('Log into %s /homekit-ccu.log', logPath)
-    log.setLogFile(path.join(logPath, 'homekit-ccu.log'))
-  } else
-    if (fs.existsSync('/var/log') && (fs.accessSync('/var/log', fs.constants.W_OK))) {
-      log.info('Log into /var/log/homekit-ccu.log')
-      log.setLogFile(path.join('/var/log', 'homekit-ccu.log'))
-    } else {
-      const tmpDir = fs.realpathSync(os.tmpdir())
-      log.info('Log into %s/homekit-ccu.log', tmpDir)
-      log.setLogFile(path.join(tmpDir, 'homekit-ccu.log'))
-    }
+  // -L <dir>, then /var/log, then the temp directory
+  const logDir = selectLogDir([logPath, '/var/log'], fs.realpathSync(os.tmpdir()))
+  log.info('Log into %s/homekit-ccu.log', logDir)
+  log.setLogFile(path.join(logDir, 'homekit-ccu.log'))
 } catch (e) {
   log.error(e)
   log.warn('cannot set persistent file for logger trying temp')

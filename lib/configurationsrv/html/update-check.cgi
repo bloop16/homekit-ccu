@@ -19,8 +19,10 @@ if { $cmd == "download" } {
 } else {
   puts -nonewline "Content-Type: text/plain; charset=utf-8\r\n\r\n"
   catch {
+    # the answer is shown as HTML in the add-on list and wget skips certificate checks,
+    # so only a version-shaped tag is passed on
     set json [ exec /usr/bin/wget -qO- --no-check-certificate $version_url ]
-    regexp {"tag_name"\s*:\s*"v([^"]+)"} $json -> newversion
+    regexp {"tag_name"\s*:\s*"v([0-9][0-9A-Za-z.+-]*)"} $json -> newversion
   }
   if { [info exists newversion] } {
     puts $newversion

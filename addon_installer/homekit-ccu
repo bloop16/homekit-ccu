@@ -12,6 +12,8 @@ PIDFILE=/var/run/homekit-ccu.pid
 VER=0.1.0-dev
 REQUIRED_MAJOR=22
 LOGFILE=/var/log/homekit-ccu.log
+LOCKFILE=/var/run/homekit-ccu-install.lock
+LIGHTTPD_CONF_DIR=/etc/config/lighttpd
 
 # ------------------------------------------------------------------
 # Helper functions
@@ -75,6 +77,9 @@ install() {
     log "install" "Existing installation found, removing package first..."
     uninstall_server
   fi
+  # always start from an empty directory: a half-installed one (package-lock.json without
+  # index.js) makes every later offline npm install fail with ENOTCACHED
+  rm -rf "${ADDON_DIR}"
 
   log "install" "Starting install"
   log "install" "Running on node version: $(node --version)"
@@ -84,21 +89,29 @@ install() {
   
   mkdir -p ${ADDON_DIR}
   chmod 755 ${ADDON_DIR}
-  cd ${ADDON_DIR}
+  cd ${ADDON_DIR} || { log "install" "ERROR: cannot enter ${ADDON_DIR}"; return 1; }
   
   mkdir -p ${NPMCACHE_DIR}
   log "install" "Installing Node.JS packages from \"${ADDONCFG_DIR}/etc/homekit-ccu.tgz\"." 
   # all dependencies are bundled in the tgz, npm must not touch the registry
-  npm i --offline --no-audit --no-fund --cache ${NPMCACHE_DIR} ${ADDONCFG_DIR}/etc/homekit-ccu.tgz >> ${LOGFILE} 2>&1
+  npm i --offline --no-audit --no-fund --cache ${NPMCACHE_DIR} ${ADDONCFG_DIR}/etc/homekit-ccu.tgz >> ${LOGFILE} 2>&1 || {
+    rm -rf ${NPMCACHE_DIR}
+    log "install" "ERROR: npm install failed, see ${LOGFILE}"
+    return 1
+  }
   rm -rf ${NPMCACHE_DIR}
+  [ -f "${MODULE_DIR}/index.js" ] || {
+    log "install" "ERROR: npm install left no ${MODULE_DIR}/index.js, see ${LOGFILE}"
+    return 1
+  }
 
   log "install" "Installing WebUI files."
   mkdir -p ${ADDONWWW_DIR}
   cp -af ${MODULE_DIR}/lib/configurationsrv/html/* ${ADDONWWW_DIR}
 
   log "install" "Installing lighttpd config."
-  mkdir -p /etc/config/lighttpd
-  cp -af ${MODULE_DIR}/etc/homekit_ccu.conf /etc/config/lighttpd/${ADDON_NAME}.conf
+  mkdir -p ${LIGHTTPD_CONF_DIR}
+  cp -af ${MODULE_DIR}/etc/homekit_ccu.conf ${LIGHTTPD_CONF_DIR}/${ADDON_NAME}.conf
   killall lighttpd 2>/dev/null; sleep 1; lighttpd -f /etc/lighttpd/lighttpd.conf
 
   log "install" "Creating HomeKit Button."
@@ -127,21 +140,26 @@ EOF
 }
 
 background_install() {
-  LOCKFILE=/var/run/homekit-ccu-install.lock
   exec 9>"$LOCKFILE"
   if ! flock -n 9; then
     log "install" "ERROR: Installation already running, aborting."
     return 1
   fi
+  # Check before anything is removed: on an unsupported CCU the old installation stays usable
+  check_node_version || return 1
   # Remove button during install so the CCU WebUI doesn't show a broken link
   if [ -f ${MODULE_DIR}/etc/hm_addon.js ]; then
     node "${MODULE_DIR}/etc/hm_addon.js" homekit-ccu >> ${LOGFILE} 2>&1
   fi
   log "install" "Running install and start in background"
   (
-    install && start
+    if install; then
+      start
+    else
+      log "install" "ERROR: installation failed, HomeKit-CCU was not started"
+    fi
     flock -u 9 >>${LOGFILE} 2>&1
-  ) &>/dev/null &
+  ) >/dev/null 2>&1 &
 }
 
 # ------------------------------------------------------------------
@@ -156,7 +174,7 @@ uninstall_config() {
 
   # remove_lighttpd_config
   log "uninstall" "Removing lighttpd config and reloading."
-  rm -f /etc/config/lighttpd/${ADDON_NAME}.conf
+  rm -f ${LIGHTTPD_CONF_DIR}/${ADDON_NAME}.conf
   killall lighttpd 2>/dev/null; sleep 1; lighttpd -f /etc/lighttpd/lighttpd.conf
 
   # remove_firewall_ports
@@ -231,13 +249,13 @@ uninstall() {
 start_debug() {
 	log "start" "Starting HomeKit-CCU."
 	start-stop-daemon --start --quiet --oknodo --make-pidfile --background --pidfile $PIDFILE --startas "node" -- "$MODULE_DIR/index.js" "-D"
-	log "start" "HomeKit-CCU started, log may be found at /tmp/homekit-ccu.log."
+	log "start" "HomeKit-CCU started, log may be found at ${LOGFILE}."
 }
 
 start() {
 	log "start" "Starting HomeKit-CCU."
 	start-stop-daemon --start --quiet --oknodo --make-pidfile --background --pidfile $PIDFILE --startas "node" -- "$MODULE_DIR/index.js"
-	log "start" "HomeKit-CCU started, log may be found at /tmp/homekit-ccu.log."
+	log "start" "HomeKit-CCU started, log may be found at ${LOGFILE}."
 }
 
 stop() {
@@ -261,7 +279,6 @@ restart() {
 }
 
 status() {
-	LOCKFILE=/var/run/homekit-ccu-install.lock
 	if ! flock -n 9 9>"$LOCKFILE" 2>/dev/null; then
 		echo "install: running"
 	elif [ -f ${MODULE_DIR}/index.js ]; then
@@ -277,7 +294,6 @@ status() {
 }
 
 info() {
-	LOCKFILE=/var/run/homekit-ccu-install.lock
 	INFO_HTML="<center><b>HomeKit-CCU</b><p style='margin-top: 5px;margin-bottom: 5px;'><img src='../addons/homekit-ccu/homekit-ccu-logo.png'></p></center>"
 
 	if ! flock -n 9 9>"$LOCKFILE" 2>/dev/null; then
