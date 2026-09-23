@@ -15,7 +15,7 @@ Changelog for 0.1.0:
 * Video doorbell: streams end automatically when no RTCP from the viewer arrives (watchdog: 30 s for the first packet, then ~10 s); ffmpeg errors are shown in the log with credentials (URL userinfo, `user`/`password` query parameters) and SRTP keys masked; snapshots cached 5 s
 * Addon tarball bundles all npm dependencies (`bundleDependencies`), installation on the CCU works without internet access (tarball ~23 MB)
 * Hardware verification on OpenCCU + iOS 27: pending (pairing migration from 0.0.x, bridges, video doorbell)
-* binrpc 4.3 (no `binary`/`put` dependencies, fragmented TCP frames, no CPU spin on refused connects) and homematic-xmlrpc 2.0 (built-in XML writer, byte-identical output); commander 15 (ESM, needs Node.js 22.12+), mocha 12, c8 12; `npm audit`: 0 vulnerabilities
+* binrpc 4.3 (no `binary`/`put` dependencies, fragmented TCP frames, no CPU spin on refused connects) and homematic-xmlrpc 2.0 (built-in XML writer, byte-identical output); mocha 12, c8 12 (commander stays on 14, the last CommonJS release, so any Node.js 22 works); `npm audit`: 0 vulnerabilities
 * RPC event servers: errors of the socket servers are logged instead of ending the process, a remote call named `error` no longer crashes it, and the CUxD BIN-RPC server is closed on shutdown (it was never closed)
 * RPC smoke test: XML-RPC and BIN-RPC calls in both directions against fake CCU daemons; a test on a real CCU is still pending
 
