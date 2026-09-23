@@ -1,5 +1,4 @@
 .vscode
-package-lock.json
 .DS_Store
 .nyc_output
 coverage
@@ -18,7 +17,6 @@ addon_installer/*
 !addon_installer/VERSION
 !addon_installer/genscript.sh
 !addon_installer/update_script
-!addon_installer/homekit-ccu-*.tar.gz
 !addon_installer/homekit-ccu
 !addon_installer/etc/
 CLAUDE.md

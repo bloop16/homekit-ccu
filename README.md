@@ -1,8 +1,7 @@
 <h1 style="display:inline"><img src="doc/HomeKit-CCU_LogoBlue.png" style="float:left;"> HomeKit-CCU</h1>
 
-[![Build Status](https://travis-ci.org/britz/homekit-ccu.svg?branch=master)](https://travis-ci.org/britz/homekit-ccu)
-[![npm version](https://badge.fury.io/js/homekit-ccu.svg)](https://badge.fury.io/js/homekit-ccu)
-![Node.js CI](https://github.com/britz/homekit-ccu/workflows/Node.js%20CI/badge.svg)
+[![CI](https://github.com/bloop16/homekit-ccu/actions/workflows/ci.yml/badge.svg)](https://github.com/bloop16/homekit-ccu/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/bloop16/homekit-ccu?include_prereleases)](https://github.com/bloop16/homekit-ccu/releases/latest)
 
 <p align="center">
     <img src="doc/hap_homematic_ui2.png">
