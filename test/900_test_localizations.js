@@ -17,13 +17,13 @@ describe('HomeKit-CCU Localization Tests', () => {
     // load the file
 
     const items = fs.readdirSync(path.join(__dirname, '..', 'lib', 'services'))
-    items.map(item => {
+    items.forEach(item => {
       if (item.match(/HomeMatic.*Accessory.js/)) {
         const test = require(path.join(__dirname, '..', 'lib', 'services', item))
         const serviceDescription = test.serviceDescription()
         assert.ok(this.localizations[serviceDescription] !== undefined, `serviceDescription ${serviceDescription}  has no localization for ${item}`)
         const configurationItems = test.configurationItems()
-        Object.keys(configurationItems).map((key) => {
+        Object.keys(configurationItems).forEach((key) => {
           const cItem = configurationItems[key]
           // check label
           if (cItem.label !== undefined) {

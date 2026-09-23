@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 
-copyRecursiveSync = function (src, dest) {
+function copyRecursiveSync (src, dest) {
   const exists = fs.existsSync(src)
   const stats = exists && fs.statSync(src)
   const isDirectory = exists && stats.isDirectory()
@@ -18,8 +18,9 @@ copyRecursiveSync = function (src, dest) {
   }
 }
 
-rmDir = function (dirPath) {
-  try { var files = fs.readdirSync(dirPath) } catch (e) { return }
+function rmDir (dirPath) {
+  let files
+  try { files = fs.readdirSync(dirPath) } catch (e) { return }
   if (files.length > 0) {
     for (let i = 0; i < files.length; i++) {
       const filePath = dirPath + '/' + files[i]

@@ -33,7 +33,7 @@ if (myArgs.length === 2) {
       name: tmp.CONFIG_NAME
     }
   } else {
-
+    // intentionally empty
   }
 }
 

@@ -34,7 +34,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   after(() => {
-    Object.keys(that.server._publishedAccessories).map(key => {
+    Object.keys(that.server._publishedAccessories).forEach(key => {
       const accessory = that.server._publishedAccessories[key]
       accessory.shutdown()
     })

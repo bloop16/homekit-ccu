@@ -41,7 +41,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   after(() => {
-    Object.keys(that.server._publishedAccessories).map(key => {
+    Object.keys(that.server._publishedAccessories).forEach(key => {
       const accessory = that.server._publishedAccessories[key]
       accessory.shutdown()
     })
@@ -63,7 +63,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HomeKit-CCU check assigned services', (done) => {
-    Object.keys(that.server._publishedAccessories).map(key => {
+    Object.keys(that.server._publishedAccessories).forEach(key => {
       const accessory = that.server._publishedAccessories[key]
       expect(accessory.serviceClass).to.be(that.data.ccu[accessory.address()])
     })
