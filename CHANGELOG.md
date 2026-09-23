@@ -1,3 +1,20 @@
+Changelog for 0.1.0:
+====================
+
+* Migrated from hap-nodejs 0.11.1 to @homebridge/hap-nodejs 2.2.3 (custom characteristics as ES classes, Formats/Perms/Units enums, Categories)
+* Video doorbell rewritten on CameraController: snapshot, stream, Opus/AAC-ELD audio, optional two-way audio via `audio_return_target`; ffmpeg encoder probe decides offered codecs
+* Removed the dummy LockMechanism from the video doorbell
+* `advertiser` config key (bonjour-hap, ciao, avahi)
+* commander 14, formidable 3, fakegato-history 0.6.7; moment replaced by lib/util/time.js
+* standard lint clean, c8 coverage script, husky removed
+* GitHub Actions CI and release workflow; addon tarball no longer tracked in git
+* Installer requires Node.js 22 (OpenCCU 3.89+), README no longer claims automatic Node install; the add-on info shows the Node.js version actually installed
+* Update check in the CCU's add-on list reads the latest release of bloop16/homekit-ccu; repository, WebUI and issue links point at the fork
+* Restart from the configuration UI calls the rc.d script directly; configuration restore checks the CCU session when authentication is on and removes rejected uploads
+* **Upgrade note, video doorbell:** the doorbell gets a new HomeKit identity (derived from its UUID instead of the fixed `00:00:11:22:22:11`) and the old default PIN `123-45-678` is now rejected as trivial. After upgrading: set a non-trivial PIN in the doorbell settings, remove the old doorbell in Apple Home, add it again. Renaming the doorbell also changes its identity.
+* Video doorbell: streams end automatically when no RTCP from the viewer arrives (watchdog: 30 s for the first packet, then ~10 s); ffmpeg errors are shown in the log with credentials (URL userinfo, `user`/`password` query parameters) and SRTP keys masked; snapshots cached 5 s
+* Known: 2 low `npm audit` findings via binrpc 3.3.1 (`put`), fix needs a binrpc 4.x upgrade tested against a real CCU
+
 Changelog for 0.0.16:
 ====================
 

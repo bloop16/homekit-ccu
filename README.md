@@ -18,43 +18,37 @@ All credit for the original implementation goes to Thomas Kluge and the contribu
 
 # Description
 
-This RaspberryMatic / OpenCCU / CCU3 addon will allow you to access your HomeMatic devices from HomeKit. Its much like https://github.com/thkl/homebridge-homematic but without homebridge.
+This RaspberryMatic / OpenCCU / CCU3 addon will allow you to access your HomeMatic devices from HomeKit. It is much like https://github.com/thkl/homebridge-homematic but without homebridge.
 All this runs on your RaspberryMatic / OpenCCU / CCU3. You will not need any extra hardware.
 
-Requires Node.js >= 20. OpenCCU and RaspberryMatic ship Node.js as part of the system image. If Node.js is missing or too old, the addon will automatically download and install a compatible version during installation.
+Requires OpenCCU 3.89 or newer, which ships Node.js 22. The addon does not bundle Node.js; if the CCU's Node.js is older than 22 the installation stops with an error in `/var/log/homekit-ccu.log`.
 
-# What's new in 0.0.16
+# What's new in 0.1.0
 
-- Fixed HomeKit device discovery on OpenCCU (switched mDNS advertiser from ciao to bonjour-hap)
-- Fixed Rega communication: socket hang-ups resolved by disabling HTTP keep-alive connection reuse
-- Rega retry logic fixed — counter was stuck at "1/3"; now correctly retries and gives up after 3 attempts
-- Rega requests serialised with 150ms cooldown between calls to avoid overloading single-threaded ReGaHss
-- Per-caller Rega log tags for easier debugging (e.g. `[Rega] [getValue]`, `[Rega] [fetchRooms]`)
-- HomeKit Instances UI: action buttons now responsive — icons only on small screens, full labels on medium+
-- Addon installer runs in background — CCU WebUI no longer times out during install
-- flock-based install locking prevents parallel installs
-- Dynamic status in CCU System Control: shows install progress, hides buttons during install
-- npm install failures are now detected and logged instead of silently continuing
-- Log date format aligned between rc.d script and Node.js server
+- HAP stack upgraded from hap-nodejs 0.11 (2023) to @homebridge/hap-nodejs 2.2 (2026): security fixes and current iOS/tvOS 26/27 compatibility
+- Video doorbell rewritten on the HAP CameraController: audio (Opus / AAC-ELD) and optional two-way audio
+- mDNS advertiser selectable in `config.json` (`"advertiser": "bonjour-hap" | "ciao" | "avahi"`)
+- Dependencies refreshed (commander 14, formidable 3, fakegato-history 0.6, moment removed), `npm audit` clean except two low findings in binrpc (see CHANGELOG)
+- GitHub Actions CI and release pipeline; the addon tarball is built on every `v*` tag
+- Requires Node.js 22 (OpenCCU 3.89+)
 
-# What's new in 0.0.15
+See [CHANGELOG.md](CHANGELOG.md) for the details and for older versions.
 
-- Renamed from **hap-homematic** to **homekit-ccu**
-- npm package is now bundled inside the addon tar — no internet access required on the CCU at install time
-- Node.js version is shown alongside the addon version in CCU System Control
-- OpenCCU compatibility improvements
-- Rega communication refactored with request queuing and automatic retry
-- Improved error handling across all CCU/RPC layers — fewer silent failures and crashes
-- Removed npm registry version check (no internet needed on CCU)
-- Safer addon installer scripts with proper service restart on update
-- Lighttpd proxy config reorganized with explicit SSL settings
+# Upgrading from hap-homematic / homekit-ccu 0.0.x
+
+- **Bridges keep their pairings.** The HomeKit storage format is unchanged; bridges and their accessories stay in Apple Home, including rooms and automations.
+- **The video doorbell has to be added again.** It now gets its own HomeKit identity (derived from its UUID instead of the fixed `00:00:11:22:22:11`), and the old default PIN `123-45-678` is rejected as trivial. If the doorbell still uses that PIN, set a different one in the doorbell settings; otherwise the doorbell is not published and the log says why. Then remove the old doorbell in Apple Home and add it again with the new PIN. Renaming the doorbell also changes its identity.
+- **Restoring a configuration backup** in the configuration UI requires a valid CCU session when authentication is turned on, like every other change. Open the configuration page from the CCU's system control, not from a bookmark.
+- **Restart** in the configuration UI now calls `/etc/config/rc.d/homekit-ccu restart` directly (the old npm script is gone). In remote mode there is no rc.d script; restart the process yourself.
 
 # Installation
-Download the latest addon (homekit-ccu-x.x.xx.tar.gz) from https://github.com/britz/homekit-ccu/releases/latest/ and install it via system preferences to your ccu.
+Download the latest addon (`homekit-ccu-x.y.z.tar.gz`) from https://github.com/bloop16/homekit-ccu/releases/latest and install it via *Settings → Control panel → Additional software* on your CCU.
 
-A little bit later (the addon will install all other needed software) you will have a HomeKit button in your ccu system preference page.
+The addon contains the complete npm package, so the CCU needs no internet access during installation. Installation runs in the background; after a minute or two you will have a HomeKit button in the CCU's control panel. Progress and errors are logged to `/var/log/homekit-ccu.log`.
 
-This will not run on a older CCU2 model.
+The *Additional software* page shows the newest release as available version (the CCU asks GitHub for it).
+
+This will not run on an older CCU2 model or on CCU firmware that ships a Node.js older than 22.
 
 # Running Modes
 
@@ -92,13 +86,33 @@ In remote mode, homekit-ccu automatically remaps internal daemon ports (32001, 3
 
 # Used Ports
 
-* 9874 -> Config WebUI (proxied through lighttpd)
+* 9874 -> Config WebUI (lighttpd proxies it to the config server on 127.0.0.1:39874; in remote mode the config server listens on 9874 itself)
 * 49874 -> Config WebUI HTTPS (proxied through lighttpd)
 * 9875 -> RPC event server
 * 9876 -> RPC event server CuxD (optional)
 * 9877..n HAP Instance 0 .. n
+* 5353/udp -> mDNS (Bonjour), so HomeKit can find the bridges
+* random UDP ports -> video doorbell streams (see below)
 
 Ports 9874 and 49874 are automatically opened in the CCU firewall during addon installation.
+
+# Video Doorbell and ffmpeg
+
+The video doorbell (special accessory) needs an `ffmpeg` binary. OpenCCU does not ship one.
+
+- **Remote mode** (recommended for cameras): run homekit-ccu on a machine that has ffmpeg with `libx264`, `libopus` and ideally `libfdk_aac`.
+- **On the CCU**: copy a static build (for example the johnvansickle.com builds for arm64/amd64) to `/usr/local/bin/ffmpeg`, make it executable and set *Path to ffmpeg* in the doorbell settings. Audio is offered only for encoders the binary actually has; without `libopus`/`libfdk_aac` the doorbell is published video-only.
+- *Video codec* `copy` avoids transcoding when the camera already delivers H.264. This is the only realistic option on a Raspberry Pi based CCU.
+- *URL RTSP video* accepts a plain RTSP/HTTP URL (homekit-ccu prepends `-re -i`) or, when it starts with `-`, raw ffmpeg input arguments. Raw arguments are passed as they are, so add `-re` yourself for sources that do not deliver at live rate (files, `lavfi` test sources); otherwise ffmpeg reads them as fast as it can. `-re -f lavfi -i testsrc=size=1280x720:rate=15 -re -f lavfi -i sine=frequency=440` gives a test pattern with a tone and needs no camera at all.
+- *Talkback target* is an ffmpeg output; when set, Apple Home shows the talk button. A plain URL (for example `rtsp://camera/talk`) is sent as `-f rtsp <url>` with AAC audio. A value starting with `-` is taken as raw ffmpeg output options that follow the AAC default and override it, for example `-codec:a pcm_mulaw -ar 8000 -f rtsp rtsp://camera/talk` for a G.711 intercom, or `-f null -` to test the return channel without a device.
+- Raw arguments in both fields are split on spaces; quoting is not supported, so values with spaces (for example in a file path or a password) cannot be passed.
+- Credentials in URLs (`rtsp://user:pass@…`, `?user=…&password=…`) and SRTP keys are masked in the log.
+- **Watchdog and firewalls:** the viewer (iPhone, iPad, Apple TV) sends RTCP to a random UDP port on the machine running homekit-ccu. A stream is ended when nothing arrives there: 30 s for the first packet (slow battery doorbells need time for the first frame), then after about 10 s of silence (five RTCP intervals, 10 to 60 s). A firewall between the viewer and homekit-ccu that blocks incoming UDP therefore breaks streaming: the picture appears and stops after about 30 s. On the CCU, check the firewall configuration in the control panel.
+- ffmpeg errors (with the last lines of ffmpeg's output) are written to the log; snapshots are cached for 5 s.
+
+# mDNS advertiser
+
+`config.json` accepts `"advertiser"` with `bonjour-hap` (default, works on OpenCCU), `ciao` or `avahi` (uses the CCU's avahi daemon via D-Bus). Change it only if HomeKit cannot discover the bridge. An unknown value falls back to `bonjour-hap` with a warning in the log.
 
 # Architecture
 
@@ -106,7 +120,7 @@ homekit-ccu connects to these CCU endpoints:
 
 | Port | Service | Endpoint | Purpose |
 |------|---------|----------|---------|
-| 8181 | Rega | POST `/tclrega.exe` | Device/variable/program enumeration via TCL scripts |
+| 8183 (local) / 8181 (remote) | Rega | POST `/tclrega.exe` | Device/variable/program enumeration via TCL scripts |
 | 2001 | BidCos-RF | XML-RPC | Classic HomeMatic RF devices |
 | 2010 | HmIP-RF | XML-RPC | HomeMatic IP devices |
 | 9292 | VirtualDevices | XML-RPC | Virtual/grouped devices |
@@ -115,8 +129,9 @@ homekit-ccu connects to these CCU endpoints:
 Key source files:
 - `lib/HomeMaticCCU.js` — CCU connection manager, interface discovery, port mapping
 - `lib/HomeMaticRPC.js` — XML-RPC/BinRPC event handling (port 9875)
-- `lib/HomeMaticRegaRequest.js` — HTTP POST to Rega at `:8181/tclrega.exe`
-- `lib/configurationsrv/ccu.js` — JSON-RPC auth, TLS, firewall config reader
+- `lib/HomeMaticRegaRequest.js` — HTTP POST to Rega at `:8183/tclrega.exe` (internal port on the CCU) or `:8181/tclrega.exe` (remote mode)
+- `lib/configurationsrv/ConfigurationService.js` — config server: JSON-RPC session check, firewall ports, backup/restore
+- `lib/services/camera/` — video doorbell streaming (CameraController delegate, ffmpeg handling)
 - `lib/Server.js` — HAP bridge server, instance management (ports 9877+)
 - `index.js` — Entry point
 
@@ -137,20 +152,22 @@ Stefan, of verdrahtet.info, has made a nice german tutorial [here](https://www.v
 If you are using the https version of your ccu WebUI page, the configuration page is automatically available on port 49874 via the lighttpd HTTPS proxy. homekit-ccu will use the same self signed tls certificate as your ccu.
 
 # Authentication
-You can use your ccu user management as an optional authentication for homekit-ccu. If you turn on this feature, you have to call the configuration page from your ccu webUI system preference page to use a valid session. Only ccu admins are alowed to use the homekit-ccu configuration page if authentication was turned on.
+You can use your ccu user management as an optional authentication for homekit-ccu. If you turn on this feature, you have to call the configuration page from your ccu webUI system preference page to use a valid session. Only ccu admins are allowed to use the homekit-ccu configuration page if authentication was turned on.
 
 # Concept of rooms
-HAP the homekit accessory protocol does not know a room concept. So when you add one or more devices to a bridge the will appear at the same room as the bridge in your homekit client application. Therefore homekit-ccu is able to fire up multiple bridges (hap instances). During the installation wizzard you may add a instance for each of your rooms, add theese instances to homekit and put them into rooms. From this time on adding a new device to an instance will place this device into the same room as your brigde.
+HAP the homekit accessory protocol does not know a room concept. So when you add one or more devices to a bridge they will appear at the same room as the bridge in your homekit client application. Therefore homekit-ccu is able to fire up multiple bridges (hap instances). During the installation wizard you may add an instance for each of your rooms, add these instances to homekit and put them into rooms. From this time on adding a new device to an instance will place this device into the same room as your bridge.
 
 # FakeGato History
 All generated homekit devices will support fakegato history (if there is a history option in eve). 
-Please note: History is only available if u are using the eve app as a homekit controller.
+Please note: History is only available if you are using the Eve app as a homekit controller.
 
 # Development
 
 ```bash
-npm install          # install dependencies
+npm install          # install dependencies (Node.js 22)
 npm test             # run tests
+npm run lint         # standard, enforced in CI
+npm run coverage     # c8, at least 80 % for the camera code
 node index.js -D     # run in debug mode (expects CCU on localhost)
 node index.js -D -H <host>  # run against remote CCU
 ```
@@ -160,11 +177,8 @@ node index.js -D -H <host>  # run against remote CCU
 A devcontainer in `.devcontainer/` provides a full OpenCCU environment for development and debugging. It runs a single container based on the OpenCCU image with Node.js layered on top, using Podman.
 
 ```bash
-# Probe all CCU endpoints to see what works/fails
-.devcontainer/scripts/test-ccu-api.sh
-
 # Install homekit-ccu as a proper CCU addon (symlinks workspace source)
-.devcontainer/scripts/install-addon.sh
+.devcontainer/install-addon.sh
 
 # Use the rc.d script like the real CCU:
 /usr/local/etc/config/rc.d/homekit-ccu start
@@ -182,17 +196,17 @@ killall lighttpd; sleep 1; lighttpd -f /etc/lighttpd/lighttpd.conf
 The OpenCCU WebUI is available at `http://localhost:8080` from the host. The addon button appears under System Control after running `install-addon.sh`.
 
 # Issues and not supported devices
-Please open an issue [here](https://github.com/britz/homekit-ccu/issues/new) for all what went wrong. If you just have a question or want to know something consider to open a thread in [Discussions](https://github.com/britz/homekit-ccu/discussions)
+Please open an issue [here](https://github.com/bloop16/homekit-ccu/issues/new) for everything that went wrong, and attach the relevant part of `/var/log/homekit-ccu.log`.
 
 # Documentation
-Please find the documentation in the [wiki](https://github.com/britz/homekit-ccu/wiki)
+The configuration UI is still the one of hap-homematic, so the [hap-homematic wiki](https://github.com/thkl/hap-homematic/wiki) by Thomas Kluge covers most of it. The sections above describe what changed since.
 
 ## Useful commands for debugging
 
 ```shell
 
 # re-deploy lighttpd conf
-cp /usr/local/addons/homekit-ccu/node_modules/homekit-ccu/etc/homekit_ccu.conf /usr/local/etc/config/lighttpd/homekit_ccu.conf 
+cp /usr/local/addons/homekit-ccu/node_modules/homekit-ccu/etc/homekit_ccu.conf /usr/local/etc/config/lighttpd/homekit-ccu.conf
 # /etc/config -> ../usr/local/etc/config
 
 # validate lighttpd config (catches syntax errors before restart)

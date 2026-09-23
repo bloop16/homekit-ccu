@@ -10,8 +10,7 @@ NPMCACHE_DIR=/tmp/homekit-ccu-cache
 RCD_DIR=${CONFIG_DIR}/rc.d
 PIDFILE=/var/run/homekit-ccu.pid
 VER=0.0.16
-NODE_VER=20.18.3
-REQUIRED_MAJOR=20
+REQUIRED_MAJOR=22
 LOGFILE=/var/log/homekit-ccu.log
 
 # ------------------------------------------------------------------
@@ -64,7 +63,7 @@ check_node_version() {
     log "install" "Node.js ${CURRENT_VERSION} meets requirement (>=${REQUIRED_MAJOR})"
     return 0
   else
-    log "install" "ERROR: Node.js ${CURRENT_VERSION} is too old (need >=${REQUIRED_MAJOR})"
+    log "install" "ERROR: Node.js ${CURRENT_VERSION} is too old (need >=${REQUIRED_MAJOR}). Update OpenCCU to 3.89 or newer."
     return 1
   fi
 }
@@ -295,7 +294,7 @@ info() {
 
 	echo "Info: ${INFO_HTML}"
 	echo "Name: HomeKit-CCU"
-	echo "Version: $VER (Node $NODE_VER)"
+	echo "Version: $VER (Node $(node --version 2>/dev/null || echo 'missing'))"
 	echo "Operations: ${OPS}"
 	[ -n "${OPS}" ] && echo "Config-Url: $CONFIG_URL"
 	echo "Update: /addons/${ADDON_NAME}/update-check.cgi"
