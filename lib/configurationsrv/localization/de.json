@@ -445,11 +445,20 @@
   "There is a new version available. Do you want to update HomeKit-CCU to %s ?": "Es ist eine neue Version von HomeKit-CCU verfügbar. Möchtest Du auf Version %s aktualisieren ?",
   "ChangeLog": "ChangeLog",
   "You are using this version": "Du benutzt diese Version",
-  "Datapoint which contains the battery level":"Datenpunkt welcher das Battie Level enthält",
-  "This service provides a battery indicator based on a HomeMatic Device Datapoint":"dieser Service stellt einen Batterie Indikator zur Verfügung",
-  "Datapoint":"Datenpunk",
-  "Max Level Value":"maximales Level",
-  "Use Color Temp":"Farbtemperatur verwenden",
-  "This will enable the color temperature feature. Please check in your CCU if your device supports this.":
-    "Dies wird die Farbtemperatureinstellung verwenden. Bitte prüfe in der CCU, ob das Gerät dies unterstützt"
+  "Datapoint which contains the battery level": "Datenpunkt welcher das Battie Level enthält",
+  "This service provides a battery indicator based on a HomeMatic Device Datapoint": "dieser Service stellt einen Batterie Indikator zur Verfügung",
+  "Datapoint": "Datenpunk",
+  "Max Level Value": "maximales Level",
+  "Use Color Temp": "Farbtemperatur verwenden",
+  "This will enable the color temperature feature. Please check in your CCU if your device supports this.": "Dies wird die Farbtemperatureinstellung verwenden. Bitte prüfe in der CCU, ob das Gerät dies unterstützt",
+  "Video codec": "Video-Codec",
+  "Use copy when the camera already delivers H.264": "copy verwenden, wenn die Kamera bereits H.264 liefert",
+  "Max width": "Maximale Breite",
+  "Max height": "Maximale Höhe",
+  "Max FPS": "Maximale Bildrate",
+  "Max bitrate (kbit/s)": "Maximale Bitrate (kbit/s)",
+  "Audio": "Audio",
+  "Talkback target": "Gegensprech-Ziel",
+  "RTSP URL, or raw ffmpeg input args starting with - (e.g. -f lavfi -i testsrc)": "RTSP-URL oder rohe ffmpeg-Eingabeargumente, beginnend mit - (z. B. -f lavfi -i testsrc)",
+  "ffmpeg output for talkback, empty disables two-way audio": "ffmpeg-Ausgabe für Gegensprechen, leer deaktiviert Zwei-Wege-Audio"
 }
