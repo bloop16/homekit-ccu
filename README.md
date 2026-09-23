@@ -28,7 +28,7 @@ Requires OpenCCU 3.89 or newer, which ships Node.js 22. The addon does not bundl
 - Current HAP stack: hap-nodejs 0.11 (2023) replaced by @homebridge/hap-nodejs 2.2 (2026), with its security fixes
 - Video doorbell rewritten on the HAP CameraController: audio (Opus / AAC-ELD) and optional two-way audio
 - mDNS advertiser selectable in `config.json` (`"advertiser": "bonjour-hap" | "ciao" | "avahi"`)
-- Dependencies refreshed (binrpc 4, homematic-xmlrpc 2, commander 14, formidable 3, fakegato-history 0.6, moment removed), `npm audit` clean
+- Dependencies refreshed (binrpc 4, homematic-xmlrpc 2, commander 14, formidable 3, moment removed; fakegato-history 0.6 vendored without its Google-Drive storage, so googleapis is gone), `npm audit` clean
 - GitHub Actions CI and release pipeline; the addon tarball is built on every `v*` tag
 - Requires Node.js 22 (OpenCCU 3.89+)
 
@@ -44,7 +44,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the details and for older versions.
 # Installation
 Download the latest addon (`homekit-ccu-x.y.z.tar.gz`) from https://github.com/bloop16/homekit-ccu/releases/latest and install it via *Settings → Control panel → Additional software* on your CCU.
 
-The addon (about 23 MB) contains homekit-ccu together with all its npm dependencies, so the CCU needs no internet access during installation; installed, it takes about 240 MB under `/usr/local/addons`. Installation runs in the background; after a minute or two you will have a HomeKit button in the CCU's control panel. Progress and errors are logged to `/var/log/homekit-ccu.log`.
+The addon (about 3.5 MB) contains homekit-ccu together with all its npm dependencies, so the CCU needs no internet access during installation; installed, it takes about 15 MB under `/usr/local/addons`. Installation runs in the background; after a minute or two you will have a HomeKit button in the CCU's control panel. Progress and errors are logged to `/var/log/homekit-ccu.log`.
 
 The *Additional software* page shows the newest release as available version (the CCU asks GitHub for it).
 
