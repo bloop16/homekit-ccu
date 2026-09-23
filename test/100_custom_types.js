@@ -51,3 +51,29 @@ describe('HomeKit-CCU CustomHomeKitTypes', () => {
     expect(types.Service.TestService.UUID).to.be(SERVICE_UUID)
   })
 })
+
+describe('HomeKit-CCU Server.getAdvertiser', () => {
+  const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
+  const Server = require(path.join(__dirname, '..', 'lib', 'Server.js'))
+  const log = new Logger('HAP Test')
+  log.setDebugEnabled(false)
+
+  it('defaults to bonjour-hap', () => {
+    const server = new Server(log)
+    expect(server.getAdvertiser()).to.be('bonjour-hap')
+  })
+
+  it('accepts avahi and ciao', () => {
+    const server = new Server(log)
+    server._configuration = { advertiser: 'avahi' }
+    expect(server.getAdvertiser()).to.be('avahi')
+    server._configuration = { advertiser: 'ciao' }
+    expect(server.getAdvertiser()).to.be('ciao')
+  })
+
+  it('falls back on unknown values', () => {
+    const server = new Server(log)
+    server._configuration = { advertiser: 'nope' }
+    expect(server.getAdvertiser()).to.be('bonjour-hap')
+  })
+})
