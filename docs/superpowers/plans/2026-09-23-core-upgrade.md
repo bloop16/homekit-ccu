@@ -2276,6 +2276,17 @@ The video doorbell (special accessory) needs an `ffmpeg` binary. OpenCCU does no
 `config.json` accepts `"advertiser"` with `bonjour-hap` (default, works on OpenCCU), `ciao` or `avahi` (uses the CCU's avahi daemon via D-Bus). Change it only if HomeKit cannot discover the bridge.
 ```
 
+- [ ] **Step 3b: Upstream-Verweise auf den Fork umstellen**
+
+- `package.json`: `repository.url` auf `git+https://github.com/bloop16/homekit-ccu.git` setzen.
+- `lib/configurationsrv/html/update-check.cgi` (Zeilen 3-4) prüft bisher `britz/homekit-ccu/master/package.json` und verlinkt auf Britz' Releases. Umstellen auf das letzte Release des Forks: Versionsquelle `https://api.github.com/repos/bloop16/homekit-ccu/releases/latest` mit Regex `"tag_name"\s*:\s*"v([^"]+)"`, Download-Link `https://github.com/bloop16/homekit-ccu/releases/latest`. Vorher die Datei lesen und die Struktur (TCL-CGI) beibehalten.
+
+```bash
+grep -rn "britz\|thkl" lib/configurationsrv/html/*.cgi package.json README.md | grep -v "Origin\|hap-homematic\|credit" 
+```
+
+Erwartet: keine Treffer mehr außer den Herkunftsangaben im README.
+
 - [ ] **Step 4: CHANGELOG ergänzen**
 
 Am Anfang von `CHANGELOG.md` einfügen:
