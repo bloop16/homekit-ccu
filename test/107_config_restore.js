@@ -30,15 +30,15 @@ const makeService = ({ useAuth = false, validSession = true } = {}) => {
   return { service, calls }
 }
 
-const postRestore = async (service, withFile = true) => {
+const postRestore = async (service, fileCount = 1) => {
   const server = http.createServer((req, res) => service.processRestore(req, res))
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
   try {
     const form = new FormData()
     form.append('method', 'restore')
     form.append('sid', '@abcdefghij@')
-    if (withFile) {
-      form.append('file', new Blob([Buffer.from('not really a tarball')]), 'backup.tar.gz')
+    for (let i = 0; i < fileCount; i++) {
+      form.append('file', new Blob([Buffer.from('not really a tarball ' + i)]), `backup${i}.tar.gz`)
     }
     const res = await fetch(`http://127.0.0.1:${server.address().port}/restore/`, { method: 'POST', body: form })
     return { status: res.status, body: await res.text() }
@@ -58,6 +58,19 @@ const waitFor = async (check, timeoutMs = 3000) => {
 after(() => fs.rmSync(scratch, { recursive: true, force: true }))
 
 describe('HomeKit-CCU ConfigurationService.processRestore', () => {
+  let uploadDir
+
+  beforeEach(() => {
+    uploadDir = fs.mkdtempSync(path.join(scratch, 'upload-'))
+    process.env.HOMEKIT_CCU_UPLOAD_DIR = uploadDir
+  })
+
+  afterEach(() => {
+    delete process.env.HOMEKIT_CCU_UPLOAD_DIR
+  })
+
+  const uploadDirIsEmpty = () => fs.readdirSync(uploadDir).length === 0
+
   it('rejects an invalid session with 401 and removes the uploaded temp file', async () => {
     const { service, calls } = makeService({ useAuth: true, validSession: false })
     const origRm = fs.rm
@@ -70,6 +83,7 @@ describe('HomeKit-CCU ConfigurationService.processRestore', () => {
       expect(calls.restarts).to.be(0)
       expect(removed).to.have.length(1)
       await waitFor(() => !fs.existsSync(removed[0]))
+      await waitFor(uploadDirIsEmpty)
     } finally {
       fs.rm = origRm
     }
@@ -83,15 +97,25 @@ describe('HomeKit-CCU ConfigurationService.processRestore', () => {
     expect(calls.extracted[0].existed).to.be(true)
     expect(calls.restarts).to.be(1)
     await waitFor(() => !fs.existsSync(calls.extracted[0].file))
+    await waitFor(uploadDirIsEmpty)
   })
 
   it('answers 200 and logs an error when no file was uploaded', async () => {
     const { service, calls } = makeService()
-    const res = await postRestore(service, false)
+    const res = await postRestore(service, 0)
     expect(res.status).to.be(200)
     expect(calls.extracted).to.have.length(0)
     expect(calls.restarts).to.be(0)
     expect(calls.errors.map(args => args[0])).to.contain('[Config] restore: no file in upload')
+  })
+
+  it('rejects a second file with 413 and leaves no uploaded file behind', async () => {
+    const { service, calls } = makeService()
+    const res = await postRestore(service, 2)
+    expect(res.status).to.be(413)
+    expect(calls.extracted).to.have.length(0)
+    expect(calls.restarts).to.be(0)
+    await waitFor(uploadDirIsEmpty)
   })
 })
 
@@ -117,5 +141,47 @@ describe('HomeKit-CCU ConfigurationService.restartSystem', () => {
     expect(service.restartSystem()).to.be(true)
     await waitFor(() => fs.existsSync(marker) && fs.readFileSync(marker, 'utf8').trim() === 'restart')
     expect(errors).to.have.length(0)
+  })
+})
+
+describe('HomeKit-CCU ConfigurationService API restart/update', () => {
+  const callApi = async (query, restartResult) => {
+    const service = Object.create(ConfigurationService.prototype)
+    service.log = { error () {}, info () {}, debug () {} }
+    service.useAuth = false
+    service.saveGlobalSettings = () => {}
+    let restarts = 0
+    service.restartSystem = () => { restarts++; return restartResult }
+    const response = {
+      headersSent: false,
+      writeHead () { this.headersSent = true },
+      end (body) { this.body = body }
+    }
+    await service.processApiCall(query, response)
+    return { json: JSON.parse(response.body), restarts }
+  }
+
+  it('reports ok when the restart was scheduled', async () => {
+    for (const method of ['restart', 'saveSettings']) {
+      const { json, restarts } = await callApi({ method }, true)
+      expect(json).to.eql({ response: 'ok' })
+      expect(restarts).to.be(1)
+    }
+  })
+
+  it('reports an error when restart is not available', async () => {
+    for (const method of ['restart', 'saveSettings']) {
+      const { json } = await callApi({ method }, false)
+      expect(json).to.eql({ error: 'restart not available' })
+    }
+  })
+
+  it('points updates to the addon installer without building a backup', async () => {
+    let backups = 0
+    const service = Object.create(ConfigurationService.prototype)
+    service.generateBackup = async () => { backups++ }
+    const result = await service.updateSystem()
+    expect(result.error).to.contain('addon installer')
+    expect(backups).to.be(0)
   })
 })
