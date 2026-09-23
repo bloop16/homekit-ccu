@@ -31,6 +31,7 @@ describe('HomeKit-CCU CustomHomeKitTypes', () => {
 
   it('exposes the UUID on the class itself', () => {
     expect(types.Characteristic.TestDuration.UUID).to.be(CHAR_UUID)
+    expect(types.Characteristic.TestDuration.name).to.be('TestDuration')
   })
 
   it('uses the display name when given', () => {
@@ -75,5 +76,44 @@ describe('HomeKit-CCU Server.getAdvertiser', () => {
     const server = new Server(log)
     server._configuration = { advertiser: 'nope' }
     expect(server.getAdvertiser()).to.be('bonjour-hap')
+  })
+})
+
+describe('HomeKit-CCU HomeMaticAccessory.publishSingleAccessory', () => {
+  const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
+  const Server = require(path.join(__dirname, '..', 'lib', 'Server.js'))
+  const HomeMaticAccessory = require(path.join(__dirname, '..', 'lib', 'services', 'HomeMaticAccessory.js'))
+  const log = new Logger('HAP Test')
+  log.setDebugEnabled(false)
+
+  const publishWith = (publishInfo) => {
+    let captured
+    const fake = {
+      _server: new Server(log),
+      _name: 'x',
+      getPort () { return this.port },
+      getPublishInfo () { return publishInfo },
+      homeKitAccessory: {
+        publish (info) {
+          captured = info
+          return Promise.resolve()
+        }
+      },
+      log
+    }
+    HomeMaticAccessory.prototype.publishSingleAccessory.call(fake, 51826)
+    return { captured, fake }
+  }
+
+  it('passes the server advertiser and the port', () => {
+    const { captured, fake } = publishWith({ username: 'aa', pincode: '1' })
+    expect(captured.advertiser).to.be('bonjour-hap')
+    expect(captured.username).to.be('aa')
+    expect(fake.homeKitAccessory.port).to.be(51826)
+  })
+
+  it('lets getPublishInfo override the advertiser', () => {
+    const { captured } = publishWith({ advertiser: 'ciao' })
+    expect(captured.advertiser).to.be('ciao')
   })
 })
