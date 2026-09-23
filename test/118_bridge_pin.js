@@ -6,9 +6,13 @@ const fs = require('fs')
 const util = require('util')
 const expect = require('expect.js')
 const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
+const { HAPStorage } = require('@homebridge/hap-nodejs')
 const Server = require(path.join(__dirname, '..', 'lib', 'Server.js'))
 const hapIds = require(path.join(__dirname, '..', 'lib', 'util', 'hapIds.js'))
 const { migrateInstances } = require(path.join(__dirname, '..', 'lib', 'util', 'instanceMigration.js'))
+const { CONFIG_VERSION, upgradeConfigVersion } = require(path.join(__dirname, '..', 'lib', 'util', 'configMigration.js'))
+const { normalizeInstance, normalizeMappingInstances, removeInstanceFrom } = require(path.join(__dirname, '..', 'lib', 'util', 'mappingInstances.js'))
+const ConfigurationService = require(path.join(__dirname, '..', 'lib', 'configurationsrv', 'ConfigurationService.js'))
 const { isValidSetupCode } = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'hapIdentity.js'))
 
 // a logger that records every formatted line instead of printing it
@@ -94,6 +98,71 @@ describe('HomeKit-CCU instance migration', () => {
   })
 })
 
+describe('HomeKit-CCU config version', () => {
+  it('is 2', () => {
+    expect(CONFIG_VERSION).to.be(2)
+  })
+
+  it('turns the session check on for a config without configVersion, even when it was false', () => {
+    const config = { useCCCAuthentication: false, useTLS: false, instances: {} }
+    const result = upgradeConfigVersion(config)
+    expect(result.upgraded).to.be(true)
+    expect(result.config).to.eql({ useCCCAuthentication: true, useTLS: false, instances: {}, configVersion: 2 })
+    // the input stays untouched
+    expect(config.useCCCAuthentication).to.be(false)
+    expect(config.configVersion).to.be(undefined)
+  })
+
+  it('upgrades configs of an older version', () => {
+    expect(upgradeConfigVersion({ configVersion: 1, useCCCAuthentication: false }).config).to.eql({ configVersion: 2, useCCCAuthentication: true })
+  })
+
+  it('leaves configs of version 2 and newer alone', () => {
+    const config = { configVersion: 2, useCCCAuthentication: false }
+    expect(upgradeConfigVersion(config)).to.eql({ config, upgraded: false })
+    expect(upgradeConfigVersion({ configVersion: 3 }).upgraded).to.be(false)
+  })
+})
+
+describe('HomeKit-CCU mapping instances', () => {
+  const A = 'b6589fc6-ab0d-4c82-8f12-099d1c2d40ab'
+  const B = '356a192b-7913-504c-9457-4d18c28d46e6'
+
+  it('replaces a one-element array by its element and keeps strings and multi-instance arrays', () => {
+    expect(normalizeInstance([A])).to.be(A)
+    expect(normalizeInstance(A)).to.be(A)
+    expect(normalizeInstance([A, B])).to.eql([A, B])
+    expect(normalizeInstance(undefined)).to.be(undefined)
+  })
+
+  it('normalizes all mappings and names the changed ones', () => {
+    const mappings = { 'X:1': { name: 'x', instance: [A] }, 'Y:1': { name: 'y', instance: [A, B] }, 'Z:1': { name: 'z', instance: B }, HM: ['HomeMaticSwitchAccessory'] }
+    const result = normalizeMappingInstances(mappings)
+    expect(result.normalized).to.eql(['X:1'])
+    expect(result.mappings['X:1']).to.eql({ name: 'x', instance: A })
+    expect(result.mappings['Y:1'].instance).to.eql([A, B])
+    expect(result.mappings.HM).to.eql(['HomeMaticSwitchAccessory'])
+    // the input stays untouched
+    expect(mappings['X:1'].instance).to.eql([A])
+  })
+
+  it('returns the same mappings when nothing changes', () => {
+    const mappings = { 'X:1': { instance: A } }
+    expect(normalizeMappingInstances(mappings)).to.eql({ mappings, normalized: [] })
+    expect(normalizeMappingInstances(undefined).normalized).to.eql([])
+  })
+
+  it('removes a bridge from a mapping instance and falls back to the default bridge', () => {
+    expect(removeInstanceFrom(B, B, A)).to.be(A)
+    expect(removeInstanceFrom([B], B, A)).to.be(A)
+    expect(removeInstanceFrom([A, B], B, A)).to.be(A)
+    const C = 'c'
+    expect(removeInstanceFrom([A, B, C], B, A)).to.eql([A, C])
+    expect(removeInstanceFrom(C, B, A)).to.be(C)
+    expect(removeInstanceFrom([A, C], B, A)).to.eql([A, C])
+  })
+})
+
 describe('HomeKit-CCU Server bridge PIN', () => {
   let tmp
   beforeEach(() => { tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'hkccu-118-')) })
@@ -136,7 +205,7 @@ describe('HomeKit-CCU Server bridge PIN', () => {
   })
 
   it('does not save an already migrated config again', async () => {
-    const t = serverFor({ instances: { a: { name: 'default', pincode: '970-71-213', setupID: 'AB12' } } })
+    const t = serverFor({ configVersion: 2, instances: { a: { name: 'default', pincode: '970-71-213', setupID: 'AB12' } } })
     await t.server.loadSettings()
     await t.server.loadSettings()
     expect(t.saves()).to.be(0)
@@ -152,6 +221,104 @@ describe('HomeKit-CCU Server bridge PIN', () => {
     expect(second._configuration.instances.a.pincode).to.be(pin)
   })
 
+  describe('configVersion 2', () => {
+    const AUTH_WARNING = '[Server] configuration upgraded to version 2: the configuration UI now requires a CCU administrator session (useCCCAuthentication=true). Turn it off in the settings only if you really want an unprotected configuration UI.'
+    const DEFAULT = 'b6589fc6-ab0d-4c82-8f12-099d1c2d40ab'
+    // shape of a config written by the hap-homematic UI in local mode
+    const legacyConfig = () => ({
+      useCCCAuthentication: false,
+      useTLS: false,
+      enableMonitoring: true,
+      disableHistory: true,
+      interfaceWatchdog: 300,
+      instances: { [DEFAULT]: { name: 'default', user: '12:34:56:3c:ae:a1', pin: '970-71-213', publishDevices: true } },
+      mappings: { '0008DA49A1B2C3:1': { name: 'Contact', Service: 'HomeMaticIPContactAccessory', instance: [DEFAULT], settings: {} } },
+      channels: ['0008DA49A1B2C3:1']
+    })
+
+    it('turns the session check on for a config without configVersion, logs it and saves once', async () => {
+      const t = serverFor(legacyConfig())
+      await t.server.loadSettings()
+      expect(t.saves()).to.be(1)
+      expect(stored().useCCCAuthentication).to.be(true)
+      expect(stored().configVersion).to.be(2)
+      expect(t.server._configuration.useCCCAuthentication).to.be(true)
+      expect(t.lines.warn).to.eql([AUTH_WARNING])
+      // the rest of the config survives, the instance migration ran in the same save
+      expect(stored().enableMonitoring).to.be(true)
+      expect(stored().interfaceWatchdog).to.be(300)
+      expect(stored().channels).to.eql(['0008DA49A1B2C3:1'])
+      expect(stored().instances[DEFAULT].pincode).to.be('970-71-213')
+    })
+
+    it('turns the session check on for a config without the key', async () => {
+      const t = serverFor({ instances: { a: { name: 'a', pincode: '111-22-333', setupID: 'ZZ99' } } })
+      await t.server.loadSettings()
+      expect(t.saves()).to.be(1)
+      expect(stored().useCCCAuthentication).to.be(true)
+      expect(stored().configVersion).to.be(2)
+    })
+
+    it('honors an explicit false in a version 2 config and does not save', async () => {
+      const t = serverFor({ configVersion: 2, useCCCAuthentication: false, instances: { a: { name: 'a', pincode: '111-22-333', setupID: 'ZZ99' } } })
+      await t.server.loadSettings()
+      expect(t.saves()).to.be(0)
+      expect(stored().useCCCAuthentication).to.be(false)
+      expect(t.server._configuration.useCCCAuthentication).to.be(false)
+      expect(t.lines.warn).to.eql([])
+    })
+
+    it('replaces a one-element instance array of a mapping by the instance id', async () => {
+      const t = serverFor(legacyConfig())
+      await t.server.loadSettings()
+      expect(stored().mappings['0008DA49A1B2C3:1'].instance).to.be(DEFAULT)
+      expect(stored().mappings['0008DA49A1B2C3:1'].Service).to.be('HomeMaticIPContactAccessory')
+    })
+
+    it('keeps multi-instance mappings and saves a version 2 config only when a mapping changed', async () => {
+      const multi = { configVersion: 2, mappings: { 'A:1': { instance: [DEFAULT, 'other'] } } }
+      const t = serverFor(multi)
+      await t.server.loadSettings()
+      expect(t.saves()).to.be(0)
+      const single = serverFor({ configVersion: 2, mappings: { 'A:1': { instance: ['other'] } } })
+      await single.server.loadSettings()
+      expect(single.saves()).to.be(1)
+      expect(stored().mappings['A:1'].instance).to.be('other')
+    })
+
+    it('saves the migration before the config server is spawned, so it sees the new value on this start', async () => {
+      const t = serverFor(legacyConfig())
+      let seenByConfigServer
+      t.server.launchUIConfigurationServer = () => {
+        const saved = process.env.UIX_CONFIG_PATH
+        process.env.UIX_CONFIG_PATH = tmp
+        try {
+          seenByConfigServer = new ConfigurationService({ debug () {}, info () {}, warn () {}, error () {} }).useAuth
+        } finally {
+          if (saved === undefined) {
+            delete process.env.UIX_CONFIG_PATH
+          } else {
+            process.env.UIX_CONFIG_PATH = saved
+          }
+        }
+        throw new Error('stop after spawn')
+      }
+      // keep the process-wide HAP storage path of the other tests untouched
+      const setPath = HAPStorage.setCustomStoragePath
+      HAPStorage.setCustomStoragePath = () => {}
+      let error
+      try {
+        await t.server.init(true)
+      } catch (e) {
+        error = e
+      } finally {
+        HAPStorage.setCustomStoragePath = setPath
+      }
+      expect(error.message).to.be('stop after spawn')
+      expect(seenByConfigServer).to.be(true)
+    })
+  })
+
   it('creates the default instance with pincode and setupID', () => {
     const t = serverFor({})
     const instances = t.server.createDefaultInstance()
@@ -160,6 +327,21 @@ describe('HomeKit-CCU Server bridge PIN', () => {
     expect(isValidSetupCode(inst.pincode)).to.be(true)
     expect(inst.setupID).to.match(/^[0-9A-Z]{4}$/)
     expect(Object.values(stored().instances)[0]).to.eql(inst)
+  })
+
+  it('creates the default instance of a fresh install with configVersion 2', () => {
+    const { log } = recordingLog()
+    const server = new Server(log, tmp)
+    server.createDefaultInstance()
+    expect(stored().configVersion).to.be(2)
+  })
+
+  it('keeps the rest of the stored config when it creates the default instance', () => {
+    const t = serverFor({ configVersion: 2, useCCCAuthentication: false, enableMonitoring: true })
+    t.server.createDefaultInstance()
+    expect(stored().configVersion).to.be(2)
+    expect(stored().useCCCAuthentication).to.be(false)
+    expect(stored().enableMonitoring).to.be(true)
   })
 
   describe('loadInstance', () => {

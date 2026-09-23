@@ -113,16 +113,94 @@ describe('HomeKit-CCU config server authentication', () => {
     })
 
     it('keeps the stored authentication setting when a settings save does not carry it', () => {
-      const { service, configDir } = construct()
+      const { service, configDir } = construct({ config: { configVersion: 2 } })
       const read = () => JSON.parse(fs.readFileSync(path.join(configDir, 'config.json'), 'utf8'))
       withEnv({ UIX_CONFIG_PATH: configDir }, () => {
         service.saveGlobalSettings({ settings: JSON.stringify({ enableMonitoring: true }) })
         expect(read().useCCCAuthentication).to.be(undefined)
         service.saveGlobalSettings({ settings: JSON.stringify({ useAuth: false }) })
         expect(read().useCCCAuthentication).to.be(false)
+        service.saveGlobalSettings({ settings: JSON.stringify({ enableMonitoring: false }) })
+        expect(read().useCCCAuthentication).to.be(false)
         service.saveGlobalSettings({ settings: JSON.stringify({ useAuth: 'true' }) })
         expect(read().useCCCAuthentication).to.be(true)
+        expect(read().configVersion).to.be(2)
       })
+    })
+
+    it('writes configVersion 2 with the settings, so an explicit false survives the next start', () => {
+      const { service, configDir } = construct({ config: { configVersion: 2, mappings: {} } })
+      const read = () => JSON.parse(fs.readFileSync(path.join(configDir, 'config.json'), 'utf8'))
+      withEnv({ UIX_CONFIG_PATH: configDir }, () => {
+        service.saveGlobalSettings({ settings: JSON.stringify({ useAuth: false }) })
+        expect(read()).to.eql({ configVersion: 2, mappings: {}, useCCCAuthentication: false, useTLS: false, enableMonitoring: false, disableHistory: false })
+        fs.writeFileSync(path.join(configDir, 'config.json'), JSON.stringify({}))
+        service.saveGlobalSettings({ settings: JSON.stringify({ useAuth: false }) })
+        expect(read().configVersion).to.be(2)
+        expect(read().useCCCAuthentication).to.be(false)
+      })
+    })
+
+    it('does not carry an old unconscious false into version 2 when the save does not set it', () => {
+      // e.g. a hap-homematic backup restored while the config server is running
+      const { service, configDir } = construct({ config: { configVersion: 2 } })
+      fs.writeFileSync(path.join(configDir, 'config.json'), JSON.stringify({ useCCCAuthentication: false }))
+      const read = () => JSON.parse(fs.readFileSync(path.join(configDir, 'config.json'), 'utf8'))
+      withEnv({ UIX_CONFIG_PATH: configDir }, () => {
+        service.saveGlobalSettings({ settings: JSON.stringify({ enableMonitoring: true }) })
+        expect(read().useCCCAuthentication).to.be(true)
+        expect(read().configVersion).to.be(2)
+      })
+    })
+  })
+
+  describe('mapping instances', () => {
+    const DEFAULT = 'b6589fc6-ab0d-4c82-8f12-099d1c2d40ab'
+    const withService = (config, fn) => {
+      const { service, configDir } = construct({ config })
+      service.process = { send () {} }
+      const read = () => JSON.parse(fs.readFileSync(path.join(configDir, 'config.json'), 'utf8'))
+      return withEnv({ UIX_CONFIG_PATH: configDir }, () => fn(service, read))
+    }
+
+    it('moves mappings of a removed bridge to the default bridge, also when stored as an array', () => {
+      withService({
+        configVersion: 2,
+        instances: { [DEFAULT]: { name: 'default' }, b2: { name: 'b2' } },
+        mappings: { 'A:1': { instance: 'b2' }, 'B:1': { instance: ['b2'] }, 'C:1': { instance: [DEFAULT, 'b2'] }, 'D:1': { instance: DEFAULT } }
+      }, (service, read) => {
+        service.bridges = [{ id: DEFAULT }, { id: 'b2' }]
+        service.removeInstance('b2')
+        const { mappings, instances } = read()
+        expect(mappings['A:1'].instance).to.be(DEFAULT)
+        expect(mappings['B:1'].instance).to.be(DEFAULT)
+        expect(mappings['C:1'].instance).to.be(DEFAULT)
+        expect(mappings['D:1'].instance).to.be(DEFAULT)
+        expect(instances.b2).to.be(undefined)
+        expect(read().configVersion).to.be(2)
+      })
+    })
+
+    it('stores a device assigned to one bridge with the bridge id as a string', async () => {
+      const save = (service, instanceIDs) => service.saveDevice({
+        name: 'Switch',
+        address: 'ABC:1',
+        serviceClass: 'HomeMaticSwitchAccessory',
+        settings: JSON.stringify({ instanceIDs })
+      })
+      const { service, configDir } = construct({ config: { configVersion: 2 } })
+      const read = () => JSON.parse(fs.readFileSync(path.join(configDir, 'config.json'), 'utf8'))
+      const saved = process.env.UIX_CONFIG_PATH
+      process.env.UIX_CONFIG_PATH = configDir
+      try {
+        expect(await save(service, { 0: 'b2' })).to.eql({ result: 'saved' })
+        expect(read().mappings['ABC:1'].instance).to.be('b2')
+        await save(service, { 0: 'b2', 1: DEFAULT })
+        expect(read().mappings['ABC:1'].instance).to.eql(['b2', DEFAULT])
+        expect(read().configVersion).to.be(2)
+      } finally {
+        setEnv('UIX_CONFIG_PATH', saved)
+      }
     })
   })
 

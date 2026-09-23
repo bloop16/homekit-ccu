@@ -39,7 +39,7 @@
 		"devall": "DEBUG=* node index.js -D || true",
 		"test": "mocha",
 		"lint": "standard",
-		"coverage": "c8 --include 'lib/services/camera/**' --include lib/services/CustomHomeKitTypes.js --include lib/util/time.js --include lib/util/hapIds.js --include lib/util/instanceMigration.js --include lib/monitConfig.js --check-coverage --lines 80 mocha"
+		"coverage": "c8 --include 'lib/services/camera/**' --include lib/services/CustomHomeKitTypes.js --include lib/util/time.js --include lib/util/hapIds.js --include lib/util/instanceMigration.js --include lib/util/configMigration.js --include lib/util/mappingInstances.js --include lib/monitConfig.js --check-coverage --lines 80 mocha"
 	},
 	"overrides": {
 		"sockjs": {
