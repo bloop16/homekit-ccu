@@ -16,4 +16,4 @@ Which settings y've choosen for this actor/sensor in homekit-ccu ?
 **What should be happend**
 
 **Steps to reproduce this issue**
-While you are perfoming these steps please run homekit-ccu in debug mode (https://github.com/thkl/hap-homematic/wiki/Troubleshooting#running-in-debug-mode) and add the log here
+While you are perfoming these steps please run homekit-ccu in debug mode (https://github.com/bloop16/homekit-ccu) and add the log here

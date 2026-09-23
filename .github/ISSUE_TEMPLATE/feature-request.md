@@ -10,7 +10,7 @@ assignees: ''
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
-Note: If you just have a question or want to know something consider to open a thread in [Discussions](https://github.com/thkl/hap-homematic/discussions/new)
+Note: If you just have a question or want to know something consider to open a thread in [Discussions](https://github.com/thkl/homekit-ccu/discussions/new)
 
 **Describe the solution you'd like**
 A clear and concise description of what you want to happen.

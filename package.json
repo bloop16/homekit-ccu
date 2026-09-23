@@ -1,6 +1,6 @@
 {
 	"name": "homekit-ccu",
-	"version": "0.1.0-dev",
+	"version": "0.1.0-rc.1",
 	"description": "provides a homekit bridge to the ccu",
 	"license": "MIT",
 	"repository": {
