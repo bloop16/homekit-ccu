@@ -49,7 +49,9 @@ describe('HomeKit-CCU Server.rebuildClassSettings', () => {
   })
 
   it('still publishes when one class fails to load its settings', async () => {
-    const server = new Server(log)
+    const errors = []
+    const quietLog = Object.assign(Object.create(log), { error: (...args) => errors.push(args) })
+    const server = new Server(quietLog)
     const fakes = {
       Broken: { configurationItems: async () => { throw new Error('boom') } },
       SyncClass: { configurationItems: () => ({ sync: true }) }
@@ -60,5 +62,24 @@ describe('HomeKit-CCU Server.rebuildClassSettings', () => {
     })
     expect(published).to.be.ok()
     expect(published.TYPE_A[1].settings).to.eql({ sync: true })
+    expect(errors).to.have.length(1)
+    expect(errors[0][1]).to.be('Broken')
+  })
+})
+
+describe('HomeKit-CCU Server.buildServiceList', () => {
+  it('does not hang when a configurationItems() call rejects', async function () {
+    this.timeout(10000)
+    const errors = []
+    const log = new Logger('HAP Test')
+    log.setDebugEnabled(false)
+    const quietLog = Object.assign(Object.create(log), { error: (...args) => errors.push(args) })
+    const server = new Server(quietLog)
+    server._ccu = { getCCUDutyCycle: async () => { throw new Error('ccu unreachable') } }
+    const serviceConfig = await server.buildServiceList()
+    const dutyCycle = Object.values(serviceConfig).flat().find(item => item.serviceClazz === 'HomeMaticSPCCUDutyCycleAccessory')
+    expect(dutyCycle).to.be.ok()
+    expect(dutyCycle.settings).to.eql({})
+    expect(errors.some(args => args[1] === 'HomeMaticSPCCUDutyCycleAccessory')).to.be(true)
   })
 })
