@@ -24,9 +24,8 @@ cp -a homekit-ccu tmp/
 sed -i "s/^VER=.*/VER=${VERSION}/" tmp/homekit-ccu
 
 TARFILE=homekit-ccu-${VERSION}.tar.gz
-if [ -e "$TTARFILE" ]; then
-    # tarfile is already there remove it first 
-    rm -f homekit-ccu-${VERSION}.tar.gz
+if [ -e "$TARFILE" ]; then
+    rm -f "$TARFILE"
 fi
 
 # generate archive
