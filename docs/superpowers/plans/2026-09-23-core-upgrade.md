@@ -865,7 +865,7 @@ In `package.json` `scripts` ergänzen bzw. ändern:
 "coverage": "c8 --include 'lib/services/camera/**' --include lib/services/CustomHomeKitTypes.js --include lib/util/time.js --check-coverage --lines 80 mocha",
 ```
 
-und die veralteten Scripts `update`, `restart`, `preversion`, `prebuild`, `version`, `postversion` sowie den `husky`-Block und die devDependency `husky` entfernen (der Release-Workflow übernimmt die Versionierung).
+und die veralteten Scripts `update`, `restart`, `preversion`, `prebuild`, `version`, `postversion` sowie den `husky`-Block und die devDependency `husky` entfernen (der Release-Workflow übernimmt die Versionierung). **Achtung (aus Review Stufe 3):** `restartSystem()` und `updateSystem()` im Config-Server lasen diese npm-Scripts; sie wurden auf einen direkten Aufruf von `/etc/config/rc.d/homekit-ccu restart` (überschreibbar per `HOMEKIT_CCU_RCD`) umgestellt, `update` liefert jetzt einen Hinweis auf den Addon-Installer.
 
 ```bash
 npm install --save-dev standard@^17 c8@^10 --no-audit --no-fund
@@ -2288,6 +2288,10 @@ grep -rn "britz\|thkl" lib/configurationsrv/html/*.cgi package.json README.md | 
 ```
 
 Erwartet: keine Treffer mehr außer den Herkunftsangaben im README.
+
+- [ ] **Step 3c: Toter Express-Code (Hinweis aus Review Stufe 3)**
+
+`lib/configurationsrv/configservice.js`, `socketmanager.js`, `ccu.js`, `httpclient.js`, `cfglogger.js`, `routes/*`, `middleware/*` (und vermutlich `settings.js`) benötigen `express`, das keine Dependency ist, und werden von nichts Lebendigem referenziert. Nicht in dieser Iteration löschen; als Folgeprojekt "Config-Server aufräumen" notieren (zusammen mit CORS-Reflektion und fehlendem CSRF-Schutz im Config-Server).
 
 - [ ] **Step 4: CHANGELOG ergänzen**
 
