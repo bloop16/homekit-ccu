@@ -2310,6 +2310,9 @@ Changelog for 0.1.0:
 * standard lint clean, c8 coverage script, husky removed
 * GitHub Actions CI and release workflow; addon tarball no longer tracked in git
 * Installer requires Node.js 22 (OpenCCU 3.89+), README no longer claims automatic Node install
+* **Upgrade note, video doorbell:** the doorbell gets a new HomeKit identity (derived from its UUID instead of the fixed `00:00:11:22:22:11`) and the old default PIN `123-45-678` is now rejected as trivial. After upgrading: set a non-trivial PIN in the doorbell settings, remove the old doorbell in Apple Home, add it again. Renaming the doorbell also changes its identity.
+* Video doorbell: streams end automatically when no RTCP from the viewer arrives for ~10 s (watchdog); ffmpeg errors are shown in the log; snapshots cached 5 s
+* Known: 2 low `npm audit` findings via binrpc 3.3.1 (`put`), fix needs a binrpc 4.x upgrade tested against a real CCU
 ```
 
 Zusätzlich die Testergebnisse der beiden CCU-Tests (Task 4 Step 7, Task 13 Step 6) als Stichpunkte unter `* Verified on OpenCCU <version> with iOS 27: ...` eintragen.
