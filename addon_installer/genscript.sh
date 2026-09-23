@@ -1,5 +1,6 @@
 #!/bin/sh
 set -e
+cd "$(dirname "$0")"
 
 # Read version from package.json — single source of truth
 VERSION=$(node -p "require('../package.json').version")
@@ -11,8 +12,7 @@ rm -rf tmp/*
 # Build the npm package and include it in the archive
 # The rc.d install function will install from this tgz (no public registry needed)
 cd ..
-npm pack
-TGZFILE=$(ls homekit-ccu-*.tgz | tail -1)
+TGZFILE=$(npm pack --silent | tail -1)
 mv "${TGZFILE}" addon_installer/tmp/homekit-ccu.tgz
 cd addon_installer
 
@@ -31,7 +31,7 @@ fi
 # generate archive
 cd tmp
 chmod +x update_script
-tar --exclude=._* --exclude=.DS_Store -czvf ../homekit-ccu-${VERSION}.tar.gz *
+tar --exclude='._*' --exclude=.DS_Store -czvf ../homekit-ccu-${VERSION}.tar.gz *
 cd ..
 rm -rf tmp
 echo "Done: homekit-ccu-${VERSION}.tar.gz"

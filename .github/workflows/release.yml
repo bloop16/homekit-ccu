@@ -11,8 +11,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -28,9 +28,12 @@ jobs:
           fi
       - name: Build addon tarball
         run: cd addon_installer && sh genscript.sh
+      - name: Verify tarball layout
+        run: tar tzf addon_installer/homekit-ccu-*.tar.gz | grep -qx homekit-ccu.tgz
       - name: Publish release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           files: addon_installer/homekit-ccu-*.tar.gz
           generate_release_notes: true
           prerelease: ${{ contains(github.ref_name, '-') }}
+          fail_on_unmatched_files: true
