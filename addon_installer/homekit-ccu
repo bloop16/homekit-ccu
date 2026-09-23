@@ -14,6 +14,16 @@ REQUIRED_MAJOR=22
 LOGFILE=/var/log/homekit-ccu.log
 LOCKFILE=/var/run/homekit-ccu-install.lock
 LIGHTTPD_CONF_DIR=/etc/config/lighttpd
+MONIT_DIR=/usr/local/etc
+MONIT_BIN=/usr/bin/monit
+HM_ADDONS_CFG=/etc/config/hm_addons.cfg
+# leftovers of hap-homematic, the name of this addon before the rename; its configuration
+# directory ${CONFIG_DIR}/addons/hap-homematic is kept as a backup
+LEGACY_NAME=hap-homematic
+LEGACY_ADDON_DIR=/usr/local/addons/hap-homematic
+LEGACY_RCD_SCRIPT=${RCD_DIR}/${LEGACY_NAME}
+LEGACY_MONIT_CFG=${MONIT_DIR}/monit_${LEGACY_NAME}.cfg
+LEGACY_LIGHTTPD_CONF=${LIGHTTPD_CONF_DIR}/${LEGACY_NAME}.conf
 
 # ------------------------------------------------------------------
 # Helper functions
@@ -70,6 +80,37 @@ check_node_version() {
   fi
 }
 
+# Remove what the old hap-homematic addon left behind: it defines the same monit service
+# (every "monit reload" fails with "Service name conflict") and may be started next to this
+# addon. Needs ${MODULE_DIR}/etc/hm_addon.js, so it runs after the npm install.
+remove_legacy_hap_homematic() {
+  if [ -f "${LEGACY_RCD_SCRIPT}" ]; then
+    log "install" "Stopping legacy ${LEGACY_NAME}."
+    sh "${LEGACY_RCD_SCRIPT}" stop >> ${LOGFILE} 2>&1 || log "install" "Legacy ${LEGACY_NAME} stop failed, continuing."
+    log "install" "Removing legacy rc.d script ${LEGACY_RCD_SCRIPT}."
+    rm -f "${LEGACY_RCD_SCRIPT}"
+  fi
+  if [ -f "${LEGACY_MONIT_CFG}" ]; then
+    log "install" "Removing legacy monit config ${LEGACY_MONIT_CFG}."
+    rm -f "${LEGACY_MONIT_CFG}"
+    if [ -x "${MONIT_BIN}" ]; then
+      "${MONIT_BIN}" reload >> ${LOGFILE} 2>&1 || log "install" "monit reload failed, continuing."
+    fi
+  fi
+  if [ -f "${LEGACY_LIGHTTPD_CONF}" ]; then
+    log "install" "Removing legacy lighttpd config ${LEGACY_LIGHTTPD_CONF}."
+    rm -f "${LEGACY_LIGHTTPD_CONF}"
+  fi
+  if [ -f "${HM_ADDONS_CFG}" ] && grep -q "${LEGACY_NAME} {" "${HM_ADDONS_CFG}"; then
+    log "install" "Removing legacy WebUI button ${LEGACY_NAME}."
+    node "${MODULE_DIR}/etc/hm_addon.js" ${LEGACY_NAME} >> ${LOGFILE} 2>&1 || log "install" "Legacy WebUI button removal failed, continuing."
+  fi
+  if [ -d "${LEGACY_ADDON_DIR}" ]; then
+    log "install" "Removing legacy program directory ${LEGACY_ADDON_DIR}."
+    rm -rf "${LEGACY_ADDON_DIR}"
+  fi
+}
+
 install() {
   check_node_version || return 1
 
@@ -104,6 +145,8 @@ install() {
     log "install" "ERROR: npm install left no ${MODULE_DIR}/index.js, see ${LOGFILE}"
     return 1
   }
+
+  remove_legacy_hap_homematic
 
   log "install" "Installing WebUI files."
   mkdir -p ${ADDONWWW_DIR}
@@ -196,10 +239,10 @@ EOF
   fi
 
   # remove_monit_config
-  if [ -f /usr/local/etc/monit_${ADDON_NAME}.cfg ]; then
+  if [ -f ${MONIT_DIR}/monit_${ADDON_NAME}.cfg ]; then
     log "uninstall" "Removing monit config."
-    rm /usr/local/etc/monit_${ADDON_NAME}.cfg
-    /usr/bin/monit reload
+    rm ${MONIT_DIR}/monit_${ADDON_NAME}.cfg
+    ${MONIT_BIN} reload
   fi
   log "uninstall" "Config removal complete."
 }

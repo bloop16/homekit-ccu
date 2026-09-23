@@ -31,6 +31,7 @@ mkdir -p "$M/etc" "$M/lib/configurationsrv/html"
 touch "$M/index.js" "$M/etc/hm_addon.js" "$M/etc/homekit_ccu.conf" "$M/etc/homekit_ccu_addon.cfg" "$M/lib/configurationsrv/html/index.html"
 echo '{}' > package-lock.json`,
   'start-stop-daemon': '#!/bin/sh\necho "start-stop-daemon $*" >> "$STUB_CALLS"',
+  monit: '#!/bin/sh\necho "monit $*" >> "$STUB_CALLS"',
   // no-ops: must never reach the real commands (pgrep/kill would hit real processes)
   pgrep: '#!/bin/sh\nexit 1',
   killall: '#!/bin/sh\nexit 0',
@@ -52,7 +53,11 @@ const setup = () => {
     PIDFILE: `${root}/homekit-ccu.pid`,
     LOGFILE: `${root}/homekit-ccu.log`,
     LOCKFILE: `${root}/homekit-ccu-install.lock`,
-    LIGHTTPD_CONF_DIR: `${root}/lighttpd`
+    LIGHTTPD_CONF_DIR: `${root}/lighttpd`,
+    MONIT_DIR: `${root}/monit`,
+    MONIT_BIN: `${bin}/monit`,
+    HM_ADDONS_CFG: `${root}/hm_addons.cfg`,
+    LEGACY_ADDON_DIR: `${root}/addons/hap-homematic`
   }
   let script = fs.readFileSync(INSTALLER, 'utf8')
   Object.entries(vars).forEach(([name, value]) => {
@@ -69,7 +74,15 @@ const setup = () => {
     moduleDir: path.join(addonDir, 'node_modules', 'homekit-ccu'),
     logfile: vars.LOGFILE,
     calls: path.join(root, 'calls'),
-    www: path.join(root, 'config', 'addons', 'www', 'homekit-ccu')
+    www: path.join(root, 'config', 'addons', 'www', 'homekit-ccu'),
+    legacy: {
+      rcScript: path.join(root, 'config', 'rc.d', 'hap-homematic'),
+      monitCfg: path.join(root, 'monit', 'monit_hap-homematic.cfg'),
+      lighttpdConf: path.join(root, 'lighttpd', 'hap-homematic.conf'),
+      addonDir: path.join(root, 'addons', 'hap-homematic'),
+      configDir: path.join(root, 'config', 'addons', 'hap-homematic'),
+      hmAddons: path.join(root, 'hm_addons.cfg')
+    }
   }
   const run = (cmd, env = {}) => childProcess.spawnSync('/bin/sh', [installer, cmd], {
     cwd: root,
@@ -141,6 +154,59 @@ describe('HomeKit-CCU addon installer', () => {
     }
     expect(t.callLog()).not.to.contain('start-stop-daemon --start')
     expect(t.log()).not.to.contain('Starting HomeKit-CCU')
+  })
+
+  describe('legacy hap-homematic cleanup', () => {
+    const BUTTONS = 'hap-homematic {CONFIG_URL /addons/hap-homematic/index.html CONFIG_DESCRIPTION {de x en y} ID hap-homematic CONFIG_NAME HAP-HomeMatic} '
+
+    const createLegacy = () => {
+      const l = t.legacy
+      fs.mkdirSync(path.dirname(l.rcScript), { recursive: true })
+      // the old stop fails: the install must go on anyway
+      fs.writeFileSync(l.rcScript, '#!/bin/sh\necho "legacy-rc $1" >> "$STUB_CALLS"\nexit 1\n', { mode: 0o755 })
+      fs.mkdirSync(path.dirname(l.monitCfg), { recursive: true })
+      fs.writeFileSync(l.monitCfg, 'check process HapHomeMatic with pidfile /var/run/hap-homematic.pid\n')
+      fs.mkdirSync(path.dirname(l.lighttpdConf), { recursive: true })
+      fs.writeFileSync(l.lighttpdConf, '')
+      fs.mkdirSync(path.join(l.addonDir, 'node_modules', 'hap-homematic'), { recursive: true })
+      fs.writeFileSync(path.join(l.addonDir, 'node_modules', 'hap-homematic', 'index.js'), '')
+      fs.mkdirSync(l.configDir, { recursive: true })
+      fs.writeFileSync(path.join(l.configDir, 'config.json'), '{}')
+      fs.writeFileSync(l.hmAddons, BUTTONS)
+    }
+
+    it('stops and removes the old addon but keeps its configuration', () => {
+      createLegacy()
+      const res = t.run('install')
+      expect(res.status).to.be(0)
+      const l = t.legacy
+      expect(t.callLog()).to.contain('legacy-rc stop')
+      expect(fs.existsSync(l.rcScript)).to.be(false)
+      expect(fs.existsSync(l.monitCfg)).to.be(false)
+      expect(t.callLog()).to.contain('monit reload')
+      expect(fs.existsSync(l.lighttpdConf)).to.be(false)
+      expect(t.callLog()).to.contain(`node ${path.join(t.moduleDir, 'etc', 'hm_addon.js')} hap-homematic\n`)
+      expect(fs.existsSync(l.addonDir)).to.be(false)
+      expect(fs.existsSync(path.join(l.configDir, 'config.json'))).to.be(true)
+      // the stop runs before its code is removed, the button is removed before ours is created
+      const calls = t.callLog()
+      expect(calls.indexOf('legacy-rc stop')).to.be.lessThan(calls.indexOf('hap-homematic\n'))
+      expect(calls.indexOf('hm_addon.js hap-homematic')).to.be.lessThan(calls.indexOf('hm_addon.js homekit-ccu'))
+      ;['Stopping legacy', 'legacy rc.d script', 'legacy monit config', 'legacy lighttpd config', 'legacy WebUI button', 'legacy program directory']
+        .forEach(step => expect(t.log()).to.contain(step))
+      expect(t.log()).to.contain('Installation complete.')
+    })
+
+    it('does nothing when there are no leftovers', () => {
+      fs.writeFileSync(t.legacy.hmAddons, 'homekit-ccu {CONFIG_URL /addons/homekit-ccu/index.html CONFIG_DESCRIPTION {de x en y} ID homekit-ccu CONFIG_NAME HomeKit} ')
+      const res = t.run('install')
+      expect(res.status).to.be(0)
+      expect(t.callLog()).not.to.contain('hap-homematic')
+      expect(t.callLog()).not.to.contain('legacy-rc')
+      expect(t.callLog()).not.to.contain('monit')
+      expect(t.log()).not.to.contain('legacy')
+      expect(t.log()).to.contain('Installation complete.')
+    })
   })
 
   it('points the start message at the log file the server uses', () => {
