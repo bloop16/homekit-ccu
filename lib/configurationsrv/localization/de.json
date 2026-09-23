@@ -406,7 +406,7 @@
   "This service provides a Video door bell for HomeKit": "Dieser Service stellt eine Video Klingel zur Verfügung",
   "URL RTSP video": "RTSP Video URL",
   "URL still image": "URL des Bildes",
-  "Path to ffmpg": "Pfad zu ffmpeg",
+  "Path to ffmpeg": "Pfad zu ffmpeg",
   "This service provides a flower sensor for HomeKit": "Dieser Service stellt einen Pflanzensensor für HomeKit zur Verfügung",
   "This service provides a humidity sensor for HomeKit": "Dieser Service stellt einen Feuchtigkeitssensor für HomeKit zur Verfügung.",
   "max Dim Value": "max Wert Dimmer",
