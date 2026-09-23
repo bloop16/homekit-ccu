@@ -31,6 +31,13 @@ jobs:
         run: cd addon_installer && sh genscript.sh
       - name: Verify tarball layout
         run: tar tzf addon_installer/homekit-ccu-*.tar.gz | grep -qx homekit-ccu.tgz
+      - name: Verify offline install of the bundled package
+        run: |
+          mkdir -p "$RUNNER_TEMP/addon" "$RUNNER_TEMP/offline"
+          tar xzf addon_installer/homekit-ccu-*.tar.gz -C "$RUNNER_TEMP/addon"
+          cd "$RUNNER_TEMP/offline"
+          npm i --offline --no-audit --no-fund --cache "$RUNNER_TEMP/empty-cache" "$RUNNER_TEMP/addon/homekit-ccu.tgz"
+          node -e "require('homekit-ccu/lib/Server.js'); require('homekit-ccu/lib/HomeMaticRPC.js')"
       - name: Publish release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:

@@ -44,7 +44,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the details and for older versions.
 # Installation
 Download the latest addon (`homekit-ccu-x.y.z.tar.gz`) from https://github.com/bloop16/homekit-ccu/releases/latest and install it via *Settings → Control panel → Additional software* on your CCU.
 
-The addon contains the complete npm package, so the CCU needs no internet access during installation. Installation runs in the background; after a minute or two you will have a HomeKit button in the CCU's control panel. Progress and errors are logged to `/var/log/homekit-ccu.log`.
+The addon (about 23 MB) contains homekit-ccu together with all its npm dependencies, so the CCU needs no internet access during installation; installed, it takes about 240 MB under `/usr/local/addons`. Installation runs in the background; after a minute or two you will have a HomeKit button in the CCU's control panel. Progress and errors are logged to `/var/log/homekit-ccu.log`.
 
 The *Additional software* page shows the newest release as available version (the CCU asks GitHub for it).
 

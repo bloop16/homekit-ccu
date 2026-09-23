@@ -10,7 +10,8 @@ mkdir -p tmp
 rm -rf tmp/*
 
 # Build the npm package and include it in the archive
-# The rc.d install function will install from this tgz (no public registry needed)
+# The tgz bundles all dependencies (bundleDependencies in package.json), so the rc.d install
+# function installs it offline, without the public registry
 cd ..
 TGZFILE=$(npm pack --silent | tail -1)
 mv "${TGZFILE}" addon_installer/tmp/homekit-ccu.tgz
