@@ -28,9 +28,9 @@ Requires OpenCCU 3.89 or newer, which ships Node.js 22. The addon does not bundl
 - Current HAP stack: hap-nodejs 0.11 (2023) replaced by @homebridge/hap-nodejs 2.2 (2026), with its security fixes
 - Video doorbell rewritten on the HAP CameraController: audio (Opus / AAC-ELD) and optional two-way audio
 - mDNS advertiser selectable in `config.json` (`"advertiser": "bonjour-hap" | "ciao" | "avahi"`)
-- Dependencies refreshed (commander 14, formidable 3, fakegato-history 0.6, moment removed), `npm audit` clean except two low findings in binrpc (see CHANGELOG)
+- Dependencies refreshed (binrpc 4, homematic-xmlrpc 2, commander 15, formidable 3, fakegato-history 0.6, moment removed), `npm audit` clean
 - GitHub Actions CI and release pipeline; the addon tarball is built on every `v*` tag
-- Requires Node.js 22 (OpenCCU 3.89+)
+- Requires Node.js 22.12 or newer (OpenCCU 3.89+)
 
 See [CHANGELOG.md](CHANGELOG.md) for the details and for older versions.
 
