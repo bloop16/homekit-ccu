@@ -177,7 +177,9 @@ describe('HomeKit-CCU StreamingDelegate', () => {
     delegate = new StreamingDelegate('Test Door', { ...settings, returnAudioTarget: 'rtsp://cam/talk' }, log, { env: { FAKE_IGNORE_TERM: '1' }, killTimeoutMs: 300 })
     await prepare(delegate, 'sess-p')
     await stream(delegate, startRequest('sess-p', true))
-    await new Promise(resolve => setTimeout(resolve, 100))
+    const active = delegate.ongoingSessions.get('sess-p')
+    // the fake announces on stderr once it ignores SIGTERM
+    await waitFor(() => [active.main, active.returnAudio].every(p => p.stderrTail.text().includes('fake ffmpeg ready')))
     const started = Date.now()
     await stream(delegate, { sessionID: 'sess-p', type: hap.StreamRequestTypes.STOP })
     expect(Date.now() - started).to.be.below(900)

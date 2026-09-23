@@ -10,6 +10,17 @@ const FAKE = path.join(__dirname, 'fixtures', 'fake-ffmpeg.sh')
 const log = new Logger('HAP Test')
 log.setDebugEnabled(false)
 
+// the fake announces on stderr once its SIGTERM handling is installed
+async function ready (proc) {
+  const start = Date.now()
+  while (!proc.stderrTail.text().includes('fake ffmpeg ready')) {
+    if (Date.now() - start > 3000) {
+      throw new Error('fake ffmpeg did not get ready')
+    }
+    await new Promise(resolve => setTimeout(resolve, 10))
+  }
+}
+
 describe('HomeKit-CCU FfmpegProcess', () => {
   it('probes available encoders synchronously', () => {
     const encoders = FfmpegProcess.probeEncoders(FAKE, log)
@@ -67,6 +78,7 @@ describe('HomeKit-CCU FfmpegProcess', () => {
     const proc = new FfmpegProcess('video', FAKE, ['-i', 'x'], log, { onExit: (code, signal) => exits.push({ code, signal }) })
     proc.start()
     expect(proc.isRunning()).to.be(true)
+    await ready(proc)
     const started = Date.now()
     await proc.stop()
     expect(Date.now() - started).to.be.below(1000)
@@ -85,7 +97,7 @@ describe('HomeKit-CCU FfmpegProcess', () => {
       onExit: (code, signal, expected) => exits.push({ code, signal, expected })
     })
     proc.start()
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await ready(proc)
     const started = Date.now()
     await proc.stop()
     expect(Date.now() - started).to.be.within(180, 1000)

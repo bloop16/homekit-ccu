@@ -28,6 +28,8 @@ if [ -n "$FAKE_IGNORE_TERM" ]; then
 else
   trap '[ -n "$SLEEP_PID" ] && kill $SLEEP_PID 2>/dev/null; exit 0' TERM
 fi
+# tests wait for this line before stopping, so the TERM handling is in place
+echo "fake ffmpeg ready" >&2
 case " $* " in
   *" -f sdp "*) cat >/dev/null ;;
 esac
