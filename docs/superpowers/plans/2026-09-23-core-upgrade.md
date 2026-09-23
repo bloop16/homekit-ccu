@@ -2194,7 +2194,7 @@ which ffmpeg && ffmpeg -hide_banner -encoders 2>/dev/null | grep -E "libopus|lib
 node index.js -D -H <ccu-host> -C /tmp/hk-remote
 ```
 
-In der Config-UI eine Video-Klingel anlegen mit *URL RTSP video* `-f lavfi -i testsrc=size=1280x720:rate=15 -f lavfi -i sine=frequency=440` (das Feld wird als ffmpeg-Eingabe übernommen, daher funktionieren lavfi-Quellen; `-re -i` wird dann nicht vorangestellt, siehe Task 13 `cameraSettings`), *URL still image* leer, *Path to ffmpeg* auf das lokale Binary. In Apple Home: Klingel hinzufügen, Testbild als Standbild sichtbar, Live-Stream läuft, 440-Hz-Ton hörbar. Gegensprechen kann ohne Ziel nicht geprüft werden; stattdessen `audio_return_target` auf `-f null -` setzen und im Debug-Log prüfen, dass der Rückkanal-Prozess startet und SDP empfängt. Beobachtungen im CHANGELOG-Entwurf festhalten.
+In der Config-UI eine Video-Klingel anlegen mit *URL RTSP video* `-re -f lavfi -i testsrc=size=1280x720:rate=15 -re -f lavfi -i sine=frequency=440` (das `-re` vor jeder lavfi-Quelle ist nötig, sonst erzeugt ffmpeg das Testbild so schnell wie die CPU erlaubt) (das Feld wird als ffmpeg-Eingabe übernommen, daher funktionieren lavfi-Quellen; `-re -i` wird dann nicht vorangestellt, siehe Task 13 `cameraSettings`), *URL still image* leer, *Path to ffmpeg* auf das lokale Binary. In Apple Home: Klingel hinzufügen, Testbild als Standbild sichtbar, Live-Stream läuft, 440-Hz-Ton hörbar. Gegensprechen kann ohne Ziel nicht geprüft werden; stattdessen `audio_return_target` auf `-f null -` setzen und im Debug-Log prüfen, dass der Rückkanal-Prozess startet und SDP empfängt. Beobachtungen im CHANGELOG-Entwurf festhalten.
 
 ---
 
@@ -2271,7 +2271,8 @@ The video doorbell (special accessory) needs an `ffmpeg` binary. OpenCCU does no
 - **On the CCU**: copy a static build (for example the johnvansickle.com builds for arm64/amd64) to `/usr/local/bin/ffmpeg`, make it executable and set *Path to ffmpeg* in the doorbell settings. Audio is offered only for encoders the binary actually has; without `libopus`/`libfdk_aac` the doorbell is published video-only.
 - *Video codec* `copy` avoids transcoding when the camera already delivers H.264. This is the only realistic option on a Raspberry Pi based CCU.
 - *Talkback target* is an ffmpeg output (for example `rtsp://camera/talk`); when set, Apple Home shows the talk button.
-- *URL RTSP video* accepts a plain RTSP/HTTP URL or, when it starts with `-`, raw ffmpeg input arguments. `-f lavfi -i testsrc=size=1280x720:rate=15 -f lavfi -i sine=frequency=440` gives a test pattern with a tone and needs no camera at all.
+- *URL RTSP video* accepts a plain RTSP/HTTP URL or, when it starts with `-`, raw ffmpeg input arguments (then nothing is prepended, so add `-re` yourself for live-rate sources). `-re -f lavfi -i testsrc=size=1280x720:rate=15 -re -f lavfi -i sine=frequency=440` gives a test pattern with a tone and needs no camera at all.
+- *Talkback target* likewise accepts a plain URL (sent as `-f rtsp <url>`) or raw ffmpeg output options starting with `-` (for example `-f null -` to test the return channel without a device).
 
 # mDNS advertiser
 
