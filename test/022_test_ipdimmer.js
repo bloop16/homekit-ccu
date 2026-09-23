@@ -2,8 +2,9 @@ const assert = require('assert')
 const path = require('path')
 const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
 const Server = require(path.join(__dirname, '..', 'lib', 'Server.js'))
-const Service = require('hap-nodejs').Service
-const Characteristic = require('hap-nodejs').Characteristic
+const Service = require('@homebridge/hap-nodejs').Service
+const Characteristic = require('@homebridge/hap-nodejs').Characteristic
+const { getCharacteristicValue } = require(path.join(__dirname, 'helpers', 'characteristicValue.js'))
 const expect = require('expect.js')
 
 const fs = require('fs')
@@ -75,7 +76,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     assert.ok(service, 'Lightbulb Service not found')
     let ch = service.getCharacteristic(Characteristic.Brightness)
     assert.ok(ch, 'Brightness Characteristics not found')
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(0)
         done()
@@ -92,7 +93,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     assert.ok(service, 'Lightbulb Service not found')
     let ch = service.getCharacteristic(Characteristic.Brightness)
     assert.ok(ch, 'Brightness Characteristics not found')
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(100)
         done()
@@ -109,7 +110,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     assert.ok(service, 'Lightbulb Service not found')
     let ch = service.getCharacteristic(Characteristic.Brightness)
     assert.ok(ch, 'Brightness Characteristics not found')
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(50)
         done()

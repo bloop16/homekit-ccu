@@ -2,8 +2,8 @@ const assert = require('assert')
 const path = require('path')
 const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
 const Server = require(path.join(__dirname, '..', 'lib', 'Server.js'))
-const Service = require('hap-nodejs').Service
-const Characteristic = require('hap-nodejs').Characteristic
+const Service = require('@homebridge/hap-nodejs').Service
+const Characteristic = require('@homebridge/hap-nodejs').Characteristic
 const expect = require('expect.js')
 
 const fs = require('fs')

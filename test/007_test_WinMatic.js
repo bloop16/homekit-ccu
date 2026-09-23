@@ -2,8 +2,9 @@ const assert = require('assert')
 const path = require('path')
 const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
 const Server = require(path.join(__dirname, '..', 'lib', 'Server.js'))
-const Service = require('hap-nodejs').Service
-const Characteristic = require('hap-nodejs').Characteristic
+const Service = require('@homebridge/hap-nodejs').Service
+const Characteristic = require('@homebridge/hap-nodejs').Characteristic
+const { getCharacteristicValue } = require(path.join(__dirname, 'helpers', 'characteristicValue.js'))
 const expect = require('expect.js')
 
 const fs = require('fs')
@@ -70,7 +71,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     assert.ok(service, 'Window Service not found')
     let ch = service.getCharacteristic(Characteristic.CurrentPosition)
     assert.ok(ch, 'CurrentPosition State Characteristics not found')
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(0)
       } catch (e) {
@@ -79,7 +80,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     })
     let ch1 = service.getCharacteristic(Characteristic.TargetPosition)
     assert.ok(ch1, 'TargetPosition State Characteristics not found')
-    ch1.getValue((context, value) => {
+    getCharacteristicValue(ch1, (context, value) => {
       try {
         expect(value).to.be(0)
         done()
@@ -141,14 +142,14 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     let service = accessory.getService(Service.Window)
     let curPos = service.getCharacteristic(Characteristic.CurrentPosition)
     let tarPos = service.getCharacteristic(Characteristic.TargetPosition)
-    curPos.getValue((context, value) => {
+    getCharacteristicValue(curPos, (context, value) => {
       try {
         expect(value).to.be(100)
       } catch (e) {
         done(e)
       }
     })
-    tarPos.getValue((context, value) => {
+    getCharacteristicValue(tarPos, (context, value) => {
       try {
         expect(value).to.be(100)
         done()
@@ -223,7 +224,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   it('HAP-Homematic Test AKKU 100%', (done) => {
     that.server._ccu.fireEvent('BidCos-RF.1123456789ABCD:2.LEVEL', 1)
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.BatteryService)
+    let service = accessory.getService(Service.Battery)
     let lvl = service.getCharacteristic(Characteristic.BatteryLevel)
     let lowLvl = service.getCharacteristic(Characteristic.StatusLowBattery)
     try {
@@ -238,7 +239,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   it('HAP-Homematic Test AKKU 19% LOW Level', (done) => {
     that.server._ccu.fireEvent('BidCos-RF.1123456789ABCD:2.LEVEL', 0.19)
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.BatteryService)
+    let service = accessory.getService(Service.Battery)
     let lvl = service.getCharacteristic(Characteristic.BatteryLevel)
     let lowLvl = service.getCharacteristic(Characteristic.StatusLowBattery)
     try {
@@ -253,7 +254,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   it('HAP-Homematic Test AKKU Charging', (done) => {
     that.server._ccu.fireEvent('BidCos-RF.1123456789ABCD:2.STATUS', 1)
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.BatteryService)
+    let service = accessory.getService(Service.Battery)
     let chrg = service.getCharacteristic(Characteristic.ChargingState)
     try {
       expect(chrg.value).to.be(Characteristic.ChargingState.CHARGING)

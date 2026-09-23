@@ -2,8 +2,9 @@ const assert = require('assert')
 const path = require('path')
 const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
 const Server = require(path.join(__dirname, '..', 'lib', 'Server.js'))
-const Service = require('hap-nodejs').Service
-const Characteristic = require('hap-nodejs').Characteristic
+const Service = require('@homebridge/hap-nodejs').Service
+const Characteristic = require('@homebridge/hap-nodejs').Characteristic
+const { getCharacteristicValue } = require(path.join(__dirname, 'helpers', 'characteristicValue.js'))
 const expect = require('expect.js')
 
 const fs = require('fs')
@@ -75,7 +76,7 @@ describe('HomeKit-CCU Tests (IP Heating Groups) ' + testCase, () => {
     assert.ok(service, 'Thermostat Service not found')
     let ch = service.getCharacteristic(Characteristic.CurrentTemperature)
     assert.ok(ch, 'CurrentTemperature State Characteristics not found')
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(rnd)
         done()
@@ -91,7 +92,7 @@ describe('HomeKit-CCU Tests (IP Heating Groups) ' + testCase, () => {
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     let service = accessory.getService(Service.Thermostat)
     let ch = service.getCharacteristic(Characteristic.CurrentRelativeHumidity)
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(rnd)
         done()
@@ -119,7 +120,7 @@ describe('HomeKit-CCU Tests (IP Heating Groups) ' + testCase, () => {
     })
     // we have a temperature so the TargetHeatingCoolingState should be heating
     let ch1 = service.getCharacteristic(Characteristic.TargetHeatingCoolingState)
-    ch1.getValue((context, value) => {
+    getCharacteristicValue(ch1, (context, value) => {
       try {
         expect(value).to.be(Characteristic.CurrentHeatingCoolingState.HEAT)
         done()
@@ -134,7 +135,7 @@ describe('HomeKit-CCU Tests (IP Heating Groups) ' + testCase, () => {
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     let service = accessory.getService(Service.Thermostat)
     let ch = service.getCharacteristic(Characteristic.TargetHeatingCoolingState)
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(Characteristic.CurrentHeatingCoolingState.OFF)
         done()
@@ -147,9 +148,9 @@ describe('HomeKit-CCU Tests (IP Heating Groups) ' + testCase, () => {
   it('HAP-Homematic test low bat normal level', (done) => {
     that.server._ccu.fireEvent('HmIP.4762653007ABCD:0.LOW_BAT', false)
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.BatteryService)
+    let service = accessory.getService(Service.Battery)
     let ch = service.getCharacteristic(Characteristic.StatusLowBattery)
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL)
         done()
@@ -162,9 +163,9 @@ describe('HomeKit-CCU Tests (IP Heating Groups) ' + testCase, () => {
   it('HAP-Homematic test low bat low level', (done) => {
     that.server._ccu.fireEvent('HmIP.4762653007ABCD:0.LOW_BAT', true)
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.BatteryService)
+    let service = accessory.getService(Service.Battery)
     let ch = service.getCharacteristic(Characteristic.StatusLowBattery)
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW)
         done()
@@ -177,9 +178,9 @@ describe('HomeKit-CCU Tests (IP Heating Groups) ' + testCase, () => {
   it('HAP-Homematic test BatteryLevel is 100 on non existing OPERATING_VOLTAGE datapoint', (done) => {
     that.server._ccu.fireEvent('HmIP.4762653007ABCD:0.LOW_BAT', false)
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.BatteryService)
+    let service = accessory.getService(Service.Battery)
     let ch = service.getCharacteristic(Characteristic.BatteryLevel)
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(100)
         done()
@@ -192,9 +193,9 @@ describe('HomeKit-CCU Tests (IP Heating Groups) ' + testCase, () => {
   it('HAP-Homematic test BatteryLevel is 0 on non existing OPERATING_VOLTAGE datapoint and LOW_BAT is true', (done) => {
     that.server._ccu.fireEvent('HmIP.4762653007ABCD:0.LOW_BAT', true)
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.BatteryService)
+    let service = accessory.getService(Service.Battery)
     let ch = service.getCharacteristic(Characteristic.BatteryLevel)
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(0)
         done()

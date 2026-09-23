@@ -2,7 +2,8 @@ const assert = require('assert')
 const path = require('path')
 const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
 const Server = require(path.join(__dirname, '..', 'lib', 'Server.js'))
-const Characteristic = require('hap-nodejs').Characteristic
+const Characteristic = require('@homebridge/hap-nodejs').Characteristic
+const { getCharacteristicValue } = require(path.join(__dirname, 'helpers', 'characteristicValue.js'))
 const expect = require('expect.js')
 
 const fs = require('fs')
@@ -69,7 +70,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     assert.ok(service, 'WeatherStation Service not found')
     let ch = service.getCharacteristic(Characteristic.CurrentTemperature)
     assert.ok(ch, 'CurrentTemperature State Characteristics not found')
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(10)
         done()
@@ -86,7 +87,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     assert.ok(service, 'WeatherStation Service not found')
     let ch = service.getCharacteristic(Characteristic.CurrentRelativeHumidity)
     assert.ok(ch, 'CurrentRelativeHumidity State Characteristics not found')
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(34)
         done()
@@ -103,7 +104,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     assert.ok(service, 'WeatherStation Service not found')
     let ch = service.getCharacteristic(Characteristic.CurrentAmbientLightLevel)
     assert.ok(ch, 'CurrentAmbientLightLevel State Characteristics not found')
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(140)
         done()
@@ -120,7 +121,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     assert.ok(service, 'WeatherStation Service not found')
     let ch = service.getCharacteristic(accessory.eveWeatherProg.Characteristic.SunShineDuration)
     assert.ok(ch, 'SunShineDuration State Characteristics not found')
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(5.7)
         done()
@@ -137,7 +138,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     assert.ok(service, 'WeatherStation Service not found')
     let ch = service.getCharacteristic(accessory.eveWeatherProg.Characteristic.WindSpeed)
     assert.ok(ch, 'WindSpeedCharacteristic State Characteristics not found')
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(98)
         done()

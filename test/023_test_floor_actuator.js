@@ -4,6 +4,7 @@ const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
 const Server = require(path.join(__dirname, '..', 'lib', 'Server.js'))
 const expect = require('expect.js')
 const EveHomeKitValveTypes = require(path.join(__dirname, '..', 'lib', 'services', 'EveValve.js'))
+const { getCharacteristicValue } = require(path.join(__dirname, 'helpers', 'characteristicValue.js'))
 
 const fs = require('fs')
 let log = new Logger('HAP Test')
@@ -76,7 +77,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     assert.ok(service, 'ValveService Service not found')
     let ch = service.getCharacteristic(eveValve.Characteristic.CurrentValveState)
     assert.ok(ch, 'CurrentValveState State Characteristics not found')
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(50)
         done()

@@ -2,8 +2,9 @@ const assert = require('assert')
 const path = require('path')
 const Logger = require(path.join(__dirname, '..', 'lib', 'logger.js'))
 const Server = require(path.join(__dirname, '..', 'lib', 'Server.js'))
-const Service = require('hap-nodejs').Service
-const Characteristic = require('hap-nodejs').Characteristic
+const Service = require('@homebridge/hap-nodejs').Service
+const Characteristic = require('@homebridge/hap-nodejs').Characteristic
+const { getCharacteristicValue } = require(path.join(__dirname, 'helpers', 'characteristicValue.js'))
 const expect = require('expect.js')
 
 const fs = require('fs')
@@ -75,7 +76,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     assert.ok(service, 'MotionSensor Service not found')
     let ch = service.getCharacteristic(Characteristic.MotionDetected)
     assert.ok(ch, 'MotionDetected State Characteristics not found')
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(false)
         done()
@@ -90,7 +91,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     let service = accessory.getService(Service.MotionSensor)
     let ch = service.getCharacteristic(Characteristic.MotionDetected)
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(true)
         done()
@@ -107,7 +108,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     let service = accessory.getService(Service.LightSensor)
     let ch = service.getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(rnd)
         done()
@@ -120,9 +121,9 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   it('HAP-Homematic test low bat', (done) => {
     that.server._ccu.fireEvent('HmIP.0123456789ABCD:0.LOW_BAT', true)
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.BatteryService)
+    let service = accessory.getService(Service.Battery)
     let ch = service.getCharacteristic(Characteristic.StatusLowBattery)
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW)
         done()
@@ -135,9 +136,9 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   it('HAP-Homematic test low bat negative', (done) => {
     that.server._ccu.fireEvent('HmIP.0123456789ABCD:0.LOW_BAT', false)
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.BatteryService)
+    let service = accessory.getService(Service.Battery)
     let ch = service.getCharacteristic(Characteristic.StatusLowBattery)
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL)
         done()
@@ -150,9 +151,9 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   it('HAP-Homematic test voltage reading 1.2V 50%', (done) => {
     that.server._ccu.fireEvent('HmIP.0123456789ABCD:0.OPERATING_VOLTAGE', 1.2)
     let accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
-    let service = accessory.getService(Service.BatteryService)
+    let service = accessory.getService(Service.Battery)
     let ch = service.getCharacteristic(Characteristic.BatteryLevel)
-    ch.getValue((context, value) => {
+    getCharacteristicValue(ch, (context, value) => {
       try {
         expect(value).to.be(50)
         done()
