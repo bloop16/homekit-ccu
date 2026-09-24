@@ -122,6 +122,32 @@ describe('HomeKit-CCU new device dialog model', () => {
     expect(perKey.map(item => [item.address, item.name, item.serviceClass])).to.eql([['BSM:1', 'Taster 1', KEY], ['BSM:2', 'Taster 2', KEY]])
   })
 
+  it('makes one mapping of combined switch outputs and keeps the others', () => {
+    const device = bsm()
+    device.channels.forEach(item => { item.main = !item.secondary && !item.key && (item.number !== 7) })
+    device.channels[3].main = true // a second output
+    const entries = model.buildEntries(device)
+    const chosen = entries.filter(entry => ['BSM:4', 'BSM:5', 'BSM:7'].includes(entry.id))
+    const choices = {
+      'BSM:4': { name: 'Licht', service: SWITCH, settings: { Type: 'Switch' } },
+      'BSM:5': { name: 'Licht 5', service: SWITCH, settings: {} },
+      'BSM:7': { name: 'Zähler', service: 'HomeMaticIPPowerMeterSwitchAccessory', settings: {} }
+    }
+    expect(model.combinableEntries(chosen, choices).map(entry => entry.id)).to.eql(['BSM:4', 'BSM:5'])
+    const combined = model.deviceMappings(chosen, choices, 'b1', true)
+    expect(combined.map(item => [item.address, item.name, item.combine])).to.eql([['BSM:4', 'Licht', ['BSM:5']], ['BSM:7', 'Zähler', undefined]])
+    expect(model.deviceMappings(chosen, choices, 'b1', false)).to.have.length(3)
+    choices['BSM:5'].service = 'HomeMaticDoorOpenerAccessory'
+    expect(model.deviceMappings(chosen, choices, 'b1', true)).to.have.length(3)
+  })
+
+  it('names a combined accessory after its device instead of a numbered suggestion', () => {
+    const device = { name: 'Aktor (EG)' }
+    expect(model.combinedName(device, 'Aktor (EG) 4')).to.be('Aktor (EG)')
+    expect(model.combinedName(device, 'Aktor (EG) 1–2')).to.be('Aktor (EG)')
+    expect(model.combinedName(device, 'Flurlicht')).to.be('Flurlicht')
+  })
+
   it('names service classes readably', () => {
     expect(model.serviceLabel('HomeMaticIPPowerMeterSwitchAccessory')).to.be('Power Meter Switch')
     expect(model.serviceLabel('HomeMaticSwitchAccessory')).to.be('Switch')

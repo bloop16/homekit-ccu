@@ -149,6 +149,31 @@ describe('HomeKit-CCU new device catalog: saveNewDevices', () => {
     expect(save([entry(BSM + ':5'), entry(BSM + ':5')]).reason).to.be('channel already in HomeKit')
   })
 
+  it('combines further free switch outputs of the same device into one mapping', () => {
+    const DRS = 'X'
+    expect(save([entry(BSM + ':4', { combine: [BSM + ':5', BSM + ':6'] })])).to.eql({ result: 'saved', count: 1 })
+    expect(readConfig().mappings[BSM + ':4'].settings).to.eql({ channels: [BSM + ':5', BSM + ':6'], Type: 'Switch' })
+    expect(readConfig().channels).to.eql([BSM + ':4'])
+    // a combined output is taken: neither a mapping of its own nor part of another combination
+    expect(save([entry(BSM + ':5')]).reason).to.be('channel already in HomeKit')
+    writeConfig({ mappings: {}, channels: [] })
+    const wrong = [
+      [{ combine: [] }, 'invalid combination'],
+      [{ combine: BSM + ':5' }, 'invalid combination'],
+      [{ combine: [BSM + ':4'] }, 'invalid combination'],
+      [{ combine: [KRC4 + ':1'] }, 'invalid combination'],
+      [{ combine: [DRS + ':1'] }, 'invalid combination'],
+      [{ combine: [BSM + ':1'] }, 'invalid combination'],
+      [{ combine: [BSM + ':5', BSM + ':5'] }, 'channel already in HomeKit'],
+      [{ combine: [BSM + ':5'], serviceClass: 'HomeMaticDoorOpenerAccessory' }, 'invalid combination']
+    ]
+    wrong.forEach(([more, reason]) => {
+      expect(save([entry(BSM + ':4', more)]).reason).to.be(reason)
+    })
+    expect(save([entry(BSM + ':4', { combine: [BSM + ':5'] }), entry(BSM + ':5')]).reason).to.be('channel already in HomeKit')
+    expect(readConfig().mappings).to.eql({})
+  })
+
   it('refuses a payload that is no list of entries', () => {
     expect(save('not json').result).to.be('error saving')
     expect(save([]).result).to.be('error saving')

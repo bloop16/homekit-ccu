@@ -10,6 +10,7 @@ First release of the fork for OpenCCU 3.89+ (Node.js 22.12+). Moving from hap-ho
 described in [doc/upgrading.md](doc/upgrading.md).
 
 ### Added
+- Multi-gang switch actuators (e.g. HmIP-DRSI4, HmIP-BS2, HMW-IO-12) can become one Apple Home accessory with a switch per output, chosen per device in "new device" and in the setup assistant. The outputs share one room; Apple Home can still show them as separate tiles. Off by default, existing accessories stay as they are.
 - New devices: HmIP-SWSD-2/-3 smoke detectors, Door Lock Drive Pro (DLP) and door lock sensor (DLS), irrigation valve (WSM) with run time, water stop (WSS), particulate sensor (SFD) as air quality, CO₂ traffic light HM-CC-SCD, window drive (MOD-WD-VK), presence detector (SPI) as occupancy sensor, sirens (ASIR) as an alarm switch, HmIP-ESI energy sensor (Eve), alarm actuator HM-Sec-SFA and door controller outputs.
 - Remotes and wall buttons as one accessory with numbered buttons (ServiceLabel), instead of one accessory per key.
 - Venetian blind tilt for HM-LC-Ja1PBU, colour temperature for HmIP-RGBW/LSC/E27/GU10, a latch "Open" switch and jammed state for the KeyMatic, a separate humidity sensor for wall thermostats.

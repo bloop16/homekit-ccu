@@ -523,5 +523,9 @@
   "Several keys as one push button device": "Mehrere Tasten als ein Taster-Gerät",
   "HTTP switch": "HTTP-Schalter",
   "CCU temperature": "CCU-Temperatur",
-  "CCU duty cycle": "CCU Duty Cycle"
+  "CCU duty cycle": "CCU Duty Cycle",
+  "One device in Apple Home with %s switches": "Ein Gerät in Apple Home mit %s Schaltern",
+  "All switches share one room; Apple Home can still show them as separate tiles. Separate devices can each have their own room.": "Alle Schalter teilen sich einen Raum; Apple Home kann sie trotzdem als getrennte Kacheln zeigen. Getrennte Geräte können je einen eigenen Raum haben.",
+  "%s is a switch of %s": "%s ist ein Schalter von %s",
+  "Name of the device": "Name des Geräts"
 }
