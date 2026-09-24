@@ -9,6 +9,7 @@ Changelog for 0.1.0:
 * standard lint clean, c8 coverage script, husky removed
 * GitHub Actions CI and release workflow; addon tarball no longer tracked in git
 * Installer requires Node.js 22 (OpenCCU 3.89+), README no longer claims automatic Node install; the add-on info shows the Node.js version actually installed
+* README shortened to requirements, installation and links; details moved to `doc/` (upgrading, security, video doorbell, remote mode, advanced, development)
 * Update check in the CCU's add-on list reads the latest release of bloop16/homekit-ccu; repository, WebUI and issue links point at the fork
 * Restart from the configuration UI calls the rc.d script directly; configuration restore checks the CCU session when authentication is on and removes rejected uploads
 * **Upgrade note, video doorbell:** the doorbell gets a new HomeKit identity (derived from its UUID instead of the fixed `00:00:11:22:22:11`) and the old default PIN `123-45-678` is now rejected as trivial. After upgrading: set a non-trivial PIN in the doorbell settings, remove the old doorbell in Apple Home, add it again. Renaming the doorbell also changes its identity.
