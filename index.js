@@ -32,6 +32,7 @@ const path = require('path')
 const Server = require(path.join(__dirname, 'lib', 'Server.js'))
 const Logger = require(path.join(__dirname, 'lib', 'logger.js'))
 const { selectLogDir } = require(path.join(__dirname, 'lib', 'util', 'logDir.js'))
+const { startupBanner } = require(path.join(__dirname, 'lib', 'util', 'startupBanner.js'))
 const { program } = require('commander')
 const os = require('os')
 const fs = require('fs')
@@ -134,9 +135,7 @@ if (fs.existsSync(fdebug)) {
   fs.unlinkSync(fdebug) // remove the flag
 }
 
-log.info('---- launching ----')
-log.info('Welcome to homekit-ccu. Use your HomeMatic devices in HomeKit')
-log.info('(c) 2020-2026 thkl, britz, bloop16 - https://github.com/bloop16/homekit-ccu')
+startupBanner().forEach(line => log.info(line))
 log.info('Logging into %s', log.getLogFile())
 let server
 

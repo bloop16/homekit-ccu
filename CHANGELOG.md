@@ -31,6 +31,9 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 - The log shows when a bridge is paired or unpaired, and warnings of hap-nodejs about invalid values of a device (they can make Apple Home refuse a bridge); the same warning is logged at most once a minute per bridge.
 - The setup assistant asks to create the rooms in Apple Home first: while adding a bridge, Apple Home only offers existing rooms.
 - The ports 9874 and 49874 are no longer used on the CCU; the installation closes them in the firewall. In remote mode the configuration stays on port 9874.
+- The log names the version of the add-on and of Node.js at every start.
+- A successful registration at an interface of the CCU is logged once (before, only in debug mode, so a connected HmIP-RF was not visible); the reconnects of the watchdog are not.
+- "compatible devices found" is logged once per start; the rebuilds whenever the configuration page is opened only appear in the debug log.
 
 ## [0.1.0] - 2026-09-24
 
