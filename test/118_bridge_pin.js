@@ -351,9 +351,11 @@ describe('HomeKit-CCU Server bridge PIN', () => {
       server.isTestMode = true
       server._configuration = { mappings: {} }
       server.currentPortNum = 9877
-      server.loadInstance('b6589fc6-ab0d-4c82-8f12-099d1c2d40ab', instanceData, [], [], [], [])
-      const line = lines.debug.find(l => /Your Bridge ID .* PinCode is/.test(l))
-      return line.split('PinCode is ')[1]
+      const bridge = server.loadInstance('b6589fc6-ab0d-4c82-8f12-099d1c2d40ab', instanceData, [], [], [], [])
+      const pin = bridge._publishInfo.pincode
+      // the setup code must never end up in the log, which users attach to support requests
+      Object.values(lines).flat().forEach(line => expect(line).not.to.contain(pin))
+      return pin
     }
 
     it('uses pincode', () => {

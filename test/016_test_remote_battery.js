@@ -101,8 +101,8 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     })
   })
 
-  it('HAP-Homematic test voltage reading 0.6V 50%', (done) => {
-    that.server._ccu.fireEvent('HmIP.4436784678ABCD:0.OPERATING_VOLTAGE', 0.6)
+  it('HAP-Homematic test voltage reading: one cell at 1.3 V is half full', (done) => {
+    that.server._ccu.fireEvent('HmIP.4436784678ABCD:0.OPERATING_VOLTAGE', 1.3)
     const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     const service = accessory.getService(Service.Battery)
     const ch = service.getCharacteristic(Characteristic.BatteryLevel)
