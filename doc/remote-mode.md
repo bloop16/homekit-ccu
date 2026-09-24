@@ -36,8 +36,8 @@ In remote mode, homekit-ccu automatically remaps internal daemon ports (32001, 3
 
 * 9874 -> Config WebUI (lighttpd proxies it to the config server on 127.0.0.1:39874; in remote mode the config server listens on 9874 itself)
 * 49874 -> Config WebUI HTTPS (proxied through lighttpd)
-* 9875 -> RPC event server
-* 9876 -> RPC event server CuxD (optional)
+* 9875 -> RPC event server (only calls from the CCU are accepted; on the CCU itself it listens on 127.0.0.1)
+* 9876 -> RPC event server CuxD (optional, same rule)
 * 9877..n HAP Instance 0 .. n
 * 5353/udp -> mDNS (Bonjour), so HomeKit can find the bridges
 * random UDP ports -> video doorbell streams (see [video doorbell](video-doorbell.md))

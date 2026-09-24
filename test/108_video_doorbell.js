@@ -8,7 +8,9 @@ const fs = require('fs')
 const os = require('os')
 
 const { isValidSetupCode } = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'hapIdentity.js'))
-const FAKE = path.join(__dirname, 'fixtures', 'fake-ffmpeg.sh')
+// the accessory only starts a program named ffmpeg
+const FAKE = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'hkccu-fake-')), 'ffmpeg')
+fs.symlinkSync(path.join(__dirname, 'fixtures', 'fake-ffmpeg.sh'), FAKE)
 const log = new Logger('HAP Test')
 log.setDebugEnabled(false)
 
@@ -143,14 +145,23 @@ describe('HomeKit-CCU video doorbell accessory', () => {
     expect(accessory.cameraController).to.be.a(hap.CameraController)
   })
 
+  it('starts no program that is not called ffmpeg', () => {
+    for (const ffmpegpath of ['/bin/sh', '/tmp/ffmpeg;reboot', '../ffmpeg', 'ffmpeg -version']) {
+      const rec = recordingLog()
+      const accessory = make({ ffmpegpath, video_source: 'rtsp://x' }, rec)
+      expect(accessory.cameraUnavailable).to.be(true)
+      expect(rec.text('error')).to.contain('called ffmpeg')
+    }
+  })
+
   it('resolves a bare ffmpeg name via PATH', () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hkccu-'))
-    fs.symlinkSync(FAKE, path.join(dir, 'hkccu-fake-ffmpeg'))
+    fs.symlinkSync(FAKE, path.join(dir, 'ffmpeg'))
     const oldPath = process.env.PATH
     process.env.PATH = dir + path.delimiter + oldPath
     let accessory
     try {
-      accessory = make({ ffmpegpath: 'hkccu-fake-ffmpeg', video_source: 'rtsp://x' })
+      accessory = make({ ffmpegpath: 'ffmpeg', video_source: 'rtsp://x' })
     } finally {
       process.env.PATH = oldPath
     }

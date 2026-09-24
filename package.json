@@ -33,16 +33,14 @@
 		"binrpc": "^4.3.0",
 		"commander": "^15.0.0",
 		"formidable": "^3.5.4",
-		"homematic-xmlrpc": "^2.0.0",
-		"sockjs": "^0.3.20"
+		"homematic-xmlrpc": "^2.0.0"
 	},
 	"bundleDependencies": [
 		"@homebridge/hap-nodejs",
 		"binrpc",
 		"commander",
 		"formidable",
-		"homematic-xmlrpc",
-		"sockjs"
+		"homematic-xmlrpc"
 	],
 	"scripts": {
 		"start": "node index.js || true",
@@ -51,11 +49,6 @@
 		"test": "mocha",
 		"lint": "eslint .",
 		"coverage": "c8 --include 'lib/services/camera/**' --include lib/services/CustomHomeKitTypes.js --include lib/util/time.js --include lib/util/hapIds.js --include lib/util/instanceMigration.js --include lib/util/configMigration.js --include lib/util/mappingInstances.js --include lib/monitConfig.js --check-coverage --lines 80 mocha"
-	},
-	"overrides": {
-		"sockjs": {
-			"uuid": "^11.1.1"
-		}
 	},
 	"devDependencies": {
 		"c8": "^12.0.0",

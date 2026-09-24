@@ -39,6 +39,7 @@ described in [doc/upgrading.md](doc/upgrading.md).
 - Dependencies: commander 15, formidable 3, binrpc 4.3, homematic-xmlrpc 2.0, fakegato-history 0.6.7 vendored without Google Drive; moment and chalk replaced by Node.js built-ins. Linting with neostandard (ESLint 9).
 
 ### Fixed
+- A restored backup never brought back the persistent values of the accessories (the host name was not read correctly). The Support download failed while the session check is on.
 - A new special device without an explicitly chosen bridge was on no bridge; it now goes to the first one. A second special device with the same name replaced the first; it is refused. The special device list did not refresh after saving.
 - The virtual keys of HmIP-RCV-50 were offered as one remote with 50 buttons; each key is a programmable switch again, as for HM-RCV-50.
 - Doorbell buttons (HmIP-DSD-PCB, HmIP-DBB, HM-Sen-DB-PCB) are added as a programmable switch: Apple Home shows a doorbell without a camera as "not supported". The doorbell service stays selectable.
@@ -59,6 +60,13 @@ described in [doc/upgrading.md](doc/upgrading.md).
 - Names from the CCU are shown as text in the configuration UI; before, a name containing HTML ran as script (stored XSS).
 - Setup codes and the content of `config.json` are no longer written to the log; the video doorbell gets a random setup code instead of a fixed default.
 - Same-origin CORS for the configuration API, session check for the websocket, update-check.cgi without query-string injection, ffmpeg errors in the log with credentials masked.
+- The event servers (9875/9876) only take calls from the CCU and this machine; on the CCU they listen on 127.0.0.1 and port 9875 is closed in the CCU firewall again. Before, any host on the LAN could send fake device states to HomeKit.
+- Service class names from the API and from `config.json` (also from a restored backup) must be classes of `lib/services`; a path could reach `require()` before.
+- A restore upload is refused before anything is stored unless it carries a valid session (header), one restore at a time; backup and restore use private temp directories that are removed afterwards.
+- No CCU session ids, setup codes or URL credentials in the log any more (ReGa scripts, IPC and HTTP switch messages); the log file is readable by root only.
+- Without the session check the API only answers requests to an own address or name (DNS rebinding). Bridge ids like `__proto__` and non-numeric channel ids in datapoint queries are refused. The video doorbell only starts a program named ffmpeg.
+- Downloads (backup, log, support data) post the session instead of putting it into the URL; the pairing code and port of a bridge are shown as text.
+- sockjs (server and browser client, unmaintained) is replaced by long polling over the authenticated API: fewer dependencies, the same live updates.
 
 ## [0.0.16]
 * Fixed Rega timeout causing full server crash — unhandledRejection now logged without process exit

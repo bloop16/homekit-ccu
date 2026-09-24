@@ -109,7 +109,9 @@ install() {
   chmod 755 ${ADDON_DIR}
   cd ${ADDON_DIR} || { log "install" "ERROR: cannot enter ${ADDON_DIR}"; return 1; }
   
-  mkdir -p ${NPMCACHE_DIR}
+  # a fresh cache only root can use: an existing path (e.g. a symlink planted in /tmp) is removed first
+  rm -rf ${NPMCACHE_DIR}
+  mkdir -m 700 ${NPMCACHE_DIR} || { log "install" "ERROR: cannot create ${NPMCACHE_DIR}"; return 1; }
   log "install" "Installing Node.JS packages from \"${ADDONCFG_DIR}/etc/homekit-ccu.tgz\"." 
   # all dependencies are bundled in the tgz, npm must not touch the registry
   npm i --offline --no-audit --no-fund --cache ${NPMCACHE_DIR} ${ADDONCFG_DIR}/etc/homekit-ccu.tgz >> ${LOGFILE} 2>&1 || {
@@ -286,7 +288,8 @@ stop() {
       rm -f $PIDFILE
     fi
 	sleep 2
-	pgrep -f 'node.*homekit-ccu' | xargs -r kill -9 2>/dev/null
+	# only the server and its configuration process, both run from the module directory
+	pgrep -f "node .*${MODULE_DIR}/" | xargs -r kill -9 2>/dev/null
  	log "stop" "HomeKit-CCU stopped."
 }
 

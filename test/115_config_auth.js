@@ -255,6 +255,22 @@ describe('HomeKit-CCU config server authentication', () => {
       expect(res.status).to.be(401)
       expect(extracted).to.have.length(0)
       expect(ctx.calls.restarts).to.be(0)
+      // a session in the form is not enough: the header is checked before the upload is stored
+      form.append('sid', SID)
+      const again = await fetch(`http://127.0.0.1:${ctx.port}/restore/`, { method: 'POST', body: form })
+      expect(again.status).to.be(401)
+    })
+
+    it('takes a restore upload with the session header', async () => {
+      ctx = await startService()
+      const extracted = []
+      ctx.service.checkAndExtractUploadedConfig = (file) => { extracted.push(file); return false }
+      const form = new FormData()
+      form.append('method', 'restore')
+      form.append('file', new Blob([Buffer.from('x')]), 'backup.tar.gz')
+      const res = await fetch(`http://127.0.0.1:${ctx.port}/restore/`, { method: 'POST', body: form, headers: { 'X-HomeKit-CCU-Session': SID } })
+      expect(res.status).to.be(200)
+      expect(extracted).to.have.length(1)
     })
 
     it('serves api calls without a session when useCCCAuthentication is explicitly false', async () => {
@@ -366,42 +382,41 @@ describe('HomeKit-CCU config server authentication', () => {
       expect(res.headers).not.to.have.key('access-control-allow-origin')
     })
 
-    it('applies the same rule to the websocket endpoint', async () => {
-      const foreign = await request(ctx.port, { path: '/websockets/info', headers: { Origin: 'http://evil.example' } })
+    it('refuses the event poll of a foreign origin', async () => {
+      const foreign = await postApi(ctx.port, { method: 'events', sid: SID }, { Origin: 'http://evil.example' })
       expect(foreign.status).to.be(403)
       expect(foreign.headers).not.to.have.key('access-control-allow-origin')
-      const own = await request(ctx.port, { path: '/websockets/info', headers: { Origin: 'http://127.0.0.1' } })
-      expect(own.status).to.be(200)
     })
   })
 
-  describe('websocket hello', () => {
-    const fakeConn = () => {
-      const written = []
-      return { id: 'c1', written, write: (msg) => written.push(JSON.parse(msg)) }
-    }
-    const makeService = (validSids) => {
-      const { service } = construct()
-      service.isValidCCUSession = async (sid) => validSids.includes(sid)
-      service.connections = {}
-      return service
-    }
+  describe('server events (long polling)', () => {
+    let ctx
+    afterEach(() => ctx && ctx.close())
 
-    it('does not register a socket without a valid session', async () => {
-      const service = makeService([SID])
-      const conn = fakeConn()
-      await service.handleSocketRequest(conn, { command: 'hello' })
-      await service.handleSocketRequest(conn, { command: 'hello', sid: '@zzzzzzzzzz@' })
-      expect(service.connections).to.eql({})
-      expect(conn.written.map(m => m.message)).to.eql(['unauthorized', 'unauthorized'])
+    it('refuses an event poll without a valid session', async () => {
+      ctx = await startService()
+      const res = await postApi(ctx.port, { method: 'events' })
+      expect(res.status).to.be(401)
+      expect(ctx.service.events.size).to.be(0)
     })
 
-    it('registers a socket with a valid session', async () => {
-      const service = makeService([SID])
-      const conn = fakeConn()
-      await service.handleSocketRequest(conn, { command: 'hello', sid: SID })
-      expect(service.connections).to.have.key('c1')
-      expect(conn.written[0].message).to.be('ackn')
+    it('starts a new client with the system info, then holds the poll until a message comes', async () => {
+      ctx = await startService()
+      ctx.service.getSystemInfo = async () => ({ version: 'x' })
+      const first = JSON.parse((await postApi(ctx.port, { method: 'events', sid: SID })).body)
+      expect(first.client).to.match(/^[0-9a-f]{32}$/)
+      expect(first.messages).to.eql([{ message: 'ackn', payload: { version: 'x' } }])
+      const second = postApi(ctx.port, { method: 'events', sid: SID, client: first.client })
+      setTimeout(() => ctx.service.sendMessageToSockets({ message: 'serverdata', payload: 1 }), 50)
+      expect(JSON.parse((await second).body)).to.eql({ client: first.client, messages: [{ message: 'serverdata', payload: 1 }] })
+    })
+
+    it('gives an unknown client (e.g. after a restart) a new id and the system info', async () => {
+      ctx = await startService()
+      ctx.service.getSystemInfo = async () => ({})
+      const res = JSON.parse((await postApi(ctx.port, { method: 'events', sid: SID, client: 'gone' })).body)
+      expect(res.client).not.to.be('gone')
+      expect(res.messages[0].message).to.be('ackn')
     })
   })
 

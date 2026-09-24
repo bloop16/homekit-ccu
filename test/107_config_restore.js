@@ -36,11 +36,10 @@ const postRestore = async (service, fileCount = 1) => {
   try {
     const form = new FormData()
     form.append('method', 'restore')
-    form.append('sid', '@abcdefghij@')
     for (let i = 0; i < fileCount; i++) {
       form.append('file', new Blob([Buffer.from('not really a tarball ' + i)]), `backup${i}.tar.gz`)
     }
-    const res = await fetch(`http://127.0.0.1:${server.address().port}/restore/`, { method: 'POST', body: form })
+    const res = await fetch(`http://127.0.0.1:${server.address().port}/restore/`, { method: 'POST', body: form, headers: { 'X-HomeKit-CCU-Session': '@abcdefghij@' } })
     return { status: res.status, body: await res.text() }
   } finally {
     server.close()
@@ -71,22 +70,20 @@ describe('HomeKit-CCU ConfigurationService.processRestore', () => {
 
   const uploadDirIsEmpty = () => fs.readdirSync(uploadDir).length === 0
 
-  it('rejects an invalid session with 401 and removes the uploaded temp file', async () => {
+  it('rejects an invalid session with 401 before anything is stored', async () => {
     const { service, calls } = makeService({ useAuth: true, validSession: false })
-    const origRm = fs.rm
-    const removed = []
-    fs.rm = (file, opts, cb) => { removed.push(file); return origRm(file, opts, cb) }
-    try {
-      const res = await postRestore(service)
-      expect(res.status).to.be(401)
-      expect(calls.extracted).to.have.length(0)
-      expect(calls.restarts).to.be(0)
-      expect(removed).to.have.length(1)
-      await waitFor(() => !fs.existsSync(removed[0]))
-      await waitFor(uploadDirIsEmpty)
-    } finally {
-      fs.rm = origRm
-    }
+    const res = await postRestore(service)
+    expect(res.status).to.be(401)
+    expect(calls.extracted).to.have.length(0)
+    expect(calls.restarts).to.be(0)
+    expect(uploadDirIsEmpty()).to.be(true)
+  })
+
+  it('refuses a second restore while one runs', async () => {
+    const { service } = makeService({ useAuth: true, validSession: true })
+    service.restoreRunning = true
+    const res = await postRestore(service)
+    expect(res.status).to.be(409)
   })
 
   it('extracts the upload and restarts on a valid session', async () => {

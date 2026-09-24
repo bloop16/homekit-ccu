@@ -102,6 +102,29 @@ describe('HomeKit-CCU backup hardening', () => {
       }
     })
 
+    it('restores the persistent values of this host and removes its temp directory', () => {
+      const dir = scratch()
+      const config = path.join(dir, 'config')
+      fs.mkdirSync(config)
+      const file = archive(dir, (src) => {
+        fs.writeFileSync(path.join(src, 'config.json'), '{"instances":{}}')
+        fs.writeFileSync(path.join(src, os.hostname() + '_ABC_1.pstore'), '{}')
+        fs.writeFileSync(path.join(src, 'otherhost_ABC_1.pstore'), '{}')
+      })
+      const old = process.env.UIX_CONFIG_PATH
+      process.env.UIX_CONFIG_PATH = config
+      const before = fs.readdirSync(os.tmpdir()).filter(name => name.startsWith('homekit-ccu-restore-'))
+      try {
+        const { service } = makeService()
+        expect(service.checkAndExtractUploadedConfig(file)).to.be(true)
+        expect(fs.readdirSync(config).sort()).to.contain(os.hostname() + '_ABC_1.pstore')
+        expect(fs.readdirSync(config)).not.to.contain('otherhost_ABC_1.pstore')
+        expect(fs.readdirSync(os.tmpdir()).filter(name => name.startsWith('homekit-ccu-restore-'))).to.eql(before)
+      } finally {
+        process.env.UIX_CONFIG_PATH = old
+      }
+    })
+
     it('only passes numeric ports to the firewall script', () => {
       const { service } = makeService()
       const scripts = []
@@ -109,7 +132,7 @@ describe('HomeKit-CCU backup hardening', () => {
       service.bridges = [{ port: 9877 }, { port: '9878' }, { port: '1]; exec rm -rf /; #' }]
       service.ensureFirewallPorts()
       service.removeFirewallPort('1]; exec reboot; #')
-      expect(scripts[0]).to.contain('9877 9878}')
+      expect(scripts[0]).to.contain('{9874 49874 9877 9878}')
       expect(scripts.join('\n')).not.to.contain('exec')
       expect(scripts.length).to.be(1)
     })

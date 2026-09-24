@@ -11,7 +11,6 @@ removing that line again.
 | bootstrap-icons | bootstrap-icons | 1.13.1 | MIT |
 | jquery | jquery | 4.0.0 | MIT |
 | chartjs | chart.js | 4.5.1 | MIT |
-| sockjs | sockjs-client | 1.6.1 | MIT |
 | showdown | showdown | 2.1.0 | MIT |
 | dompurify | dompurify | 3.4.16 | Apache-2.0 or MPL-2.0 |
 | qrcode | qrcode-generator | 2.0.4 | MIT |
