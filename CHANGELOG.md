@@ -24,6 +24,7 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 - The RPC watchdog started a new reconnect every 10 s while the previous one was still waiting; late events no longer bring back an interface that is being disconnected, and the BIN-RPC connections of dropped interfaces are closed on a reload instead of reconnecting forever.
 - A command for an interface that is not connected never finished; after a start without BidCos-RF devices the duty cycle query hung and the class settings were never rebuilt.
 - Faults of `reportValueUsage` ("Transmission is pending", "Invalid XML-RPC message") were logged as `unhandledRejection`. They are harmless hints of the daemon and now only appear in the debug log.
+- A read that failed at the CCU (e.g. a Rega error for a value not known yet) left HomeKit without any answer for most characteristics: the read handler stopped before it called back, hap-nodejs waited 10 s ("didn't respond at all"), Apple Home showed "No Response" and the rejection went unhandled. All read handlers now answer such a read with the last known value and write the failure into the debug log.
 
 ### Changed
 - Saving the configuration only restarts bridges whose name, setup code or HomeKit id changed, and a bridge whose pairing is reset. The others keep running and get their new devices in one step, so Apple Home never sees them go away and a pairing that is going on is not broken.
