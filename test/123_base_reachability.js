@@ -3,6 +3,7 @@
 const path = require('path')
 const expect = require('expect.js')
 const { Service, Characteristic, HAPStatus } = require('@homebridge/hap-nodejs')
+const { IdentifierCache } = require('@homebridge/hap-nodejs/dist/lib/model/IdentifierCache')
 const { simulateDevice, read, settle, findService } = require(path.join(__dirname, 'helpers', 'openingsHarness.js'))
 
 // every HomeMatic device: while the CCU reports 0.UNREACH, Apple Home shows "No Response"
@@ -56,5 +57,43 @@ describe('HomeKit-CCU base class: unreachable devices', () => {
     sim.fire('0.UNREACH', false)
     await settle()
     expect(await read(contact.getCharacteristic(Characteristic.ContactSensorState))).to.be(0)
+  })
+
+  describe('device that is unreachable when the bridge starts', () => {
+    let offline
+
+    before(async () => {
+      offline = await simulateDevice({
+        type: 'HmIP-SWDO-PL-2',
+        address: '0001D3C99C9ABC',
+        channels: ['MAINTENANCE', 'SHUTTER_CONTACT_TRANSCEIVER'],
+        channel: 1,
+        service: 'HomeMaticContactSensorAccessory',
+        values: { '0.LOW_BAT': false, '0.OPERATING_VOLTAGE': 3, '0.UNREACH': true, '1.STATE': 0 }
+      })
+      await settle()
+      // ids as the bridge assigns them when the accessory is published
+      offline.accessory.homeKitAccessory._assignIDs(new IdentifierCache('test-' + Date.now()))
+    })
+
+    after(() => offline.shutdown())
+
+    // hap-nodejs looks every characteristic up by its iid before reading it
+    const readLikeHomeKit = (characteristic) =>
+      offline.accessory.homeKitAccessory.getCharacteristicByIID(characteristic.iid).handleGetRequest()
+
+    it('answers "No Response" also for characteristics added after the start', async () => {
+      const battery = findService(offline.accessory, Service.Battery)
+      for (const characteristic of battery.characteristics.concat(findService(offline.accessory, Service.ContactSensor).characteristics)) {
+        if (characteristic.UUID === Characteristic.Name.UUID) continue
+        let error
+        try {
+          await readLikeHomeKit(characteristic)
+        } catch (e) {
+          error = e
+        }
+        expect(error).to.be(HAPStatus.SERVICE_COMMUNICATION_FAILURE)
+      }
+    })
   })
 })
