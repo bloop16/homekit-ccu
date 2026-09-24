@@ -24,6 +24,8 @@ Der erste Eintrag im Menü. Bei einer neuen Installation startet er von selbst.
 3. **Geräte:** Jedes Gerät und jeder Kanal lässt sich anhaken, benennen und auf den Typ setzen, den es in Apple Home haben soll (zum Beispiel Schalter, Steckdose oder Licht). Jedes Gerät hat ein Feld *Bridge*: Es startet mit der Bridge seines Raums und lässt sich ändern; das Gerät wandert dann in den Abschnitt dieser Bridge („abweichend vom Raum“). Geräte auf „nicht übernehmen“ stehen am Ende und lassen sich zurückholen. Suche, Gerätebilder und der Schalter für Zusatzkanäle funktionieren wie bei „Neues Gerät hinzufügen“.
 4. **Vorschau:** Bridges mit ihren Räumen, Geräten und Apple-Geräten. Apple Home nimmt höchstens 149 Geräte pro Bridge an; der Assistent warnt vorher.
 5. **Koppeln:** Die neuen Bridges starten ohne Geräte. Füge jede in Apple Home hinzu (+, *Gerät hinzufügen*, Code scannen) und wähle den angezeigten Raum. Der Status wechselt von selbst auf „gekoppelt“. Danach *Geräte veröffentlichen*: Die Geräte landen im Raum ihrer Bridge.
+   - **Lege die Räume zuerst in Apple Home an** (+, *Raum hinzufügen*). Beim Hinzufügen einer Bridge bietet Apple Home nur vorhandene Räume und eigene Vorschläge an, ein neuer Name lässt sich dort nicht eingeben. Das liegt an Apple Home, nicht an der Bridge: HomeKit sieht nicht vor, dass eine Bridge einen Raum benennt.
+   - Beim Speichern der Konfiguration starten nur Bridges neu, deren Name, Setup-Code oder HomeKit-Kennung sich geändert hat, und eine Bridge, deren Kopplung zurückgesetzt wird. Die anderen laufen weiter, eine laufende Kopplung wird nicht unterbrochen.
 
 Geräte, die schon in HomeKit sind, werden nie auf eine andere Bridge verschoben; sonst verlöre Apple Home ihren Raum, ihre Szenen und Automationen.
 

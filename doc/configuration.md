@@ -24,6 +24,8 @@ The first entry of the menu. On a new installation it starts by itself.
 3. **Devices:** every device and channel can be ticked, named and set to the type it has in Apple Home (for example switch, outlet or light). Each device has a *Bridge* field: it starts with the bridge of its room and can be changed; the device then moves to that bridge's section ("differs from the room"). Devices set to "not taken" are listed at the end and can be brought back. Search, device pictures and the switch for additional channels work as in "New device".
 4. **Preview:** bridges with their rooms, devices and accessories. Apple Home takes at most 149 accessories per bridge; the assistant warns before that.
 5. **Pair:** the new bridges start without devices. Add each one in Apple Home (+, *Add Accessory*, scan the code) and choose the room shown. The state changes to "paired" by itself. Then *Publish devices*: the devices land in the room of their bridge.
+   - **Create the rooms in Apple Home first** (+, *Add Room*). While adding a bridge, Apple Home only offers existing rooms and its own suggestions; a new name cannot be typed there. This is Apple Home, not the bridge: HomeKit has no way for a bridge to name a room.
+   - Saving the configuration only restarts bridges whose name, setup code or HomeKit id changed, and a bridge whose pairing is reset. The others keep running, so a pairing that is going on is not interrupted.
 
 Devices that are already in HomeKit are never moved to another bridge; otherwise Apple Home would lose their room, scenes and automations.
 

@@ -10,10 +10,20 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 - Setup assistant, step "Bridges and rooms": proposed bridges can be removed and bridges of your own added in every layout, not only floors. A name that is empty or already taken is refused before anything is created.
 
 ### Fixed
+- Backup, log and support downloads answered `{"error":"Forbidden"}`: they submitted a hidden form, and because OpenCCU sends `Referrer-Policy: no-referrer`, the browser posted it with `Origin: null`, which the origin check refuses. The files are now fetched from the same origin and saved by the browser.
+- "Reset pairing" deleted the pairing files from the configuration service while the bridge in the main process was still running and could write them again. The main process now stops the bridge with hap-nodejs' `destroy()`, which removes its pairing data, and publishes it anew; a reset requested during a reload runs right after it.
+- The configuration service wrote nothing into `/var/log/homekit-ccu.log`, so refused api calls left no trace; it now logs into the file of the add-on.
 - Firefox over HTTPS showed an empty configuration ("CORS request did not succeed", [#1](https://github.com/bloop16/homekit-ccu/issues/1)): the page came from the WebUI, its api from port 49874, and Firefox trusts the certificate of the CCU per port. The api now uses the address and port of the WebUI (lighttpd passes `/addons/homekit-ccu/api/` to the configuration server), so there is no cross-origin request and no second certificate. If the configuration server does not answer at all, the page says so and connects by itself once it runs.
 - Uninstalling never closed the firewall ports 9874/49874: the shell replaced the port list of the Tcl script by an empty text.
+- CUxD events were dropped ("multiCall unable to find Interface for HAP_CUxD."): CUxD often answers the registration only after binrpc's 5 s timeout, so the interface counted as not connected. The registration with CUxD now waits up to 30 s on a connection of its own (other commands keep 5 s), and an event with the id of the add-on marks its interface as connected. Switch states of CUxD devices reach Apple Home again.
+- The RPC watchdog started a new reconnect every 10 s while the previous one was still waiting; late events no longer bring back an interface that is being disconnected, and the BIN-RPC connections of dropped interfaces are closed on a reload instead of reconnecting forever.
+- A command for an interface that is not connected never finished; after a start without BidCos-RF devices the duty cycle query hung and the class settings were never rebuilt.
+- Faults of `reportValueUsage` ("Transmission is pending", "Invalid XML-RPC message") were logged as `unhandledRejection`. They are harmless hints of the daemon and now only appear in the debug log.
 
 ### Changed
+- Saving the configuration only restarts bridges whose name, setup code or HomeKit id changed, and a bridge whose pairing is reset. The others keep running and get their new devices in one step, so Apple Home never sees them go away and a pairing that is going on is not broken.
+- The log shows when a bridge is paired or unpaired, and warnings of hap-nodejs about invalid values of a device (they can make Apple Home refuse a bridge); the same warning is logged at most once a minute per bridge.
+- The setup assistant asks to create the rooms in Apple Home first: while adding a bridge, Apple Home only offers existing rooms.
 - The ports 9874 and 49874 are no longer used on the CCU; the installation closes them in the firewall. In remote mode the configuration stays on port 9874.
 
 ## [0.1.0] - 2026-09-24

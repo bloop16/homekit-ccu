@@ -458,7 +458,7 @@
   "%s devices on %s bridges, %s of them new.": "%s Geräte auf %s Bridges, davon %s neu.",
   "A change to other devices then never restarts them; they land in the room of the security bridge.": "Änderungen an anderen Geräten starten sie dann nie neu. Sie landen im Raum der Sicherheits-Bridge.",
   "Accessories": "Apple-Geräte",
-  "Add every new bridge in Apple Home: tap +, \"Add Accessory\", scan the code. Apple Home asks for the room of the bridge, choose the room shown here. Then publish the devices.": "Füge jede neue Bridge in Apple Home hinzu: + antippen, „Gerät hinzufügen“, Code scannen. Apple Home fragt nach dem Raum der Bridge, wähle den hier angezeigten Raum. Danach die Geräte veröffentlichen.",
+  "Create the rooms in Apple Home first (+, \"Add Room\"): while adding a bridge, Apple Home only offers existing rooms. Then add every new bridge: tap +, \"Add Accessory\", scan the code and choose the room shown here. Then publish the devices.": "Lege zuerst die Räume in Apple Home an (+, „Raum hinzufügen“): Beim Hinzufügen einer Bridge bietet Apple Home nur vorhandene Räume an. Füge dann jede neue Bridge hinzu: + antippen, „Gerät hinzufügen“, Code scannen und den hier angezeigten Raum wählen. Danach die Geräte veröffentlichen.",
   "Add floor": "Etage hinzufügen",
   "Apple Home puts a new device into the room of its bridge. With a bridge per room every device lands in its room right away, nothing needs to be moved by hand.": "Apple Home legt ein neues Gerät in den Raum seiner Bridge. Mit einer Bridge pro Raum landet jedes Gerät sofort im richtigen Raum, nichts muss von Hand verschoben werden.",
   "Apple Home takes at most %s accessories per bridge. Split these bridges: %s": "Apple Home nimmt höchstens %s Geräte pro Bridge. Teile diese Bridges auf: %s",
@@ -538,5 +538,6 @@
   "differs from the room": "abweichend vom Raum",
   "Reload": "Neu laden",
   "No connection to HomeKit-CCU": "Keine Verbindung zu HomeKit-CCU",
-  "The configuration server does not answer. Check under Settings → Control panel → Additional software that HomeKit-CCU is running; this page connects by itself once it does.": "Der Konfigurationsserver antwortet nicht. Prüfe unter Einstellungen → Systemsteuerung → Zusatzsoftware, ob HomeKit-CCU läuft; diese Seite verbindet sich danach von selbst."
+  "The configuration server does not answer. Check under Settings → Control panel → Additional software that HomeKit-CCU is running; this page connects by itself once it does.": "Der Konfigurationsserver antwortet nicht. Prüfe unter Einstellungen → Systemsteuerung → Zusatzsoftware, ob HomeKit-CCU läuft; diese Seite verbindet sich danach von selbst.",
+  "The download failed (%s).": "Der Download ist fehlgeschlagen (%s)."
 }
