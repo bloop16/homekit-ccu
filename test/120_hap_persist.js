@@ -36,36 +36,36 @@ describe('HomeKit-CCU HAP pairing persistence', () => {
     })
 
     it('copies paired AccessoryInfo and IdentifierCache from hap-homematic when homekit-ccu has none', () => {
-      writeJSON(path.join(legacyDir, 'persist', 'AccessoryInfo.1234563CAEA1.json'), accessoryInfo({ 'A-B': 'cc' }))
-      writeJSON(path.join(legacyDir, 'persist', 'IdentifierCache.1234563CAEA1.json'), { cache: { x: 2 } })
+      writeJSON(path.join(legacyDir, 'persist', 'AccessoryInfo.1234560D4E7F.json'), accessoryInfo({ 'A-B': 'cc' }))
+      writeJSON(path.join(legacyDir, 'persist', 'IdentifierCache.1234560D4E7F.json'), { cache: { x: 2 } })
 
       const result = migrateLegacyPersist({ legacyDir, configDir, log: silentLog })
 
-      expect(result.migrated).to.eql(['1234563CAEA1'])
-      expect(readJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234563CAEA1.json')).pairedClients).to.eql({ 'A-B': 'cc' })
-      expect(readJSON(path.join(configDir, 'persist', 'IdentifierCache.1234563CAEA1.json'))).to.eql({ cache: { x: 2 } })
+      expect(result.migrated).to.eql(['1234560D4E7F'])
+      expect(readJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234560D4E7F.json')).pairedClients).to.eql({ 'A-B': 'cc' })
+      expect(readJSON(path.join(configDir, 'persist', 'IdentifierCache.1234560D4E7F.json'))).to.eql({ cache: { x: 2 } })
       expect(fs.existsSync(path.join(configDir, MARKER_FILE))).to.be(true)
     })
 
     it('replaces a fresh unpaired AccessoryInfo that homekit-ccu created on its first start', () => {
-      writeJSON(path.join(legacyDir, 'persist', 'AccessoryInfo.1234563CAEA1.json'), accessoryInfo({ 'A-B': 'cc' }))
-      writeJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234563CAEA1.json'), accessoryInfo({}))
+      writeJSON(path.join(legacyDir, 'persist', 'AccessoryInfo.1234560D4E7F.json'), accessoryInfo({ 'A-B': 'cc' }))
+      writeJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234560D4E7F.json'), accessoryInfo({}))
 
       const result = migrateLegacyPersist({ legacyDir, configDir, log: silentLog })
 
-      expect(result.migrated).to.eql(['1234563CAEA1'])
-      expect(readJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234563CAEA1.json')).pairedClients).to.eql({ 'A-B': 'cc' })
+      expect(result.migrated).to.eql(['1234560D4E7F'])
+      expect(readJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234560D4E7F.json')).pairedClients).to.eql({ 'A-B': 'cc' })
     })
 
     it('keeps a pairing that was made with homekit-ccu', () => {
-      writeJSON(path.join(legacyDir, 'persist', 'AccessoryInfo.1234563CAEA1.json'), accessoryInfo({ OLD: 'cc' }))
-      writeJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234563CAEA1.json'), accessoryInfo({ NEW: 'dd' }))
+      writeJSON(path.join(legacyDir, 'persist', 'AccessoryInfo.1234560D4E7F.json'), accessoryInfo({ OLD: 'cc' }))
+      writeJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234560D4E7F.json'), accessoryInfo({ NEW: 'dd' }))
 
       const result = migrateLegacyPersist({ legacyDir, configDir, log: silentLog })
 
       expect(result.migrated).to.eql([])
-      expect(result.skipped).to.eql(['1234563CAEA1'])
-      expect(readJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234563CAEA1.json')).pairedClients).to.eql({ NEW: 'dd' })
+      expect(result.skipped).to.eql(['1234560D4E7F'])
+      expect(readJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234560D4E7F.json')).pairedClients).to.eql({ NEW: 'dd' })
     })
 
     it('ignores unpaired legacy bridges', () => {
@@ -76,7 +76,7 @@ describe('HomeKit-CCU HAP pairing persistence', () => {
     })
 
     it('runs only once, so a later reset in the UI does not bring the old pairing back', () => {
-      writeJSON(path.join(legacyDir, 'persist', 'AccessoryInfo.1234563CAEA1.json'), accessoryInfo({ 'A-B': 'cc' }))
+      writeJSON(path.join(legacyDir, 'persist', 'AccessoryInfo.1234560D4E7F.json'), accessoryInfo({ 'A-B': 'cc' }))
       migrateLegacyPersist({ legacyDir, configDir, log: silentLog })
       fs.rmSync(path.join(configDir, 'persist'), { recursive: true })
 
@@ -94,7 +94,7 @@ describe('HomeKit-CCU HAP pairing persistence', () => {
 
     it('survives a broken legacy file', () => {
       fs.mkdirSync(path.join(legacyDir, 'persist'), { recursive: true })
-      fs.writeFileSync(path.join(legacyDir, 'persist', 'AccessoryInfo.1234563CAEA1.json'), '{broken')
+      fs.writeFileSync(path.join(legacyDir, 'persist', 'AccessoryInfo.1234560D4E7F.json'), '{broken')
       const result = migrateLegacyPersist({ legacyDir, configDir, log: silentLog })
       expect(result.migrated).to.eql([])
     })
@@ -108,29 +108,29 @@ describe('HomeKit-CCU HAP pairing persistence', () => {
     })
 
     it('stages the persist folder of a backup even if homekit-ccu already has one', () => {
-      writeJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234563CAEA1.json'), accessoryInfo({}))
-      writeJSON(path.join(extracted, 'persist', 'AccessoryInfo.1234563CAEA1.json'), accessoryInfo({ 'A-B': 'cc' }))
-      writeJSON(path.join(extracted, 'persist', 'IdentifierCache.1234563CAEA1.json'), { cache: {} })
+      writeJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234560D4E7F.json'), accessoryInfo({}))
+      writeJSON(path.join(extracted, 'persist', 'AccessoryInfo.1234560D4E7F.json'), accessoryInfo({ 'A-B': 'cc' }))
+      writeJSON(path.join(extracted, 'persist', 'IdentifierCache.1234560D4E7F.json'), { cache: {} })
 
       const staged = stageRestoredPersist({ extractedDir: extracted, configDir })
 
-      expect(staged.sort()).to.eql(['AccessoryInfo.1234563CAEA1.json', 'IdentifierCache.1234563CAEA1.json'])
+      expect(staged.sort()).to.eql(['AccessoryInfo.1234560D4E7F.json', 'IdentifierCache.1234560D4E7F.json'])
       // the running bridge keeps its files until the restart
-      expect(readJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234563CAEA1.json')).pairedClients).to.eql({})
-      expect(fs.existsSync(path.join(configDir, RESTORE_DIR, 'AccessoryInfo.1234563CAEA1.json'))).to.be(true)
+      expect(readJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234560D4E7F.json')).pairedClients).to.eql({})
+      expect(fs.existsSync(path.join(configDir, RESTORE_DIR, 'AccessoryInfo.1234560D4E7F.json'))).to.be(true)
     })
 
     it('applies the staged files on the next start and removes the staging folder', () => {
-      writeJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234563CAEA1.json'), accessoryInfo({}))
-      writeJSON(path.join(configDir, 'persist', 'IdentifierCache.1234563CAEA1.json'), { cache: { new: 1 } })
-      writeJSON(path.join(configDir, RESTORE_DIR, 'AccessoryInfo.1234563CAEA1.json'), accessoryInfo({ 'A-B': 'cc' }))
+      writeJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234560D4E7F.json'), accessoryInfo({}))
+      writeJSON(path.join(configDir, 'persist', 'IdentifierCache.1234560D4E7F.json'), { cache: { new: 1 } })
+      writeJSON(path.join(configDir, RESTORE_DIR, 'AccessoryInfo.1234560D4E7F.json'), accessoryInfo({ 'A-B': 'cc' }))
 
       const applied = applyStagedRestore({ configDir, log: silentLog })
 
-      expect(applied).to.eql(['AccessoryInfo.1234563CAEA1.json'])
-      expect(readJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234563CAEA1.json')).pairedClients).to.eql({ 'A-B': 'cc' })
+      expect(applied).to.eql(['AccessoryInfo.1234560D4E7F.json'])
+      expect(readJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234560D4E7F.json')).pairedClients).to.eql({ 'A-B': 'cc' })
       // an IdentifierCache that belongs to the new keys must not survive next to the restored ones
-      expect(fs.existsSync(path.join(configDir, 'persist', 'IdentifierCache.1234563CAEA1.json'))).to.be(false)
+      expect(fs.existsSync(path.join(configDir, 'persist', 'IdentifierCache.1234560D4E7F.json'))).to.be(false)
       expect(fs.existsSync(path.join(configDir, RESTORE_DIR))).to.be(false)
     })
 
@@ -153,13 +153,13 @@ describe('HomeKit-CCU HAP pairing persistence', () => {
   describe('removePairing', () => {
     it('removes AccessoryInfo and IdentifierCache for a bridge username in HAP naming', () => {
       const configDir = tmpDir()
-      writeJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234563CAEA1.json'), accessoryInfo({ 'A-B': 'cc' }))
-      writeJSON(path.join(configDir, 'persist', 'IdentifierCache.1234563CAEA1.json'), { cache: {} })
+      writeJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234560D4E7F.json'), accessoryInfo({ 'A-B': 'cc' }))
+      writeJSON(path.join(configDir, 'persist', 'IdentifierCache.1234560D4E7F.json'), { cache: {} })
       writeJSON(path.join(configDir, 'persist', 'AccessoryInfo.AABBCCDDEEFF.json'), accessoryInfo({}))
 
-      const removed = removePairing({ configDir, username: '12:34:56:3c:ae:a1' })
+      const removed = removePairing({ configDir, username: '12:34:56:0d:4e:7f' })
 
-      expect(removed.sort()).to.eql(['AccessoryInfo.1234563CAEA1.json', 'IdentifierCache.1234563CAEA1.json'])
+      expect(removed.sort()).to.eql(['AccessoryInfo.1234560D4E7F.json', 'IdentifierCache.1234560D4E7F.json'])
       expect(fs.readdirSync(path.join(configDir, 'persist'))).to.eql(['AccessoryInfo.AABBCCDDEEFF.json'])
     })
 

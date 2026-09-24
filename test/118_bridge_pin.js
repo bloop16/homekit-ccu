@@ -64,13 +64,13 @@ describe('HomeKit-CCU instance migration', () => {
   const gen = { generatePin: () => '314-15-926', generateSetupID: () => 'AB12' }
 
   it('moves pin to pincode and adds a missing setupID', () => {
-    const instances = { a: { name: 'default', user: '12:34:56:3C:AE:A1', pin: '970-71-213', publishDevices: true } }
+    const instances = { a: { name: 'default', user: '12:34:56:0D:4E:7F', pin: '482-91-736', publishDevices: true } }
     const result = migrateInstances(instances, gen)
-    expect(result.instances.a).to.eql({ name: 'default', user: '12:34:56:3C:AE:A1', pincode: '970-71-213', setupID: 'AB12', publishDevices: true })
+    expect(result.instances.a).to.eql({ name: 'default', user: '12:34:56:0D:4E:7F', pincode: '482-91-736', setupID: 'AB12', publishDevices: true })
     expect(result.migrated).to.have.length(1)
     expect(result.migrated[0].id).to.be('a')
     // the input stays untouched
-    expect(instances.a.pin).to.be('970-71-213')
+    expect(instances.a.pin).to.be('482-91-736')
     expect(instances.a.pincode).to.be(undefined)
   })
 
@@ -182,16 +182,16 @@ describe('HomeKit-CCU Server bridge PIN', () => {
   const stored = () => JSON.parse(fs.readFileSync(path.join(tmp, 'config.json'), 'utf8'))
 
   it('migrates pin to pincode on load and saves once', async () => {
-    const t = serverFor({ instances: { a: { name: 'default', user: '12:34:56:3c:ae:a1', pin: '970-71-213', publishDevices: true } }, mappings: {} })
+    const t = serverFor({ instances: { a: { name: 'default', user: '12:34:56:0d:4e:7f', pin: '482-91-736', publishDevices: true } }, mappings: {} })
     await t.server.loadSettings()
     expect(t.saves()).to.be(1)
     const inst = stored().instances.a
-    expect(inst.pincode).to.be('970-71-213')
+    expect(inst.pincode).to.be('482-91-736')
     expect(inst.pin).to.be(undefined)
     expect(inst.setupID).to.match(/^[0-9A-Z]{4}$/)
     expect(inst.publishDevices).to.be(true)
     expect(stored().mappings).to.eql({})
-    expect(t.server._configuration.instances.a.pincode).to.be('970-71-213')
+    expect(t.server._configuration.instances.a.pincode).to.be('482-91-736')
     expect(t.lines.info.filter(l => /migrated bridge settings/.test(l))).to.have.length(1)
   })
 
@@ -205,7 +205,7 @@ describe('HomeKit-CCU Server bridge PIN', () => {
   })
 
   it('does not save an already migrated config again', async () => {
-    const t = serverFor({ configVersion: 2, instances: { a: { name: 'default', pincode: '970-71-213', setupID: 'AB12' } } })
+    const t = serverFor({ configVersion: 2, instances: { a: { name: 'default', pincode: '482-91-736', setupID: 'AB12' } } })
     await t.server.loadSettings()
     await t.server.loadSettings()
     expect(t.saves()).to.be(0)
@@ -231,7 +231,7 @@ describe('HomeKit-CCU Server bridge PIN', () => {
       enableMonitoring: true,
       disableHistory: true,
       interfaceWatchdog: 300,
-      instances: { [DEFAULT]: { name: 'default', user: '12:34:56:3c:ae:a1', pin: '970-71-213', publishDevices: true } },
+      instances: { [DEFAULT]: { name: 'default', user: '12:34:56:0d:4e:7f', pin: '482-91-736', publishDevices: true } },
       mappings: { '0008DA49A1B2C3:1': { name: 'Contact', Service: 'HomeMaticIPContactAccessory', instance: [DEFAULT], settings: {} } },
       channels: ['0008DA49A1B2C3:1']
     })
@@ -248,7 +248,7 @@ describe('HomeKit-CCU Server bridge PIN', () => {
       expect(stored().enableMonitoring).to.be(true)
       expect(stored().interfaceWatchdog).to.be(300)
       expect(stored().channels).to.eql(['0008DA49A1B2C3:1'])
-      expect(stored().instances[DEFAULT].pincode).to.be('970-71-213')
+      expect(stored().instances[DEFAULT].pincode).to.be('482-91-736')
     })
 
     it('turns the session check on for a config without the key', async () => {
@@ -361,7 +361,7 @@ describe('HomeKit-CCU Server bridge PIN', () => {
     })
 
     it('falls back to the legacy pin key', () => {
-      expect(load({ name: 'default', pin: '970-71-213' })).to.be('970-71-213')
+      expect(load({ name: 'default', pin: '482-91-736' })).to.be('482-91-736')
     })
 
     it('generates a valid PIN when neither is set', () => {
