@@ -56,12 +56,23 @@ jobs:
           cd "$RUNNER_TEMP/offline"
           npm i --offline --no-audit --no-fund --cache "$RUNNER_TEMP/empty-cache" "$RUNNER_TEMP/addon/homekit-ccu.tgz"
           node -e "require('homekit-ccu/lib/Server.js'); require('homekit-ccu/lib/HomeMaticRPC.js')"
+      - name: Release notes from CHANGELOG.md
+        run: |
+          # the section of the version (a pre-release uses the section of its final version)
+          VERSION=${TAG#v}
+          VERSION=${VERSION%%-*}
+          awk -v head="## [$VERSION]" 'index($0, head) == 1 { found = 1; next } found && /^## \[/ { exit } found { print }' CHANGELOG.md \
+            | sed "s#](doc/#](https://github.com/$GITHUB_REPOSITORY/blob/$TAG/doc/#g" > "$RUNNER_TEMP/notes.md"
+          test -s "$RUNNER_TEMP/notes.md" || echo "See [CHANGELOG.md](https://github.com/$GITHUB_REPOSITORY/blob/$TAG/CHANGELOG.md)." > "$RUNNER_TEMP/notes.md"
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
       - name: Publish release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           files: addon_installer/homekit-ccu-*.tar.gz
           tag_name: ${{ steps.tag.outputs.tag }}
           target_commitish: ${{ github.sha }}
+          body_path: ${{ runner.temp }}/notes.md
           generate_release_notes: true
           prerelease: ${{ contains(steps.tag.outputs.tag, '-') }}
           fail_on_unmatched_files: true

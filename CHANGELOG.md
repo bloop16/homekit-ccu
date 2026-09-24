@@ -4,7 +4,7 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/). Versions up to 0.0.64 are those of hap-homematic.
 
-## [0.1.0] - unreleased
+## [0.1.0] - 2026-09-24
 
 First release of the fork for OpenCCU 3.89+ (Node.js 22.12+). Moving from hap-homematic is
 described in [doc/upgrading.md](doc/upgrading.md).

@@ -67,4 +67,4 @@ tail -f /var/log/homekit-ccu.log
    - Tag pushen: `git tag -a v<version> -m "<version>" && git push origin v<version>`
    - oder GitHub → Actions → Release → „Run workflow“ auf `master`; der Workflow legt den Tag `v<version>` selbst an.
 
-Der Workflow testet, baut das Add-on-Paket und veröffentlicht es; eine Version mit `-` (z. B. `0.1.0-rc.8`) wird zum Pre-Release.
+Der Workflow testet, baut das Add-on-Paket und veröffentlicht es; eine Version mit `-` (z. B. `0.1.0-rc.8`) wird zum Pre-Release. Der Release-Text ist der Abschnitt der Version in CHANGELOG.md; vor einem endgültigen Release dort das Datum eintragen.
