@@ -21,6 +21,17 @@ describe('HomeKit-CCU security hardening', () => {
       expect(redactText('var s = "@abcdefghij@"; http://user:secret@cam/x rtsp://cam/x'))
         .to.be('var s = "@***@"; http://***@cam/x rtsp://cam/x')
     })
+
+    it('replaces the bare session id of the session check script', () => {
+      // isValidCCUSession strips the @ of the session id before it goes into the Rega script
+      expect(redactText("Write(system.GetSessionVarStr('YXGjfgVaxU'));"))
+        .to.be("Write(system.GetSessionVarStr('***'));")
+    })
+
+    it('replaces session ids in query strings, also URL encoded', () => {
+      expect(redactText('"/api/?sid=%40AbCdEfGhIj%40&method=backup"')).to.be('"/api/?sid=***&method=backup"')
+      expect(redactText('/api/?method=x&sid=@AbCdEfGhIj@')).to.be('/api/?method=x&sid=***')
+    })
   })
 
   describe('service class names', () => {

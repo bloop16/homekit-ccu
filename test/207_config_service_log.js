@@ -37,3 +37,21 @@ describe('HomeKit-CCU log of the configuration service', () => {
     }
   })
 })
+
+describe('HomeKit-CCU debug switch of the configuration service', () => {
+  const { isFlagSet } = require(path.join(__dirname, '..', 'lib', 'logger.js'))
+
+  it('reads the switch of the main process from its environment text', () => {
+    // process.env only holds text, and "false" is truthy
+    expect(isFlagSet('true')).to.be(true)
+    expect(isFlagSet(true)).to.be(true)
+    expect(isFlagSet('false')).to.be(false)
+    expect(isFlagSet(undefined)).to.be(false)
+    expect(isFlagSet('')).to.be(false)
+  })
+
+  it('is used by the configuration service', () => {
+    const source = fs.readFileSync(path.join(__dirname, '..', 'lib', 'configurationsrv', 'index.js'), 'utf8')
+    expect(source).to.contain('logger.setDebugEnabled(isFlagSet(process.env.UIX_DEBUG))')
+  })
+})
