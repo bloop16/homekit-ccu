@@ -347,7 +347,6 @@
   "This service provides a window accessory combined from a rotary sensor and a normal window contact": "Dieser Service stellt einen Fensterkontakt zur Verfügung, der aus einem Drehgriff und FensterSensor besteht.",
   "Address retary sensor": "Adresse des Drehgriffs",
   "Address window sensor": "Adresse des Fenstersensors",
-  "Force Cache usage": "Cache immer benutzen",
   "Add ventilation": "Belüftung hinzufügen",
   "Adds a button to set the gate to ventilation mode": "Fügt einen Button hinzu um das Tor in den Belüftungsmodus zu versetzen.",
   "reverse values": "Werte umdrehen",
