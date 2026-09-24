@@ -26,10 +26,23 @@
 
 ## What you get
 
-- Thermostats, switches, dimmers, blinds, locks, door and window contacts, motion and weather sensors show up as native Apple Home accessories, with live updates.
+- Your devices as native Apple Home accessories with live updates, "No Response" when a device is unreachable and battery levels in percent.
 - One bridge per room if you like, so devices land in the right room automatically.
-- CCU system variables and programs as switches, Eve history for sensors, and a video doorbell with two-way audio.
-- A web configuration inside the CCU, protected by your CCU administrator login.
+- Eve history for sensors, and power, wind and rain values in the Eve app.
+- A web configuration inside the CCU with light and dark mode, protected by your CCU administrator login.
+
+## Supported devices
+
+HomematicIP, HomeMatic and HomeMatic Wired devices appear as the accessory types Apple Home knows:
+
+- **Climate:** radiator and wall thermostats, heating groups, temperature, humidity, CO₂ and particulate sensors, weather stations
+- **Windows and doors:** contacts, window handles, roller shutters and venetian blinds with tilt, window drives, garage doors, door locks (DLD, DLP, KeyMatic)
+- **Safety:** smoke, water and rain sensors, sirens, the CCU alarm as a security system
+- **Lights and power:** dimmers, colour lights, switches, outlets, irrigation and water valves
+- **Buttons and sensors:** remotes as one accessory with numbered buttons, doorbells, motion, presence and light sensors
+- **CCU:** system variables, programs, a video doorbell
+
+The [device list](doc/devices.md) shows every family with the models and how they look in Apple Home.
 
 ## Installation
 
@@ -58,6 +71,7 @@ Bridges, devices and the HomeKit pairing come back, so rooms and automations sta
 | Login, HTTPS and why the UI needs a CCU session | [doc/security.md](doc/security.md) |
 | Video doorbell and ffmpeg | [doc/video-doorbell.md](doc/video-doorbell.md) |
 | Running on another machine, ports | [doc/remote-mode.md](doc/remote-mode.md) |
+| Supported devices and how they look in Apple Home | [doc/devices.md](doc/devices.md) |
 | Rooms, Eve history, mDNS, architecture | [doc/advanced.md](doc/advanced.md) |
 | Development and debugging | [doc/development.md](doc/development.md) |
 | What changed | [CHANGELOG.md](CHANGELOG.md) |

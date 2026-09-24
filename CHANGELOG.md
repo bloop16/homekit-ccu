@@ -10,6 +10,10 @@ First release of the fork for OpenCCU 3.89+ (Node.js 22.12+). Moving from hap-ho
 described in [doc/upgrading.md](doc/upgrading.md).
 
 ### Added
+- New devices: HmIP-SWSD-2/-3 smoke detectors, Door Lock Drive Pro (DLP) and door lock sensor (DLS), irrigation valve (WSM) with run time, water stop (WSS), particulate sensor (SFD) as air quality, CO₂ traffic light HM-CC-SCD, window drive (MOD-WD-VK), presence detector (SPI) as occupancy sensor, sirens (ASIR) as an alarm switch, HmIP-ESI energy sensor (Eve), alarm actuator HM-Sec-SFA and door controller outputs.
+- Remotes and wall buttons as one accessory with numbered buttons (ServiceLabel), instead of one accessory per key.
+- Venetian blind tilt for HM-LC-Ja1PBU, colour temperature for HmIP-RGBW/LSC/E27/GU10, a latch "Open" switch and jammed state for the KeyMatic, a separate humidity sensor for wall thermostats.
+- [Device list](doc/devices.md) with every supported family and how it looks in Apple Home.
 - Thermostats (HmIP-eTRV, HmIP-WTH, heating groups, HM-CC-RT-DN, HM-TC-IT): heating state from the valve position, Eve valve position, "No Response" while unreachable.
 - "No Response" in Apple Home for every HomeMatic device while the CCU reports it unreachable.
 - Battery service for all battery-powered sensors that report LOW_BAT; StatusTampered and StatusFault for contacts, smoke detectors and other devices that report sabotage or errors.
@@ -19,6 +23,8 @@ described in [doc/upgrading.md](doc/upgrading.md).
 - Private security reports (SECURITY.md), Dependabot, CI on Node.js 22 and 24.
 
 ### Changed
+- Native defaults when a device is added: contacts as contact sensors, buttons as programmable buttons, wall thermostats as thermostats, plugs as outlets, switch actuators as switches, rain sensors as leak sensors, garage drive lights as lightbulbs. Devices that are already set up keep their type.
+- Weather stations always show temperature, humidity and light natively in Apple Home; wind, rain and pressure stay in the Eve app. Multi-service accessories mark their main service, so Apple Home shows the right tile.
 - HomeKit core: @homebridge/hap-nodejs 2.2 (was hap-nodejs 0.11), video doorbell on CameraController with Opus/AAC-ELD audio and optional two-way audio (`audio_return_target`), `advertiser` setting (bonjour-hap, ciao, avahi).
 - Bridges are called "HomeKit-CCU" and "HomeKit-CCU <instance>"; accessory names follow Apple's rules. Accessory identities are unchanged, so rooms, scenes and automations stay.
 - Battery level scales between empty and full cells instead of dividing by the nominal voltage.
@@ -29,6 +35,7 @@ described in [doc/upgrading.md](doc/upgrading.md).
 - Dependencies: commander 15, formidable 3, binrpc 4.3, homematic-xmlrpc 2.0, fakegato-history 0.6.7 vendored without Google Drive; moment and chalk replaced by Node.js built-ins. Linting with neostandard (ESLint 9).
 
 ### Fixed
+- Settings that are on by default could not be switched off permanently in the device dialog.
 - Thermostat modes: OFF, HEAT and AUTO switch reliably, HEAT after OFF restores the last temperature, 0.5 °C steps, BidCos valve state no longer ×100, boost switch named "<name> Boost".
 - Contacts: tilted and open count as open; "reverse" no longer flips the battery warning; Eve open/closed times.
 - Garage doors, door lock drive, blinds, Winmatic, door opener, smoke detectors, weather stations, thermometers, plugs, RGB lights and buttons: correct states and values (details in the git history), no NaN or out-of-range values before the first event.
