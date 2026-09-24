@@ -129,3 +129,34 @@ describe('HomeKit-CCU new device dialog model', () => {
     expect(model.serviceLabel('HomeMaticIPRGBWAccessory')).to.be('RGBW')
   })
 })
+
+describe('HomeKit-CCU new device dialog model: filters', () => {
+  let model
+
+  before(async () => {
+    model = await loadModel()
+  })
+
+  const withFilters = (more) => ({ ...bsm(), functions: ['Licht'], category: 'switch', system: 'HmIP', virtualKeys: false, ...more })
+  const shown = (device, filter) => model.visibleEntries(device, model.buildEntries(device), filter).length
+
+  it('filters by function, category and radio system', () => {
+    const device = withFilters()
+    expect(shown(device, { func: 'Licht', category: 'switch', system: 'HmIP' })).to.be(3)
+    expect(shown(device, { func: 'Heizung' })).to.be(0)
+    expect(shown(device, { category: 'light' })).to.be(0)
+    expect(shown(device, { system: 'BidCos-RF' })).to.be(0)
+    expect(shown(device, { text: 'licht' })).to.be(3)
+  })
+
+  it('hides the virtual keys of the CCU unless asked for', () => {
+    const device = withFilters({ virtualKeys: true })
+    expect(shown(device, {})).to.be(0)
+    expect(shown(device, { showVirtualKeys: true })).to.be(3)
+  })
+
+  it('offers every category and radio system of the catalog', () => {
+    expect(model.CATEGORIES).to.eql(['light', 'switch', 'cover', 'climate', 'security', 'sensor', 'button', 'water', 'other'])
+    expect(model.SYSTEMS).to.eql(['HmIP', 'HmIP-Wired', 'BidCos-RF', 'BidCos-Wired', 'other'])
+  })
+})

@@ -156,3 +156,86 @@ describe('HomeKit-CCU new device catalog: saveNewDevices', () => {
     expect(save([null]).reason).to.be('unknown channel')
   })
 })
+
+describe('HomeKit-CCU new device catalog: filters and pictures', () => {
+  const { parseDevDb, deviceIcons } = require(path.join(__dirname, '..', 'lib', 'util', 'deviceIcons.js'))
+  const { categoryOf, radioSystemOf, isVirtualKeyDevice } = require(path.join(__dirname, '..', 'lib', 'util', 'newDeviceCatalog.js'))
+  const { orderedServicesForChannel } = require(path.join(__dirname, '..', 'lib', 'util', 'defaultServices.js'))
+  let serviceTable
+
+  before(async () => {
+    serviceTable = await new Server(quietLog).buildServiceList()
+  })
+
+  const supported = (devices) => {
+    devices.forEach(device => device.channels.forEach(channel => {
+      channel.isSuported = (serviceTable[channel.type] !== undefined) || (serviceTable[device.type + ':' + channel.type] !== undefined)
+    }))
+    return devices
+  }
+  const rcv = (type, channelType) => ({
+    id: 9000,
+    address: 'RCV',
+    name: type,
+    type,
+    channels: [1, 2, 3].map(number => ({ id: 9000 + number, address: 'RCV:' + number, name: type + ' RCV:' + number, type: channelType }))
+  })
+
+  it('reads the 50 pixel pictures from the DEV_PATHS line of DEVDB.tcl', () => {
+    const devdb = [
+      '#!/bin/tclsh',
+      'array set DEV_DESCRIPTION {HmIP-BSM HmIP-BSM}',
+      'array set DEV_PATHS       {HmIP-BSM {{50 /config/img/devices/50/PushButton-2ch-wm_thumb.png} {250 /config/img/devices/250/PushButton-2ch-wm.png}} ' +
+        'VIR-LG-RGB-DIM {{50 /config/img/devices/50/coupling/hm-coupling-rgb-dim.png} {250 /config/img/devices/250/coupling/x.png}} BROKEN {{250 /x.png}}}'
+    ].join('\n')
+    expect(parseDevDb(devdb)).to.eql({
+      'HmIP-BSM': '/config/img/devices/50/PushButton-2ch-wm_thumb.png',
+      'VIR-LG-RGB-DIM': '/config/img/devices/50/coupling/hm-coupling-rgb-dim.png'
+    })
+    expect(parseDevDb(undefined)).to.eql({})
+  })
+
+  it('has no pictures without a DEVDB.tcl', () => {
+    expect(deviceIcons(path.join(__dirname, 'no-such-devdb.tcl'))).to.eql({})
+  })
+
+  it('gives every device a category, a radio system, its functions and its picture', () => {
+    const devices = supported(['HmIP-BSM.json', 'HmIPW-DRBL4.json', 'HmIP-eTRV-2.json', 'HM-Sec-WDS.json', 'HmIP-PSM.json'].flatMap(fixture))
+    const functions = [{ id: 1, name: 'Licht', channels: [1005] }]
+    const icons = { 'HmIP-BSM': '/config/img/devices/50/PushButton-2ch-wm_thumb.png' }
+    // the category follows the function of the device, not what is already in HomeKit
+    const mappings = { '5857734983ABCD:3': { Service: 'HomeMaticSwitchAccessory' } }
+    const list = buildDeviceCatalog(devices, mappings, { serviceTable, functions, icons })
+    const byType = (type) => list.find(entry => entry.type === type)
+    expect(byType('HmIP-BSM')).to.have.property('icon', icons['HmIP-BSM'])
+    expect(byType('HmIP-BSM').functions).to.eql(['Licht'])
+    expect(byType('HmIPW-DRBL4')).to.not.have.property('icon')
+    expect(list.map(entry => [entry.type, entry.category, entry.system])).to.eql([
+      ['HM-Sec-WDS', 'sensor', 'BidCos-RF'],
+      ['HmIP-BSM', 'switch', 'HmIP'],
+      ['HmIP-eTRV-2', 'climate', 'HmIP'],
+      ['HMIP-PSM', 'switch', 'HmIP'],
+      ['HmIPW-DRBL4', 'cover', 'HmIP-Wired']
+    ])
+  })
+
+  it('knows the categories and radio systems', () => {
+    expect(['HomeMaticDimmerAccessory', 'HomeMaticKeyMaticAccessory', 'HomeMaticRemoteAccessory', 'HomeMaticIPWaterStopAccessory', 'HomeMaticIPPowerMeterSwitchAccessory', 'HomeMaticSPHTTPAccessory'].map(categoryOf))
+      .to.eql(['light', 'security', 'button', 'water', 'switch', 'other'])
+    expect(['HmIPW-DRAP', 'HmIP-BSM', 'ELV-SH-CTH', 'HMW-IO-12-Sw14-DR', 'HM-LC-Sw1-FM', 'VIR-LG-ONOFF'].map(radioSystemOf))
+      .to.eql(['HmIP-Wired', 'HmIP', 'HmIP', 'BidCos-Wired', 'BidCos-RF', 'other'])
+  })
+
+  it('marks the virtual keys of the CCU, a programmable switch per key and nothing preselected', () => {
+    expect(['HM-RCV-50', 'HmIP-RCV-50', 'HMW-RCV-50'].every(isVirtualKeyDevice)).to.be(true)
+    expect(isVirtualKeyDevice('HmIP-WRC6')).to.be(false)
+    const list = buildDeviceCatalog(supported([rcv('HmIP-RCV-50', 'KEY_TRANSCEIVER'), rcv('HM-RCV-50', 'KEY')]), {}, { serviceTable, icons: {} })
+    list.forEach(device => {
+      expect(device.virtualKeys).to.be(true)
+      expect(device.category).to.be('button')
+      expect(device.channels.map(item => [item.key, item.preselect, item.services[0].serviceClazz]))
+        .to.eql([1, 2, 3].map(() => [false, false, 'HomeMaticKeyAccessory']))
+    })
+    expect(orderedServicesForChannel(serviceTable, 'HmIP-RCV-50', 'KEY_TRANSCEIVER')[0].serviceClazz).to.be('HomeMaticKeyAccessory')
+  })
+})

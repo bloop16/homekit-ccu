@@ -438,5 +438,20 @@
   "Creates %s devices in Apple Home.": "Legt %s Geräte in Apple Home an.",
   "Every device needs a name and a HAP instance.": "Jedes Gerät braucht einen Namen und eine HAP Instanz.",
   "Key": "Taste",
-  "Remote with one button": "Fernbedienung mit einer Taste"
+  "Remote with one button": "Fernbedienung mit einer Taste",
+  "All functions": "Alle Gewerke",
+  "All kinds": "Alle Arten",
+  "All radio systems": "Alle Funksysteme",
+  "Other": "Sonstige",
+  "Show virtual CCU keys (HM-RCV-50, HmIP-RCV-50)": "Virtuelle CCU-Tasten zeigen (HM-RCV-50, HmIP-RCV-50)",
+  "Reset filter": "Filter zurücksetzen",
+  "%s of %s devices": "%s von %s Geräten",
+  "Lights": "Licht",
+  "Switches and outlets": "Schalter und Steckdosen",
+  "Blinds, windows and doors": "Rollläden, Fenster und Türen",
+  "Heating and climate": "Heizung und Klima",
+  "Security and locks": "Sicherheit und Schlösser",
+  "Sensors": "Sensoren",
+  "Buttons and remotes": "Taster und Fernbedienungen",
+  "Water": "Wasser"
 }

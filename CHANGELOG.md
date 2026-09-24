@@ -28,7 +28,7 @@ described in [doc/upgrading.md](doc/upgrading.md).
 - HomeKit core: @homebridge/hap-nodejs 2.2 (was hap-nodejs 0.11), video doorbell on CameraController with Opus/AAC-ELD audio and optional two-way audio (`audio_return_target`), `advertiser` setting (bonjour-hap, ciao, avahi).
 - Bridges are called "HomeKit-CCU" and "HomeKit-CCU <instance>"; accessory names follow Apple's rules. Accessory identities are unchanged, so rooms, scenes and automations stay.
 - Battery level scales between empty and full cells instead of dividing by the nominal voltage.
-- "New device" lists devices instead of single channels: search across device, channel, room and serial, a room filter, devices already in HomeKit and the second and third virtual channel of HomematicIP outputs hidden until asked for. Ticking a device selects its useful channels; the keys of a remote are one row. A second step sets name, Apple Home type (e.g. switch, outlet or light) and bridge for all chosen channels, which are saved at once.
+- "New device" lists devices instead of single channels: search across device, channel, room and serial, a room filter, devices already in HomeKit and the second and third virtual channel of HomematicIP outputs hidden until asked for. Ticking a device selects its useful channels; the keys of a remote are one row. A second step sets name, Apple Home type (e.g. switch, outlet or light) and bridge for all chosen channels, which are saved at once. Each device shows its picture from the CCU WebUI; filters for CCU function (Gewerk), kind of device and radio system; the virtual CCU keys (HM-RCV-50, HmIP-RCV-50) are hidden until asked for.
 - Configuration UI on Bootstrap 5.3 with a responsive layout; jQuery 4, Chart.js 4, sockjs-client 1.6, showdown 2.1 with DOMPurify, qrcode-generator 2.0. "HomeKit Instances → Settings" is now "Publish devices".
 - The configuration UI and its API require a CCU administrator session, also on the CCU; `config.json` gets `"configVersion": 2`, which turns the check on once for configurations from hap-homematic.
 - Moving from hap-homematic works through its backup: the installer refuses to run while hap-homematic is installed; restoring a backup brings back configuration and HomeKit pairing.
@@ -36,6 +36,7 @@ described in [doc/upgrading.md](doc/upgrading.md).
 - Dependencies: commander 15, formidable 3, binrpc 4.3, homematic-xmlrpc 2.0, fakegato-history 0.6.7 vendored without Google Drive; moment and chalk replaced by Node.js built-ins. Linting with neostandard (ESLint 9).
 
 ### Fixed
+- The virtual keys of HmIP-RCV-50 were offered as one remote with 50 buttons; each key is a programmable switch again, as for HM-RCV-50.
 - Doorbell buttons (HmIP-DSD-PCB, HmIP-DBB, HM-Sen-DB-PCB) are added as a programmable switch: Apple Home shows a doorbell without a camera as "not supported". The doorbell service stays selectable.
 - Saving a device answered before the configuration was written, so publishing right after could miss the change.
 - Settings that are on by default could not be switched off permanently in the device dialog.
