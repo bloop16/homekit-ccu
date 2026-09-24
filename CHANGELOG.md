@@ -9,6 +9,7 @@ Changelog for 0.1.0:
 * standard lint clean, c8 coverage script, husky removed
 * GitHub Actions CI and release workflow; addon tarball no longer tracked in git
 * Installer requires Node.js 22 (OpenCCU 3.89+), README no longer claims automatic Node install; the add-on info shows the Node.js version actually installed
+* "Reset" of a bridge in the configuration UI now really removes its pairing (the file name was built without the dot and with only the first colon removed, so nothing was deleted); a failing backup restore is logged
 * README shortened to requirements, installation and links; details moved to `doc/` (upgrading, security, video doorbell, remote mode, advanced, development)
 * Update check in the CCU's add-on list reads the latest release of bloop16/homekit-ccu; repository, WebUI and issue links point at the fork
 * Restart from the configuration UI calls the rc.d script directly; configuration restore checks the CCU session when authentication is on and removes rejected uploads

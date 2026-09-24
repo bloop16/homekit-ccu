@@ -8,6 +8,7 @@ const {
   migrateLegacyPersist,
   applyStagedRestore,
   stageRestoredPersist,
+  removePairing,
   MARKER_FILE,
   RESTORE_DIR
 } = require(path.join(__dirname, '..', 'lib', 'util', 'hapPersist.js'))
@@ -146,6 +147,25 @@ describe('HomeKit-CCU HAP pairing persistence', () => {
 
     it('does nothing on start when there is no staged restore', () => {
       expect(applyStagedRestore({ configDir, log: silentLog })).to.eql([])
+    })
+  })
+
+  describe('removePairing', () => {
+    it('removes AccessoryInfo and IdentifierCache for a bridge username in HAP naming', () => {
+      const configDir = tmpDir()
+      writeJSON(path.join(configDir, 'persist', 'AccessoryInfo.1234563CAEA1.json'), accessoryInfo({ 'A-B': 'cc' }))
+      writeJSON(path.join(configDir, 'persist', 'IdentifierCache.1234563CAEA1.json'), { cache: {} })
+      writeJSON(path.join(configDir, 'persist', 'AccessoryInfo.AABBCCDDEEFF.json'), accessoryInfo({}))
+
+      const removed = removePairing({ configDir, username: '12:34:56:3c:ae:a1' })
+
+      expect(removed.sort()).to.eql(['AccessoryInfo.1234563CAEA1.json', 'IdentifierCache.1234563CAEA1.json'])
+      expect(fs.readdirSync(path.join(configDir, 'persist'))).to.eql(['AccessoryInfo.AABBCCDDEEFF.json'])
+    })
+
+    it('rejects a username that is not a HAP MAC address', () => {
+      const configDir = tmpDir()
+      expect(() => removePairing({ configDir, username: '../../etc' })).to.throwError()
     })
   })
 })
