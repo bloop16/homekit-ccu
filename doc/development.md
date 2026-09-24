@@ -52,7 +52,7 @@ netstat -tlnp | grep 9874
 # check if ReGaHSS Remote Script API is available
 curl -X POST -d "dom.GetObject(\"HmIP-RF\");" http://127.0.0.1:8181/rega.exe
 # With login
-curl -X POST -u "Admin:IhrPasswort" -d "dom.GetObject(\"HmIP-RF\");" http://127.0.0.1:8181/rega.exe
+curl -X POST -u "<admin-user>:<admin-password>" -d "dom.GetObject(\"HmIP-RF\");" http://127.0.0.1:8181/rega.exe
 
 ls /usr/local/etc/config/addons/homekit-ccu/
 

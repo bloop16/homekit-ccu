@@ -30,7 +30,7 @@ describe('HomeKit-CCU HomeKit names and accessory information', () => {
       expect(homeKitName('#1 Lampe*')).to.be('1 Lampe')
       expect(homeKitName('Garten 🌱 Pumpe')).to.be('Garten Pumpe')
       expect(homeKitName('  --Keller--  ')).to.be('Keller')
-      expect(homeKitName('HmIP-eTRV-2 000A1A49A1138C:1')).to.be('HmIP-eTRV-2 000A1A49A1138C:1')
+      expect(homeKitName('HmIP-eTRV-2 000A1B2C3D4E5F:1')).to.be('HmIP-eTRV-2 000A1B2C3D4E5F:1')
     })
 
     it('limits names to 64 characters and falls back when nothing is left', () => {
