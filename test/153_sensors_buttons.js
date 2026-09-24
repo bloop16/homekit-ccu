@@ -79,7 +79,44 @@ describe('HomeKit-CCU sensors: HmIP-KRCA remote key', () => {
   })
 })
 
-describe('HomeKit-CCU sensors: HmIP-DSD-PCB doorbell', () => {
+describe('HomeKit-CCU sensors: HmIP-DSD-PCB doorbell button', () => {
+  const DSD = '0002DD89A1B2C3'
+  const DP = (name) => 'HmIP.' + DSD + ':1.' + name
+  let server
+  let accessory
+
+  before(async () => {
+    // no stored mapping: the channel gets its default service
+    ({ server } = await startServer('HmIP-DSD-PCB.json', {
+      mappings: {},
+      values: {
+        [DP('PRESS_SHORT')]: false,
+        [DP('PRESS_LONG')]: false
+      }
+    }))
+    accessory = accessoryAt(server, DSD + ':1')
+    await settle()
+  })
+
+  after(() => shutdown(server))
+
+  // Apple Home shows a Doorbell service without a camera as "not supported"
+  it('is a programmable switch by default, no Doorbell service', () => {
+    expect(accessory.serviceClass).to.be('HomeMaticKeyAccessory')
+    expect(findService(accessory, Service.StatelessProgrammableSwitch)).to.be.ok()
+    expect(findService(accessory, Service.Doorbell)).to.not.be.ok()
+  })
+
+  it('reports a ring as a single press', () => {
+    const button = findService(accessory, Service.StatelessProgrammableSwitch).getCharacteristic(Characteristic.ProgrammableSwitchEvent)
+    const events = recordEvents(button)
+    server._ccu.fireEvent(DP('PRESS_SHORT'), true)
+    events.stop()
+    expect(events.list).to.eql([SINGLE_PRESS])
+  })
+})
+
+describe('HomeKit-CCU sensors: HmIP-DSD-PCB as Doorbell service', () => {
   const DSD = '0002DD89A1B2C3'
   const DP = (name) => 'HmIP.' + DSD + ':1.' + name
   let server
@@ -88,6 +125,7 @@ describe('HomeKit-CCU sensors: HmIP-DSD-PCB doorbell', () => {
 
   before(async () => {
     ({ server } = await startServer('HmIP-DSD-PCB.json', {
+      mappings: { [DSD + ':1']: { Service: 'HomeMaticDoorBellAccessory' } },
       values: {
         [DP('PRESS_SHORT')]: false,
         [DP('PRESS_LONG')]: false

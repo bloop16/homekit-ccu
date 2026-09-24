@@ -62,7 +62,7 @@ The tables list the device families with typical models. Colour variants (`-A`, 
 |---|---|---|
 | Remotes and wall buttons HmIP-WRC2, WRC6, BRC2, KRC4, KRCA, RC8, HM-RC, HM-PB | One accessory with numbered buttons | Short and long press for automations |
 | CCU virtual keys HM-RCV-50 / HmIP-RCV-50 | Programmable switch per key | Or a switch that presses the key |
-| Doorbell HmIP-DSD-PCB, HmIP-DBB, HM-Sen-DB-PCB | Doorbell | Notification on iPhone, Watch and HomePod |
+| Doorbell HmIP-DSD-PCB, HmIP-DBB, HM-Sen-DB-PCB | Programmable switch | Starts automations; Apple Home shows a doorbell without a camera as "not supported" |
 | Motion detectors HmIP-SMI, SMO, SMI55, HM-Sec-MDIR | Motion sensor + light sensor | |
 | Presence detector HmIP-SPI | Occupancy sensor + light sensor | |
 | Light sensor HmIP-SLO, HM-Sen-LI-O | Light sensor | |

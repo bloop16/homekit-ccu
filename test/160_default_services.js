@@ -49,7 +49,7 @@ describe('HomeKit-CCU default services: table and ordering', () => {
     expect(preferredServices('HEATING_CLIMATECONTROL_TRANSCEIVER', 'HmIP-STH')).to.eql(['HomeMaticThermometerAccessory'])
     expect(preferredServices('HEATING_CLIMATECONTROL_TRANSCEIVER', 'HmIP-WTH-2')).to.eql(['HomeMaticRadiatorThermostatAccessory'])
     expect(preferredServices('HEATING_CLIMATECONTROL_TRANSCEIVER', 'HmIP-eTRV-2')).to.eql(['HomeMaticRadiatorThermostatAccessory'])
-    expect(preferredServices('KEY_TRANSCEIVER', 'HmIP-DBB')).to.eql(['HomeMaticDoorBellAccessory'])
+    expect(preferredServices('KEY_TRANSCEIVER', 'HmIP-DBB')).to.eql(['HomeMaticKeyAccessory', 'HomeMaticDoorBellAccessory'])
     expect(preferredServices('KEY_TRANSCEIVER', 'HmIP-WRC6')).to.eql(['HomeMaticRemoteAccessory', 'HomeMaticKeyAccessory'])
     expect(preferredServices('NO_SUCH_TYPE', 'HmIP-XYZ')).to.eql([])
   })
@@ -126,9 +126,9 @@ describe('HomeKit-CCU default services: native defaults of real channels', () =>
     ['HmIP-SMI55 key', () => fromFixture('HmIP-SMI55.json', '9979012713ABCD:1'), KEY_DEFAULT],
     ['HM-PB-2-WM55 KEY', () => ['HM-PB-2-WM55', 'KEY'], KEY_DEFAULT],
     ['CCU VIRTUAL_KEY', () => ['HM-RCV-50', 'VIRTUAL_KEY'], () => 'HomeMaticKeyAccessory'],
-    ['HmIP-DSD-PCB doorbell input', () => fromFixture('HmIP-DSD-PCB.json', '0002DD89A1B2C3:1'), () => 'HomeMaticDoorBellAccessory'],
-    ['HmIP-DBB doorbell key', () => ['HmIP-DBB', 'KEY_TRANSCEIVER'], () => 'HomeMaticDoorBellAccessory'],
-    ['HM-Sen-DB-PCB doorbell key', () => ['HM-Sen-DB-PCB', 'KEY'], () => 'HomeMaticDoorBellAccessory'],
+    ['HmIP-DSD-PCB doorbell input', () => fromFixture('HmIP-DSD-PCB.json', '0002DD89A1B2C3:1'), () => 'HomeMaticKeyAccessory'],
+    ['HmIP-DBB doorbell key', () => ['HmIP-DBB', 'KEY_TRANSCEIVER'], () => 'HomeMaticKeyAccessory'],
+    ['HM-Sen-DB-PCB doorbell key', () => ['HM-Sen-DB-PCB', 'KEY'], () => 'HomeMaticKeyAccessory'],
     ['HmIP-FCI1 contact interface', () => ['HmIP-FCI1', 'MULTI_MODE_INPUT_TRANSMITTER'], () => 'HomeMaticContactSensorAccessory'],
     ['HmIP-SWDM contact', () => fromFixture('HmIP-SWDM.json', '0123456789ABCD:1'), () => 'HomeMaticContactSensorAccessory'],
     ['HmIP-SWDO-I contact', () => fromFixture('HmIP-SWDO-I.json', '5962284199ABCD:1'), () => 'HomeMaticContactSensorAccessory'],

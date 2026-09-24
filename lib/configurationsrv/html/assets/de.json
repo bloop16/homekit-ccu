@@ -225,7 +225,7 @@
   "Please make sure, the given port for the bridge is not blocked by the firewall of your ccu.": "Bitte vergewissere Dich, das die angegebenen Ports nicht durch die CCU Firewall blockiert werden",
   "This service provides a battery indicator based on a HomeMatic variable": "Dieser Service stellt eine Batterieanzeige basierend auf einer HomeMatic Variable zur Verfügung",
   "This service provides a door based on a ccu contact in HomeKit": "Dieser Service stellt eine Tür basierend auf einem HomeMatic Kontakt zur Verfügung",
-  "This service provides a door bell in HomeKit, based on a KEY event at your CCU": "Dieser Service stellt eine Türklingel basierend auf einem KEY Ereigniss der CCU zur Verfügung",
+  "This service provides a door bell in HomeKit, based on a KEY event at your CCU. Apple Home shows a door bell without a camera as not supported, use a programmable switch there": "Dieser Service stellt eine Türklingel basierend auf einem KEY Ereignis der CCU zur Verfügung. Apple Home zeigt eine Türklingel ohne Kamera als „Nicht unterstützt“ an, dafür besser die Taste (Programmable Switch) nutzen",
   "This service provides a garage door opener in HomeKit": "Dieser Service stellt einen Garagentoröffner in HomeKit zur Verfügung",
   "This service provides a motion sensor in HomeKit based on a acceleration device.": "Dieser Service stellt einen Bewegungsmelder basierend auf einem Beschleunigungsmesser zur Verfügung",
   "This service provides a leak sensor in HomeKit": "Dieser Service stellt einen Wassermelder zur Verfügung",

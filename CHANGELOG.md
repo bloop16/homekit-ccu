@@ -35,6 +35,7 @@ described in [doc/upgrading.md](doc/upgrading.md).
 - Dependencies: commander 15, formidable 3, binrpc 4.3, homematic-xmlrpc 2.0, fakegato-history 0.6.7 vendored without Google Drive; moment and chalk replaced by Node.js built-ins. Linting with neostandard (ESLint 9).
 
 ### Fixed
+- Doorbell buttons (HmIP-DSD-PCB, HmIP-DBB, HM-Sen-DB-PCB) are added as a programmable switch: Apple Home shows a doorbell without a camera as "not supported". The doorbell service stays selectable.
 - Settings that are on by default could not be switched off permanently in the device dialog.
 - Thermostat modes: OFF, HEAT and AUTO switch reliably, HEAT after OFF restores the last temperature, 0.5 °C steps, BidCos valve state no longer ×100, boost switch named "<name> Boost".
 - Contacts: tilted and open count as open; "reverse" no longer flips the battery warning; Eve open/closed times.
