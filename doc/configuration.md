@@ -20,7 +20,7 @@ The first entry of the menu. On a new installation it starts by itself.
    - Optionally put rooms with only a few devices on one shared bridge.
    - Optionally put locks, alarm and sirens on a bridge of their own.
    - Tick the CCU functions (Gewerke) whose devices you want in Apple Home.
-2. **Bridges and rooms:** change the names of the new bridges and choose the bridge of every room, or "not taken". With floors you can add more floors. A room that already has its bridge keeps it.
+2. **Bridges and rooms:** rename the new bridges, remove proposed ones or add bridges of your own (with floors: further floors), then choose the bridge of every room, or "not taken". Every bridge needs a name of its own. A room that already has its bridge keeps it.
 3. **Devices:** every device and channel can be ticked, named and set to the type it has in Apple Home (for example switch, outlet or light). Each device has a *Bridge* field: it starts with the bridge of its room and can be changed; the device then moves to that bridge's section ("differs from the room"). Devices set to "not taken" are listed at the end and can be brought back. Search, device pictures and the switch for additional channels work as in "New device".
 4. **Preview:** bridges with their rooms, devices and accessories. Apple Home takes at most 149 accessories per bridge; the assistant warns before that.
 5. **Pair:** the new bridges start without devices. Add each one in Apple Home (+, *Add Accessory*, scan the code) and choose the room shown. The state changes to "paired" by itself. Then *Publish devices*: the devices land in the room of their bridge.

@@ -6,6 +6,9 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 
 ## [0.1.1] - unreleased
 
+### Added
+- Setup assistant, step "Bridges and rooms": proposed bridges can be removed and bridges of your own added in every layout, not only floors. A name that is empty or already taken is refused before anything is created.
+
 ### Fixed
 - Firefox over HTTPS showed an empty configuration ("CORS request did not succeed", [#1](https://github.com/bloop16/homekit-ccu/issues/1)): the page came from the WebUI, its api from port 49874, and Firefox trusts the certificate of the CCU per port. The api now uses the address and port of the WebUI (lighttpd passes `/addons/homekit-ccu/api/` to the configuration server), so there is no cross-origin request and no second certificate. If the configuration server does not answer at all, the page says so and connects by itself once it runs.
 - Uninstalling never closed the firewall ports 9874/49874: the shell replaced the port list of the Tcl script by an empty text.

@@ -111,6 +111,38 @@ describe('HomeKit-CCU setup assistant model', () => {
     expect(Object.values(single.roomBridge)).to.eql(['id:def', 'id:def', 'id:def', 'id:def'])
   })
 
+  it('removes a bridge from the plan: its rooms are not taken, hand-picked devices follow their room', () => {
+    const plan = model.proposePlan('room', model.devicesByRoom(items, ROOMS), ROOMS, [DEFAULT], { names: NAMES, security: true })
+    const kaffee = items.find(item => item.device.name === 'Kaffee')
+    const door = items.find(item => item.device.name === 'Haustür')
+    model.chooseBridge(plan, kaffee, ROOMS, 'room:Bad')
+    model.removeBridge(plan, 'room:Bad')
+    model.removeBridge(plan, 'security:Sicherheit')
+    expect(keysOf(plan)).to.eql(['room:Küche', 'room:Flur', 'id:def'])
+    expect(plan.roomBridge[20]).to.be('')
+    expect(plan.securityBridge).to.be(undefined)
+    expect(model.bridgeOfDevice(plan, kaffee, ROOMS)).to.be('room:Küche')
+    expect(model.bridgeOfDevice(plan, door, ROOMS)).to.be('room:Flur')
+    const custom = model.addBridge(plan, 'Wohnzimmer', 'custom')
+    plan.roomBridge[20] = custom
+    const payload = model.buildApplyPayload(plan, items, ROOMS, model.initialSelection(items), model.completeChoices(items, model.initialSelection(items)))
+    expect(payload.bridges.find(bridge => bridge.key === custom)).to.eql({ key: 'custom:Wohnzimmer', name: 'Wohnzimmer', roomIds: [20] })
+  })
+
+  it('finds empty and taken names of new bridges', () => {
+    const bridges = [DEFAULT, { id: 'k', displayName: 'HomeKit-CCU Küche' }]
+    const plan = { bridges: [{ key: 'id:k', id: 'k', name: 'HomeKit-CCU Küche' }, { key: 'custom:Bad', name: 'Bad' }] }
+    expect(model.bridgeNameProblem(plan, bridges)).to.be(undefined)
+    plan.bridges.push({ key: 'custom:x', name: ' ' })
+    expect(model.bridgeNameProblem(plan, bridges)).to.be('missing')
+    plan.bridges[2].name = 'bad'
+    expect(model.bridgeNameProblem(plan, bridges)).to.be('duplicate')
+    plan.bridges[2].name = 'Küche'
+    expect(model.bridgeNameProblem(plan, bridges)).to.be('duplicate')
+    plan.bridges[2].name = 'default'
+    expect(model.bridgeNameProblem(plan, bridges)).to.be('duplicate')
+  })
+
   it('creates a bridge for devices without a room when there is no default bridge', () => {
     const plan = model.proposePlan('single', model.devicesByRoom(items, ROOMS), ROOMS, [], { names: NAMES })
     expect(plan.bridges).to.eql([{ key: 'rest:Weitere Geräte', name: 'Weitere Geräte', kind: 'rest' }])
