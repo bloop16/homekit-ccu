@@ -4,35 +4,42 @@ ADDONNAME=homekit-ccu
 CONFIG_DIR=/usr/local/etc/config
 ADDONCFG_DIR=${CONFIG_DIR}/addons/${ADDONNAME}
 RCD_DIR=${CONFIG_DIR}/rc.d
+REQUIRED_NODE_MAJOR=22
 
-# make sure this addon is only executed on
-# supported platforms
-if [ "$1" = "HM-RASPBERRYMATIC" ] || [ "$1" = "CCU3" ] ; then
-
-  mount | grep /usr/local 2>&1 >/dev/null
-  if [ $? -eq 1 ]; then
-    mount /usr/local
-  fi
-
-  # create necessary directories
-  mkdir -p ${RCD_DIR}
-  mkdir -p ${ADDONCFG_DIR}/etc
-  
-  # copy rc.d script (contains install, uninstall, start, stop, etc.)
-  cp -af homekit-ccu ${RCD_DIR}
-  
-  # copy the npm package so the install function can install from it
-  cp -af homekit-ccu.tgz ${ADDONCFG_DIR}/etc/homekit-ccu.tgz
-  
-  # fix permissions
-  chmod 755 ${RCD_DIR}
-  chmod +x ${RCD_DIR}/${ADDONNAME}
-
-  # Run install + start in background so the CCU WebUI popup returns immediately.
-  # The heavy npm install can take a while — if update_script blocks, the UI times out.
-  ${RCD_DIR}/${ADDONNAME} background_install  &
-  exit 0
-else
-  echo "ERROR: unsupported platform '$1'" >&2
+fail() {
+  echo "ERROR: $*" >&2
   exit 1
+}
+
+# only OpenCCU is supported; it identifies itself as HM-RASPBERRYMATIC
+if [ "$1" != "HM-RASPBERRYMATIC" ]; then
+  fail "unsupported platform '$1'. HomeKit-CCU needs OpenCCU 3.89 or newer."
 fi
+
+# check Node.js before anything is copied, so a failed check leaves no half-installed addon
+NODE_VERSION=$(node --version 2>/dev/null)
+if [ -z "${NODE_VERSION}" ]; then
+  fail "Node.js not found. HomeKit-CCU needs Node.js ${REQUIRED_NODE_MAJOR} or newer (OpenCCU 3.89 or newer)."
+fi
+NODE_MAJOR=$(echo "${NODE_VERSION}" | sed 's/^v//' | cut -d. -f1)
+if ! [ "${NODE_MAJOR}" -ge "${REQUIRED_NODE_MAJOR}" ] 2>/dev/null; then
+  fail "Node.js ${NODE_VERSION} is too old. HomeKit-CCU needs Node.js ${REQUIRED_NODE_MAJOR} or newer, update to OpenCCU 3.89 or newer."
+fi
+
+# create necessary directories
+mkdir -p "${RCD_DIR}" "${ADDONCFG_DIR}/etc" || fail "unable to create ${RCD_DIR} and ${ADDONCFG_DIR}/etc"
+
+# copy rc.d script (contains install, uninstall, start, stop, etc.)
+cp -af homekit-ccu "${RCD_DIR}" || fail "unable to copy the rc.d script to ${RCD_DIR}"
+
+# copy the npm package so the install function can install from it
+cp -af homekit-ccu.tgz "${ADDONCFG_DIR}/etc/homekit-ccu.tgz" || fail "unable to copy homekit-ccu.tgz to ${ADDONCFG_DIR}/etc"
+
+# fix permissions
+chmod 755 "${RCD_DIR}"
+chmod +x "${RCD_DIR}/${ADDONNAME}"
+
+# Run install + start in background so the CCU WebUI popup returns immediately.
+# The heavy npm install can take a while — if update_script blocks, the UI times out.
+"${RCD_DIR}/${ADDONNAME}" background_install &
+exit 0

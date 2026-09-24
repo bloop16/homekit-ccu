@@ -1,4 +1,5 @@
-FROM ghcr.io/openccu/openccu:latest
+# pinned to an OpenCCU release; bump it to test against a newer one
+FROM ghcr.io/openccu/openccu:3.89.11.20260919
 
 # OpenCCU is a buildroot image with /sbin/init as entrypoint.
 # OpenCCU 3.89+ ships Node.js 22, so homekit-ccu runs inside the CCU

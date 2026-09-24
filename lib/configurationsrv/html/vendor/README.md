@@ -1,7 +1,9 @@
 # Vendored browser libraries
 
-Copied unchanged from the npm packages below (dist builds, no source maps).
-Update by replacing the files with a newer release of the same package.
+Copied from the npm packages below (dist builds). The only change is the removed
+`sourceMappingURL` comment line: the `.map` files are not shipped, so the browser would ask for
+them and get a 404. Update by replacing the files with a newer release of the same package and
+removing that line again.
 
 | Folder | Package | Version | License |
 |---|---|---|---|

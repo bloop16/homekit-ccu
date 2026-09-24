@@ -144,7 +144,7 @@ describe('HomeKit-CCU ConfigurationService.restartSystem', () => {
   })
 })
 
-describe('HomeKit-CCU ConfigurationService API restart/update', () => {
+describe('HomeKit-CCU ConfigurationService API restart', () => {
   const callApi = async (query, restartResult) => {
     const service = Object.create(ConfigurationService.prototype)
     service.log = { error () {}, info () {}, debug () {} }
@@ -176,12 +176,12 @@ describe('HomeKit-CCU ConfigurationService API restart/update', () => {
     }
   })
 
-  it('points updates to the addon installer without building a backup', async () => {
-    let backups = 0
-    const service = Object.create(ConfigurationService.prototype)
-    service.generateBackup = async () => { backups++ }
-    const result = await service.updateSystem()
-    expect(result.error).to.contain('addon installer')
-    expect(backups).to.be(0)
+  it('has no update methods (updates come from the CCU addon installer)', async () => {
+    for (const method of ['update', 'updateChangelog']) {
+      const { json, restarts } = await callApi({ method }, true)
+      expect(json).to.eql({ error: 'unknown method' })
+      expect(restarts).to.be(0)
+    }
+    expect(ConfigurationService.prototype.updateSystem).to.be(undefined)
   })
 })

@@ -160,7 +160,6 @@
   "During the setup in HomeKit you can assign a specific room to every bridge. All new devices added to a bridge will then automatically be assigned to this room.": "Während der Einrichtung kannst Du die Bridge einem Raum zuordnen. Alle Geräte die im Nachhinein dieser Bridge hinzugefügt werden, werden diesem Raum zugeordnet.",
   "If you are using Apples Home App please tap after adding the bridge on the house icon top left, choose Home Settings, tap on your home and there you are able to setup the rooms for the bridges. This is tricky, so its recommended to use eg Elgato Eve.": "Wenn Du Apples Home App benutzt, tippe nach dem Hinzufügen auf das Haus Icon oben links, wähle Haus Einstellungen, tippe auf Dein Home. Dort kannst Du unter Bridges den einzelnen Bridges Räume zuordnen. Das ist ein klein wenig tricky, daher ist es empfehlenswert zb Elgato Eve zu benutzen",
   "When you done with this, click on Next": "Wenn Du fertig bist, klicke auf Weiter",
-  "update to %s": "aktualisiere auf %s",
   "Pin Code": "Pin Code",
   "Room %s": "Raum %s",
   "Add": "Hinzufügen",
@@ -232,7 +231,7 @@
   "Disable Debug": "Debug ausschalten",
   "Download Log": "Log herunterladen",
   "Restart HAP Service": "Neustart HAP Service",
-  "Restart HAP Plugin ?": "Neustart des HAP Plugins ?",
+  "Restart HomeKit-CCU?": "HomeKit-CCU neu starten?",
   "Sure ?": "Sicher ?",
   "Enable debug at launch": "Debug Modus beim Start einschalten",
   "Restart Now": "Jetzt neustarten",
@@ -267,7 +266,6 @@
   "Enable Monitoring": "Monitoring einschalten",
   "Disable Eve History": "Eve History ausschalten",
   "Use HTTPS": "HTTPS benutzen",
-  "Update HAP Plugin": "HAP Plugin aktualisieren",
   "Remove program": "Programm entfernen",
   "Changelog": "Changelog",
   "Device serial": "Seriennummer Gerät",
@@ -463,5 +461,6 @@
   "Talkback target": "Gegensprech-Ziel",
   "RTSP URL, or raw ffmpeg input args starting with - (e.g. -re -f lavfi -i testsrc); no quoting supported, arguments are split on spaces": "RTSP-URL oder rohe ffmpeg-Eingabeargumente, beginnend mit - (z. B. -re -f lavfi -i testsrc); keine Anführungszeichen, Argumente werden an Leerzeichen getrennt",
   "'copy' when the camera delivers H.264 (recommended on the CCU itself); libx264 transcodes and needs a fast CPU": "'copy', wenn die Kamera H.264 liefert (empfohlen direkt auf der CCU); libx264 transkodiert und braucht eine schnelle CPU",
-  "ffmpeg output for talkback, empty disables two-way audio; raw options starting with - override codec, e.g. -codec:a pcm_mulaw -ar 8000 -f rtsp rtsp://cam/talk": "ffmpeg-Ausgabe für Gegensprechen, leer deaktiviert Zwei-Wege-Audio; rohe Optionen beginnend mit - überschreiben den Codec, z. B. -codec:a pcm_mulaw -ar 8000 -f rtsp rtsp://cam/talk"
+  "ffmpeg output for talkback, empty disables two-way audio; raw options starting with - override codec, e.g. -codec:a pcm_mulaw -ar 8000 -f rtsp rtsp://cam/talk": "ffmpeg-Ausgabe für Gegensprechen, leer deaktiviert Zwei-Wege-Audio; rohe Optionen beginnend mit - überschreiben den Codec, z. B. -codec:a pcm_mulaw -ar 8000 -f rtsp rtsp://cam/talk",
+  "Setup code for adding the doorbell in Apple Home. A random code is suggested; save the settings to keep it.": "Setup-Code zum Hinzufügen der Türklingel in Apple Home. Ein zufälliger Code ist vorgeschlagen; speichere die Einstellungen, um ihn zu behalten."
 }

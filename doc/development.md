@@ -1,7 +1,7 @@
 # Development
 
 ```bash
-npm install          # install dependencies (Node.js 22)
+npm install          # install dependencies (Node.js 22.12 or newer, see .nvmrc)
 npm test             # run tests
 npm run lint         # standard, enforced in CI
 npm run coverage     # c8, at least 80 % for the camera code

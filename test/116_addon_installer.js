@@ -215,6 +215,99 @@ describe('HomeKit-CCU addon installer', () => {
   })
 })
 
+// Runs update_script (what the CCU add-on upload executes) in a scratch copy of the extracted
+// archive; CONFIG_DIR points into the scratch directory and node/the rc.d script are stubs.
+const setupUpdate = () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'hkccu-116u-'))
+  const bin = path.join(root, 'bin')
+  const archive = path.join(root, 'archive')
+  const configDir = path.join(root, 'config')
+  fs.mkdirSync(bin)
+  fs.mkdirSync(archive)
+  // node --version answers STUB_NODE_VERSION (empty output when unset, like a broken node)
+  fs.writeFileSync(path.join(bin, 'node'), '#!/bin/sh\necho "$STUB_NODE_VERSION"\n', { mode: 0o755 })
+  fs.writeFileSync(path.join(archive, 'homekit-ccu'), '#!/bin/sh\necho "rc $*" >> "$STUB_CALLS"\n')
+  fs.writeFileSync(path.join(archive, 'homekit-ccu.tgz'), 'tgz')
+  let script = fs.readFileSync(UPDATE_SCRIPT, 'utf8')
+  const line = /^CONFIG_DIR=.*$/m
+  expect(line.test(script)).to.be(true) // update_script must keep defining CONFIG_DIR on its own line
+  script = script.replace(line, `CONFIG_DIR=${configDir}`)
+  fs.writeFileSync(path.join(archive, 'update_script'), script, { mode: 0o755 })
+  const calls = path.join(root, 'calls')
+  const run = (platform, nodeVersion) => childProcess.spawnSync('/bin/sh', ['update_script', platform], {
+    cwd: archive,
+    encoding: 'utf8',
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, STUB_CALLS: calls, STUB_NODE_VERSION: nodeVersion }
+  })
+  return {
+    root,
+    configDir,
+    rcScript: path.join(configDir, 'rc.d', 'homekit-ccu'),
+    tgz: path.join(configDir, 'addons', 'homekit-ccu', 'etc', 'homekit-ccu.tgz'),
+    run,
+    callLog: () => fs.existsSync(calls) ? fs.readFileSync(calls, 'utf8') : ''
+  }
+}
+
+describe('HomeKit-CCU addon update_script', () => {
+  let u
+  beforeEach(() => { u = setupUpdate() })
+  afterEach(() => fs.rmSync(u.root, { recursive: true, force: true }))
+
+  it('installs on OpenCCU (HM-RASPBERRYMATIC) with Node.js 22+ and starts the background install', async () => {
+    const res = u.run('HM-RASPBERRYMATIC', 'v22.12.0')
+    expect(res.status).to.be(0)
+    expect(fs.readFileSync(u.tgz, 'utf8')).to.be('tgz')
+    expect(fs.statSync(u.rcScript).mode & 0o111).not.to.be(0)
+    const start = Date.now()
+    while (!/rc background_install/.test(u.callLog())) {
+      if (Date.now() - start > 5000) throw new Error('background_install was not started')
+      await new Promise(resolve => setTimeout(resolve, 20))
+    }
+  })
+
+  it('accepts newer Node.js majors', () => {
+    expect(u.run('HM-RASPBERRYMATIC', 'v24.3.0').status).to.be(0)
+  })
+
+  ;['CCU3', 'CCU2', ''].forEach(platform => {
+    it(`refuses the platform '${platform}' without copying anything`, () => {
+      const res = u.run(platform, 'v22.12.0')
+      expect(res.status).to.be(1)
+      expect(res.stderr).to.contain('unsupported platform')
+      expect(res.stderr).to.contain('OpenCCU')
+      expect(fs.existsSync(u.configDir)).to.be(false)
+    })
+  })
+
+  it('refuses a too old Node.js before copying anything', () => {
+    const res = u.run('HM-RASPBERRYMATIC', 'v20.11.0')
+    expect(res.status).to.be(1)
+    expect(res.stderr).to.contain('Node.js v20.11.0 is too old')
+    expect(res.stderr).to.contain('Node.js 22 or newer')
+    expect(fs.existsSync(u.configDir)).to.be(false)
+    expect(u.callLog()).to.be('')
+  })
+
+  it('refuses when Node.js reports no version', () => {
+    const res = u.run('HM-RASPBERRYMATIC', '')
+    expect(res.status).to.be(1)
+    expect(res.stderr).to.contain('Node.js not found')
+    expect(fs.existsSync(u.configDir)).to.be(false)
+  })
+
+  it('refuses an unparsable Node.js version', () => {
+    const res = u.run('HM-RASPBERRYMATIC', 'garbage')
+    expect(res.status).to.be(1)
+    expect(res.stderr).to.contain('too old')
+    expect(fs.existsSync(u.configDir)).to.be(false)
+  })
+
+  it('does not mount /usr/local (CCU2-era leftover)', () => {
+    expect(fs.readFileSync(UPDATE_SCRIPT, 'utf8')).not.to.match(/\bmount\b/)
+  })
+})
+
 describe('HomeKit-CCU addon shell scripts', () => {
   const scripts = [INSTALLER, UPDATE_SCRIPT]
   const shells = ['/bin/sh', '/usr/bin/dash', '/bin/dash'].filter(sh => fs.existsSync(sh))

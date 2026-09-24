@@ -13,13 +13,12 @@
 		"CCU"
 	],
 	"engines": {
-		"node": ">=22.0.0"
+		"node": ">=22.12.0"
 	},
 	"dependencies": {
 		"@homebridge/hap-nodejs": "^2.2.3",
 		"binrpc": "^4.3.0",
-		"chalk": "^4.0.0",
-		"commander": "^14.0.3",
+		"commander": "^15.0.0",
 		"formidable": "^3.5.4",
 		"homematic-xmlrpc": "^2.0.0",
 		"sockjs": "^0.3.20"
@@ -27,7 +26,6 @@
 	"bundleDependencies": [
 		"@homebridge/hap-nodejs",
 		"binrpc",
-		"chalk",
 		"commander",
 		"formidable",
 		"homematic-xmlrpc",
@@ -61,7 +59,9 @@
 	"standard": {
 		"ignore": [
 			"/lib/configurationsrv/html/*",
-			"/lib/vendor/**"
+			"/lib/vendor/**",
+			"/lib/services/HomeMaticProgrammableSwitchAccessory.js",
+			"/lib/services/HomeMaticSmartSpeakerAccessory.js"
 		],
 		"env": [
 			"commonjs",
