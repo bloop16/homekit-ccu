@@ -59,3 +59,12 @@ ls /usr/local/etc/config/addons/homekit-ccu/
 tail -f /var/log/homekit-ccu.log 
 ```
 
+
+## Releases
+
+1. Set the version in `package.json`, `package-lock.json` (`npm version <version> --no-git-tag-version`) and `VER=` in `addon_installer/homekit-ccu`, commit and push to `master`.
+2. Start the release, either way:
+   - push the tag: `git tag -a v<version> -m "<version>" && git push origin v<version>`
+   - or GitHub → Actions → Release → "Run workflow" on `master`; it creates the tag `v<version>` itself.
+
+The workflow tests, builds the add-on package and publishes it; a version with a `-` (e.g. `0.1.0-rc.8`) becomes a pre-release.
