@@ -509,5 +509,19 @@
   "not taken": "nicht übernehmen",
   "paired": "gekoppelt",
   "waiting for pairing": "wartet auf Kopplung",
-  "Holds %s; choose one room for the bridge in Apple Home.": "Enthält %s; wähle in Apple Home einen Raum für die Bridge."
+  "Holds %s; choose one room for the bridge in Apple Home.": "Enthält %s; wähle in Apple Home einen Raum für die Bridge.",
+  "Show advanced settings": "Erweiterte Einstellungen zeigen",
+  "Hide advanced settings": "Erweiterte Einstellungen ausblenden",
+  "New special device": "Neues besonderes Gerät",
+  "Which kind of device do you want to create?": "Welche Art von Gerät möchtest du anlegen?",
+  "Choose another kind": "Andere Art wählen",
+  "A special device with this name exists already.": "Ein besonderes Gerät mit diesem Namen gibt es schon.",
+  "Video doorbell": "Video-Türklingel",
+  "Garage door from sensors and actors": "Garagentor aus Sensoren und Aktoren",
+  "Window with rotary handle and contact": "Fenster aus Drehgriff und Kontakt",
+  "Several keys as one device": "Mehrere Tasten als ein Gerät",
+  "Several keys as one push button device": "Mehrere Tasten als ein Taster-Gerät",
+  "HTTP switch": "HTTP-Schalter",
+  "CCU temperature": "CCU-Temperatur",
+  "CCU duty cycle": "CCU Duty Cycle"
 }

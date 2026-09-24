@@ -23,6 +23,7 @@ described in [doc/upgrading.md](doc/upgrading.md).
 - Private security reports (SECURITY.md), Dependabot, CI on Node.js 22 and 24.
 
 ### Changed
+- New special devices start with the choice of their kind (video doorbell, garage door, HTTP switch, ...) and then show only the settings of that kind; rarely needed ones (ffmpeg, video size, actor delays) stay folded. Editing keeps the kind. The list shows readable kinds.
 - Setup assistant, first entry of the menu and started on a new installation: proposes bridges from the CCU rooms (one per room, per floor or one for everything, small rooms on a shared bridge, locks and alarm on a bridge of their own) and the devices of the chosen functions. Bridges, rooms, devices, channels, names and Apple Home types stay changeable; a preview shows the result. New bridges start without devices, the assistant shows their QR codes and pairing state, then publishes the devices so they land in the room of their bridge. Devices already in HomeKit are never moved. It replaces the welcome wizard.
 - Native defaults when a device is added: contacts as contact sensors, buttons as programmable buttons, wall thermostats as thermostats, plugs as outlets, switch actuators as switches, rain sensors as leak sensors, garage drive lights as lightbulbs. Devices that are already set up keep their type.
 - Weather stations always show temperature, humidity and light natively in Apple Home; wind, rain and pressure stay in the Eve app. Multi-service accessories mark their main service, so Apple Home shows the right tile.
@@ -37,6 +38,7 @@ described in [doc/upgrading.md](doc/upgrading.md).
 - Dependencies: commander 15, formidable 3, binrpc 4.3, homematic-xmlrpc 2.0, fakegato-history 0.6.7 vendored without Google Drive; moment and chalk replaced by Node.js built-ins. Linting with neostandard (ESLint 9).
 
 ### Fixed
+- A new special device without an explicitly chosen bridge was on no bridge; it now goes to the first one. A second special device with the same name replaced the first; it is refused. The special device list did not refresh after saving.
 - The virtual keys of HmIP-RCV-50 were offered as one remote with 50 buttons; each key is a programmable switch again, as for HM-RCV-50.
 - Doorbell buttons (HmIP-DSD-PCB, HmIP-DBB, HM-Sen-DB-PCB) are added as a programmable switch: Apple Home shows a doorbell without a camera as "not supported". The doorbell service stays selectable.
 - Saving a device answered before the configuration was written, so publishing right after could miss the change.

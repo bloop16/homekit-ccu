@@ -331,6 +331,17 @@ describe('HomeKit-CCU default services: switch type of new mappings', () => {
       expect(config.mappings[INWALL].settings).to.eql({ Type: 'Switch' })
     })
 
+    it('refuses a second special device with the same name instead of replacing the first', async () => {
+      writeConfig({ mappings: {}, channels: [] })
+      const special = { name: 'Klingel', address: 'new:special', serviceClass: 'HomeMaticSPHTTPAccessory', settings: JSON.stringify({ url: 'http://a', instanceIDs: { 0: 'b' } }) }
+      expect(await makeConfigService().saveDevice(special)).to.eql({ result: 'saved' })
+      const first = readConfig()
+      expect(await makeConfigService().saveDevice({ ...special, settings: JSON.stringify({ url: 'http://b' }) }))
+        .to.eql({ result: 'error saving', reason: 'A special device with this name exists already.' })
+      expect(readConfig()).to.eql(first)
+      expect(first.special).to.have.length(1)
+    })
+
     it('does not add a type to a stored switch mapping without one', async () => {
       writeConfig({ mappings: { [PLUG]: { name: 'Plug', Service: 'HomeMaticSwitchAccessory', settings: {} } }, channels: [PLUG] })
       await makeConfigService().saveDevice({ name: 'Plug renamed', address: PLUG, serviceClass: 'HomeMaticSwitchAccessory', settings: '{}' })
