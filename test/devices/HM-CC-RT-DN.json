@@ -1,0 +1,70 @@
+{
+  "devices": [
+    {
+      "id": 1200,
+      "intf": 0,
+      "intfName": "BidCos-RF",
+      "name": "HM-CC-RT-DN",
+      "address": "4123456789ABCD",
+      "type": "HM-CC-RT-DN",
+      "channels": [
+        {
+          "id": 1201,
+          "name": "4123456789ABCD:0",
+          "intf": 0,
+          "address": "4123456789ABCD:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 1202,
+          "name": "4123456789ABCD:1",
+          "intf": 0,
+          "address": "4123456789ABCD:1",
+          "type": "WEATHER_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1203,
+          "name": "4123456789ABCD:2",
+          "intf": 0,
+          "address": "4123456789ABCD:2",
+          "type": "CLIMATECONTROL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1204,
+          "name": "4123456789ABCD:3",
+          "intf": 0,
+          "address": "4123456789ABCD:3",
+          "type": "WINDOW_SWITCH_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1205,
+          "name": "4123456789ABCD:4",
+          "intf": 0,
+          "address": "4123456789ABCD:4",
+          "type": "CLIMATECONTROL_RT_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 1206,
+          "name": "4123456789ABCD:5",
+          "intf": 0,
+          "address": "4123456789ABCD:5",
+          "type": "REMOTECONTROL_RECEIVER",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "4123456789ABCD:4": "HomeMaticThermostatAccessory"
+  },
+  "mappings": {
+    "4123456789ABCD:4": {
+      "Service": "HomeMaticThermostatAccessory"
+    }
+  }
+}

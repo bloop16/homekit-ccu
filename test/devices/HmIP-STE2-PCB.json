@@ -1,0 +1,54 @@
+{
+  "devices": [
+    {
+      "id": 1300,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-STE2-PCB",
+      "address": "5123456789ABCD",
+      "type": "HmIP-STE2-PCB",
+      "channels": [
+        {
+          "id": 1301,
+          "name": "5123456789ABCD:0",
+          "intf": 0,
+          "address": "5123456789ABCD:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 1302,
+          "name": "5123456789ABCD:1",
+          "intf": 0,
+          "address": "5123456789ABCD:1",
+          "type": "COND_SWITCH_TRANSMITTER_TEMPERATURE",
+          "access": 255
+        },
+        {
+          "id": 1303,
+          "name": "5123456789ABCD:2",
+          "intf": 0,
+          "address": "5123456789ABCD:2",
+          "type": "COND_SWITCH_TRANSMITTER_TEMPERATURE",
+          "access": 255
+        },
+        {
+          "id": 1304,
+          "name": "5123456789ABCD:3",
+          "intf": 0,
+          "address": "5123456789ABCD:3",
+          "type": "COND_SWITCH_TRANSMITTER_TEMPERATURE",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "5123456789ABCD:1": "HomeMaticThermSensorAccessory"
+  },
+  "mappings": {
+    "5123456789ABCD:1": {
+      "Service": "HomeMaticThermSensorAccessory"
+    }
+  }
+}
