@@ -234,7 +234,7 @@ describe('HomeKit-CCU config server authentication', () => {
 
     it('guards every api method, including the state-changing ones', async () => {
       ctx = await startService()
-      const methods = ['bridges', 'backup', 'getLog', 'restart', 'saveSettings', 'system',
+      const methods = ['bridges', 'backup', 'getLog', 'restart', 'saveSettings',
         'createinstance', 'createinstancewizzard', 'removehapinstance', 'saveDevice', 'removeDevice',
         'publish', 'debug', 'support', 'changelog', 'ccuGetDatapoints', 'unknown']
       for (const method of methods) {

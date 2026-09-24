@@ -94,10 +94,6 @@ function findService (accessory, serviceType, subtype) {
     service.UUID === serviceType.UUID && ((subtype === undefined) || (service.subtype === subtype)))
 }
 
-function servicesOf (accessory, serviceType) {
-  return accessory.getHomeKitAccessory().services.filter(service => service.UUID === serviceType.UUID)
-}
-
 async function read (characteristic) {
   return withTimeout(characteristic.handleGetRequest(), READ_TIMEOUT_MS)
 }
@@ -121,4 +117,4 @@ function settle (ms = 10) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-module.exports = { startServer, accessories, accessoryAt, shutdown, readAll, findService, servicesOf, read, settle, loadFixture, watchWarnings }
+module.exports = { startServer, accessoryAt, shutdown, readAll, findService, read, settle, watchWarnings }

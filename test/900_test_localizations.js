@@ -6,7 +6,7 @@ describe('HomeKit-CCU Localization Tests', () => {
   this.regEx = /.__\('([^,][^']*)/g
   this.regExIndex = /data-localize="(.*)"/g
 
-  const locFile = path.join(__dirname, '..', 'lib', 'configurationsrv', 'localization', 'de.json')
+  const locFile = path.join(__dirname, '..', 'lib', 'configurationsrv', 'html', 'assets', 'de.json')
   if (fs.existsSync(locFile)) {
     this.localizations = JSON.parse(fs.readFileSync(locFile).toString())
     this.localizations[''] = ' ' // add a dummy

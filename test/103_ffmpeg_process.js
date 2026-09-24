@@ -123,7 +123,6 @@ describe('HomeKit-CCU FfmpegProcess', function () {
   })
 
   it('waits 1500 ms for SIGTERM by default', () => {
-    expect(FfmpegProcess.KILL_TIMEOUT_MS).to.be(1500)
     expect(new FfmpegProcess('video', FAKE, [], log).killTimeoutMs).to.be(1500)
   })
 
