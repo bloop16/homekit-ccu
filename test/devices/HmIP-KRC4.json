@@ -1,0 +1,63 @@
+{
+  "devices": [
+    {
+      "id": 2000,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "Fernbedienung",
+      "address": "000B1BE9A1B2C3",
+      "type": "HmIP-KRC4",
+      "channels": [
+        {
+          "id": 2001,
+          "name": "000B1BE9A1B2C3:0",
+          "intf": 0,
+          "address": "000B1BE9A1B2C3:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2002,
+          "name": "HmIP-KRC4 000B1BE9A1B2C3:1",
+          "intf": 0,
+          "address": "000B1BE9A1B2C3:1",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2003,
+          "name": "HmIP-KRC4 000B1BE9A1B2C3:2",
+          "intf": 0,
+          "address": "000B1BE9A1B2C3:2",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2004,
+          "name": "Licht Flur",
+          "intf": 0,
+          "address": "000B1BE9A1B2C3:3",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2005,
+          "name": "HmIP-KRC4 000B1BE9A1B2C3:4",
+          "intf": 0,
+          "address": "000B1BE9A1B2C3:4",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "000B1BE9A1B2C3:1": "HomeMaticRemoteAccessory"
+  },
+  "mappings": {
+    "000B1BE9A1B2C3:1": {
+      "Service": "HomeMaticRemoteAccessory",
+      "name": "Fernbedienung Flur"
+    }
+  }
+}

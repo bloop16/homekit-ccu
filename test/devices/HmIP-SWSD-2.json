@@ -1,0 +1,45 @@
+{
+  "source": "channel layout and datapoints from the eQ-3 device definitions (HmIP server firmware / pydevccu paramset descriptions)",
+  "devices": [
+    {
+      "id": 2000,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-SWSD-2",
+      "address": "0001D8A99F0001",
+      "type": "HmIP-SWSD-2",
+      "channels": [
+        {
+          "id": 2001,
+          "name": "0001D8A99F0001:0",
+          "intf": 0,
+          "address": "0001D8A99F0001:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2002,
+          "name": "0001D8A99F0001:1",
+          "intf": 0,
+          "address": "0001D8A99F0001:1",
+          "type": "SMOKE_DETECTOR",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "values": {
+    "0.TIME_OF_OPERATION_STATUS": 0,
+    "0.OPERATING_VOLTAGE_STATUS": 0,
+    "0.ERROR_DEGRADED_CHAMBER": false,
+    "0.ERROR_CODE": 0,
+    "0.LOW_BAT": false,
+    "0.UNREACH": false,
+    "0.TIME_OF_OPERATION": 0,
+    "0.OPERATING_VOLTAGE": 0.0,
+    "1.SMOKE_DETECTOR_ALARM_STATUS": 0,
+    "1.DIRT_LEVEL": 0.0,
+    "1.SMOKE_LEVEL": 0.0,
+    "1.SMOKE_DETECTOR_TEST_RESULT": 0
+  }
+}

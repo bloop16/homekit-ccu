@@ -1,0 +1,38 @@
+{
+  "devices": [
+    {
+      "id": 1820,
+      "intf": 0,
+      "intfName": "BidCos-RF",
+      "name": "HM-WDS100-C6-O-2",
+      "address": "NEQ0180003",
+      "type": "HM-WDS100-C6-O-2",
+      "channels": [
+        {
+          "id": 1821,
+          "name": "HM-WDS100-C6-O-2 NEQ0180003:0",
+          "intf": 0,
+          "address": "NEQ0180003:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 1822,
+          "name": "HM-WDS100-C6-O-2 NEQ0180003:1",
+          "intf": 0,
+          "address": "NEQ0180003:1",
+          "type": "WEATHER",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "NEQ0180003:1": "HomeMaticWeatherStationAccessory"
+  },
+  "mappings": {
+    "NEQ0180003:1": {
+      "Service": "HomeMaticWeatherStationAccessory"
+    }
+  }
+}

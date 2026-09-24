@@ -1,0 +1,46 @@
+{
+  "devices": [
+    {
+      "id": 1810,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-LSC",
+      "address": "0031A0A9B18001",
+      "type": "HmIP-LSC",
+      "channels": [
+        {
+          "id": 1811,
+          "name": "HmIP-LSC 0031A0A9B18001:0",
+          "intf": 0,
+          "address": "0031A0A9B18001:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 1812,
+          "name": "HmIP-LSC 0031A0A9B18001:1",
+          "intf": 0,
+          "address": "0031A0A9B18001:1",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1813,
+          "name": "HmIP-LSC 0031A0A9B18001:2",
+          "intf": 0,
+          "address": "0031A0A9B18001:2",
+          "type": "UNIVERSAL_LIGHT_WEEK_PROFILE",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "0031A0A9B18001:1": "HomeMaticIPRGBWAccessory"
+  },
+  "mappings": {
+    "0031A0A9B18001:1": {
+      "Service": "HomeMaticIPRGBWAccessory"
+    }
+  }
+}

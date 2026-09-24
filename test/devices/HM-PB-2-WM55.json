@@ -1,0 +1,46 @@
+{
+  "devices": [
+    {
+      "id": 4000,
+      "intf": 0,
+      "intfName": "BidCos-RF",
+      "name": "Taster Bad",
+      "address": "NEQ1234567",
+      "type": "HM-PB-2-WM55",
+      "channels": [
+        {
+          "id": 4001,
+          "name": "NEQ1234567:0",
+          "intf": 0,
+          "address": "NEQ1234567:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 4002,
+          "name": "HM-PB-2-WM55 NEQ1234567:1",
+          "intf": 0,
+          "address": "NEQ1234567:1",
+          "type": "KEY",
+          "access": 255
+        },
+        {
+          "id": 4003,
+          "name": "HM-PB-2-WM55 NEQ1234567:2",
+          "intf": 0,
+          "address": "NEQ1234567:2",
+          "type": "KEY",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "NEQ1234567:1": "HomeMaticRemoteAccessory"
+  },
+  "mappings": {
+    "NEQ1234567:1": {
+      "Service": "HomeMaticRemoteAccessory"
+    }
+  }
+}

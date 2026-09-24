@@ -1,0 +1,82 @@
+{
+  "source": "channel layout and datapoints from the eQ-3 device definitions (HmIP server firmware / pydevccu paramset descriptions)",
+  "devices": [
+    {
+      "id": 2000,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-WSS",
+      "address": "0043E0C9B2A007",
+      "type": "HmIP-WSS",
+      "channels": [
+        {
+          "id": 2001,
+          "name": "0043E0C9B2A007:0",
+          "intf": 0,
+          "address": "0043E0C9B2A007:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2002,
+          "name": "0043E0C9B2A007:1",
+          "intf": 0,
+          "address": "0043E0C9B2A007:1",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2003,
+          "name": "0043E0C9B2A007:2",
+          "intf": 0,
+          "address": "0043E0C9B2A007:2",
+          "type": "VALVE_ACTUATOR_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 2004,
+          "name": "0043E0C9B2A007:3",
+          "intf": 0,
+          "address": "0043E0C9B2A007:3",
+          "type": "ALARM_ACTUATOR_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 2005,
+          "name": "0043E0C9B2A007:4",
+          "intf": 0,
+          "address": "0043E0C9B2A007:4",
+          "type": "WATER_FLOW_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 2006,
+          "name": "0043E0C9B2A007:5",
+          "intf": 0,
+          "address": "0043E0C9B2A007:5",
+          "type": "WATER_PRESSURE_TRANSMITTER",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "values": {
+    "0.LOW_BAT": false,
+    "0.UNREACH": false,
+    "0.OPERATING_VOLTAGE": 3.0,
+    "0.OPERATING_VOLTAGE_STATUS": 0,
+    "0.ERROR_CODE": 0,
+    "0.ERROR_POWER_FAILURE": false,
+    "0.ERROR_VALVE_FAILURE": false,
+    "0.ERROR_MAX_WATER_FLOW": false,
+    "0.ERROR_MAX_WATER_FLOW_DURATION": false,
+    "2.LEVEL": 0,
+    "2.LEVEL_STATUS": 0,
+    "2.PROCESS": 0,
+    "2.SECTION": 0,
+    "2.SECTION_STATUS": 0,
+    "3.STATE": false,
+    "4.WATER_FLOW": 0,
+    "5.WATER_PRESSURE": 0
+  }
+}

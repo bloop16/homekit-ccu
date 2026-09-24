@@ -1,0 +1,54 @@
+{
+  "devices": [
+    {
+      "id": 1830,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-STHO",
+      "address": "0007A0A9B18004",
+      "type": "HmIP-STHO",
+      "channels": [
+        {
+          "id": 1831,
+          "name": "HmIP-STHO 0007A0A9B18004:0",
+          "intf": 0,
+          "address": "0007A0A9B18004:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 1832,
+          "name": "HmIP-STHO 0007A0A9B18004:1",
+          "intf": 0,
+          "address": "0007A0A9B18004:1",
+          "type": "CLIMATE_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 1833,
+          "name": "HmIP-STHO 0007A0A9B18004:2",
+          "intf": 0,
+          "address": "0007A0A9B18004:2",
+          "type": "COND_SWITCH_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 1834,
+          "name": "HmIP-STHO 0007A0A9B18004:3",
+          "intf": 0,
+          "address": "0007A0A9B18004:3",
+          "type": "COND_SWITCH_TRANSMITTER",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "0007A0A9B18004:1": "HomeMaticThermometerAccessory"
+  },
+  "mappings": {
+    "0007A0A9B18004:1": {
+      "Service": "HomeMaticThermometerAccessory"
+    }
+  }
+}

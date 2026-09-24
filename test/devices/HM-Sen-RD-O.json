@@ -1,0 +1,47 @@
+{
+  "source": "channel layout and datapoints from the eQ-3 device definitions (HmIP server firmware / pydevccu paramset descriptions)",
+  "devices": [
+    {
+      "id": 2000,
+      "intf": 0,
+      "intfName": "BidCos-RF",
+      "name": "HM-Sen-RD-O",
+      "address": "NEQ0023456",
+      "type": "HM-Sen-RD-O",
+      "channels": [
+        {
+          "id": 2001,
+          "name": "NEQ0023456:0",
+          "intf": 0,
+          "address": "NEQ0023456:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2002,
+          "name": "NEQ0023456:1",
+          "intf": 0,
+          "address": "NEQ0023456:1",
+          "type": "RAINDETECTOR",
+          "access": 255
+        },
+        {
+          "id": 2003,
+          "name": "NEQ0023456:2",
+          "intf": 0,
+          "address": "NEQ0023456:2",
+          "type": "RAINDETECTOR_HEAT",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "values": {
+    "0.UNREACH": false,
+    "0.DEVICE_IN_BOOTLOADER": false,
+    "1.STATE": 0,
+    "2.STATE": false,
+    "2.INHIBIT": false,
+    "2.WORKING": false
+  }
+}

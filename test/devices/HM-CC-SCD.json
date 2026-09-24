@@ -1,0 +1,35 @@
+{
+  "source": "channel layout and datapoints from the eQ-3 device definitions (HmIP server firmware / pydevccu paramset descriptions)",
+  "devices": [
+    {
+      "id": 2000,
+      "intf": 0,
+      "intfName": "BidCos-RF",
+      "name": "HM-CC-SCD",
+      "address": "NEQ0012345",
+      "type": "HM-CC-SCD",
+      "channels": [
+        {
+          "id": 2001,
+          "name": "NEQ0012345:0",
+          "intf": 0,
+          "address": "NEQ0012345:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2002,
+          "name": "NEQ0012345:1",
+          "intf": 0,
+          "address": "NEQ0012345:1",
+          "type": "SENSOR_FOR_CARBON_DIOXIDE",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "values": {
+    "0.UNREACH": false,
+    "1.STATE": 0
+  }
+}

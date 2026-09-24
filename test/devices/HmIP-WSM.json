@@ -1,0 +1,101 @@
+{
+  "source": "channel layout and datapoints from the eQ-3 device definitions (HmIP server firmware / pydevccu paramset descriptions)",
+  "devices": [
+    {
+      "id": 2000,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-WSM",
+      "address": "0031E0C9B2A003",
+      "type": "HmIP-WSM",
+      "channels": [
+        {
+          "id": 2001,
+          "name": "0031E0C9B2A003:0",
+          "intf": 0,
+          "address": "0031E0C9B2A003:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2002,
+          "name": "0031E0C9B2A003:1",
+          "intf": 0,
+          "address": "0031E0C9B2A003:1",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2003,
+          "name": "0031E0C9B2A003:2",
+          "intf": 0,
+          "address": "0031E0C9B2A003:2",
+          "type": "FLOW_METER_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 2004,
+          "name": "0031E0C9B2A003:3",
+          "intf": 0,
+          "address": "0031E0C9B2A003:3",
+          "type": "WATER_SWITCH_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 2005,
+          "name": "0031E0C9B2A003:4",
+          "intf": 0,
+          "address": "0031E0C9B2A003:4",
+          "type": "WATER_SWITCH_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 2006,
+          "name": "0031E0C9B2A003:5",
+          "intf": 0,
+          "address": "0031E0C9B2A003:5",
+          "type": "WATER_SWITCH_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 2007,
+          "name": "0031E0C9B2A003:6",
+          "intf": 0,
+          "address": "0031E0C9B2A003:6",
+          "type": "WATER_SWITCH_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 2008,
+          "name": "0031E0C9B2A003:7",
+          "intf": 0,
+          "address": "0031E0C9B2A003:7",
+          "type": "WATER_SWITCH_WEEK_PROFILE",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "values": {
+    "0.ERROR_VALVE_FAILURE": false,
+    "0.ERROR_OVERHEAT": false,
+    "0.OPERATING_VOLTAGE_STATUS": 0,
+    "0.ACTUAL_TEMPERATURE_STATUS": 0,
+    "0.ERROR_CODE": 0,
+    "0.ERROR_WATER_FAILURE": false,
+    "0.ERROR_UNDERVOLTAGE": false,
+    "0.LOW_BAT": false,
+    "0.UNREACH": false,
+    "0.ACTUAL_TEMPERATURE": 0.0,
+    "0.OPERATING_VOLTAGE": 0.0,
+    "0.ERROR_FROST_PROTECTION": false,
+    "3.SECTION_STATUS": 0,
+    "3.PROCESS": 0,
+    "3.STATE": false,
+    "3.SECTION": 0,
+    "4.SECTION_STATUS": 0,
+    "4.PROCESS": 0,
+    "4.STATE": false,
+    "4.SECTION": 0
+  }
+}

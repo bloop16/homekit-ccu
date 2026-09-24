@@ -1,0 +1,48 @@
+{
+  "source": "channel layout and datapoints from the eQ-3 device definitions (HmIP server firmware / pydevccu paramset descriptions)",
+  "devices": [
+    {
+      "id": 2000,
+      "intf": 0,
+      "intfName": "BidCos-RF",
+      "name": "HM-Sec-SFA-SM",
+      "address": "NEQ0034567",
+      "type": "HM-Sec-SFA-SM",
+      "channels": [
+        {
+          "id": 2001,
+          "name": "NEQ0034567:0",
+          "intf": 0,
+          "address": "NEQ0034567:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2002,
+          "name": "NEQ0034567:1",
+          "intf": 0,
+          "address": "NEQ0034567:1",
+          "type": "ALARMACTUATOR",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "values": {
+    "0.UNREACH": false,
+    "0.LOWBAT": false,
+    "0.ERROR_POWER": 0,
+    "0.STICKY_POWER": 0,
+    "0.ERROR_SABOTAGE": 0,
+    "0.STICKY_SABOTAGE": 0,
+    "0.ERROR_BATTERY": 0,
+    "0.STICKY_BATTERY": 0,
+    "1.STATE": false,
+    "1.ERROR_POWER": 0,
+    "1.ERROR_SABOTAGE": 0,
+    "1.ERROR_BATTERY": 0,
+    "1.INHIBIT": false,
+    "1.WORKING": false,
+    "1.LOWBAT": false
+  }
+}

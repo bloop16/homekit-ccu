@@ -1,0 +1,72 @@
+{
+  "source": "channel layout and datapoints from the eQ-3 device definitions (HmIP server firmware / pydevccu paramset descriptions)",
+  "devices": [
+    {
+      "id": 2000,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-MOD-WD-VK",
+      "address": "0044E0C9B2A008",
+      "type": "HmIP-MOD-WD-VK",
+      "channels": [
+        {
+          "id": 2001,
+          "name": "0044E0C9B2A008:0",
+          "intf": 0,
+          "address": "0044E0C9B2A008:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2002,
+          "name": "0044E0C9B2A008:1",
+          "intf": 0,
+          "address": "0044E0C9B2A008:1",
+          "type": "ROTARY_HANDLE_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2003,
+          "name": "0044E0C9B2A008:2",
+          "intf": 0,
+          "address": "0044E0C9B2A008:2",
+          "type": "WINDOW_DRIVE_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 2004,
+          "name": "0044E0C9B2A008:3",
+          "intf": 0,
+          "address": "0044E0C9B2A008:3",
+          "type": "DIMMER_WEEK_PROFILE",
+          "access": 255
+        },
+        {
+          "id": 2005,
+          "name": "0044E0C9B2A008:4",
+          "intf": 0,
+          "address": "0044E0C9B2A008:4",
+          "type": "ALARM_COND_SWITCH_TRANSMITTER",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "values": {
+    "0.UNREACH": false,
+    "0.OPERATING_VOLTAGE": 24.0,
+    "0.OPERATING_VOLTAGE_STATUS": 0,
+    "0.ERROR_CODE": 0,
+    "0.ERROR_UNDERVOLTAGE": false,
+    "0.ERROR_DRIVE": false,
+    "0.ERROR_COMMUNICATION": false,
+    "0.ERROR_DRIVE_MODE": false,
+    "1.STATE": 0,
+    "2.LEVEL": 0,
+    "2.LEVEL_STATUS": 0,
+    "2.PROCESS": 0,
+    "2.ACTIVITY_STATE": 3,
+    "2.SECTION": 0,
+    "2.SECTION_STATUS": 0
+  }
+}

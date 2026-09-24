@@ -1,0 +1,38 @@
+{
+  "devices": [
+    {
+      "id": 1800,
+      "intf": 0,
+      "intfName": "BidCos-RF",
+      "name": "HM-Sec-Key",
+      "address": "NEQ0180001",
+      "type": "HM-Sec-Key",
+      "channels": [
+        {
+          "id": 1801,
+          "name": "HM-Sec-Key NEQ0180001:0",
+          "intf": 0,
+          "address": "NEQ0180001:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 1802,
+          "name": "HM-Sec-Key NEQ0180001:1",
+          "intf": 0,
+          "address": "NEQ0180001:1",
+          "type": "KEYMATIC",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "NEQ0180001:1": "HomeMaticKeyMaticAccessory"
+  },
+  "mappings": {
+    "NEQ0180001:1": {
+      "Service": "HomeMaticKeyMaticAccessory"
+    }
+  }
+}

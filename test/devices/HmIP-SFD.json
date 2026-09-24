@@ -1,0 +1,105 @@
+{
+  "source": "channel layout and datapoints from the eQ-3 device definitions (HmIP server firmware / pydevccu paramset descriptions)",
+  "devices": [
+    {
+      "id": 2000,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-SFD",
+      "address": "0036E0C9B2A004",
+      "type": "HmIP-SFD",
+      "channels": [
+        {
+          "id": 2001,
+          "name": "0036E0C9B2A004:0",
+          "intf": 0,
+          "address": "0036E0C9B2A004:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2002,
+          "name": "0036E0C9B2A004:1",
+          "intf": 0,
+          "address": "0036E0C9B2A004:1",
+          "type": "TEMP_HUMIDITY_PARTICULATE_MATTER_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 2003,
+          "name": "0036E0C9B2A004:2",
+          "intf": 0,
+          "address": "0036E0C9B2A004:2",
+          "type": "COND_SWITCH_TRANSMITTER_TEMPERATURE",
+          "access": 255
+        },
+        {
+          "id": 2004,
+          "name": "0036E0C9B2A004:3",
+          "intf": 0,
+          "address": "0036E0C9B2A004:3",
+          "type": "COND_SWITCH_TRANSMITTER_HUMIDITY",
+          "access": 255
+        },
+        {
+          "id": 2005,
+          "name": "0036E0C9B2A004:4",
+          "intf": 0,
+          "address": "0036E0C9B2A004:4",
+          "type": "COND_SWITCH_TRANSMITTER_PARTICULATE_MATTER",
+          "access": 255
+        },
+        {
+          "id": 2006,
+          "name": "0036E0C9B2A004:5",
+          "intf": 0,
+          "address": "0036E0C9B2A004:5",
+          "type": "COND_SWITCH_TRANSMITTER_PARTICULATE_MATTER",
+          "access": 255
+        },
+        {
+          "id": 2007,
+          "name": "0036E0C9B2A004:6",
+          "intf": 0,
+          "address": "0036E0C9B2A004:6",
+          "type": "COND_SWITCH_TRANSMITTER_PARTICULATE_MATTER",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "values": {
+    "0.ERROR_CODE": 0,
+    "0.ERROR_COMMUNICATION_PARTICULATE_MATTER_SENSOR": false,
+    "0.ERROR_COMMUNICATION_TEMP_AND_HUMIDITY_SENSOR": false,
+    "0.ERROR_PARTICULATE_MATTER_MEASUREMENT": false,
+    "0.ERROR_TEMP_OR_HUMIDITY_MEASUREMENT": false,
+    "0.OPERATING_VOLTAGE": 0.0,
+    "0.OPERATING_VOLTAGE_STATUS": 0,
+    "0.UNREACH": false,
+    "1.ACTUAL_TEMPERATURE": 0.0,
+    "1.ACTUAL_TEMPERATURE_STATUS": 0,
+    "1.HUMIDITY": 0,
+    "1.HUMIDITY_STATUS": 0,
+    "1.MASS_CONCENTRATION_PM_1": 0.0,
+    "1.MASS_CONCENTRATION_PM_10": 0.0,
+    "1.MASS_CONCENTRATION_PM_10_24H_AVERAGE": 0.0,
+    "1.MASS_CONCENTRATION_PM_10_24H_AVERAGE_STATUS": 0,
+    "1.MASS_CONCENTRATION_PM_10_STATUS": 0,
+    "1.MASS_CONCENTRATION_PM_1_24H_AVERAGE": 0.0,
+    "1.MASS_CONCENTRATION_PM_1_24H_AVERAGE_STATUS": 0,
+    "1.MASS_CONCENTRATION_PM_1_STATUS": 0,
+    "1.MASS_CONCENTRATION_PM_2_5": 0.0,
+    "1.MASS_CONCENTRATION_PM_2_5_24H_AVERAGE": 0.0,
+    "1.MASS_CONCENTRATION_PM_2_5_24H_AVERAGE_STATUS": 0,
+    "1.MASS_CONCENTRATION_PM_2_5_STATUS": 0,
+    "1.NUMBER_CONCENTRATION_PM_1": 0.0,
+    "1.NUMBER_CONCENTRATION_PM_10": 0.0,
+    "1.NUMBER_CONCENTRATION_PM_10_STATUS": 0,
+    "1.NUMBER_CONCENTRATION_PM_1_STATUS": 0,
+    "1.NUMBER_CONCENTRATION_PM_2_5": 0.0,
+    "1.NUMBER_CONCENTRATION_PM_2_5_STATUS": 0,
+    "1.TYPICAL_PARTICLE_SIZE": 0.0,
+    "1.TYPICAL_PARTICLE_SIZE_STATUS": 0
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "devices": [
+    {
+      "id": 1840,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "ELV-SH-CTH",
+      "address": "0007A0A9B18005",
+      "type": "ELV-SH-CTH",
+      "channels": [
+        {
+          "id": 1841,
+          "name": "ELV-SH-CTH 0007A0A9B18005:0",
+          "intf": 0,
+          "address": "0007A0A9B18005:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 1842,
+          "name": "ELV-SH-CTH 0007A0A9B18005:1",
+          "intf": 0,
+          "address": "0007A0A9B18005:1",
+          "type": "CLIMATE_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 1843,
+          "name": "ELV-SH-CTH 0007A0A9B18005:2",
+          "intf": 0,
+          "address": "0007A0A9B18005:2",
+          "type": "COND_SWITCH_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 1844,
+          "name": "ELV-SH-CTH 0007A0A9B18005:3",
+          "intf": 0,
+          "address": "0007A0A9B18005:3",
+          "type": "COND_SWITCH_TRANSMITTER",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "0007A0A9B18005:1": "HomeMaticThermometerAccessory"
+  },
+  "mappings": {
+    "0007A0A9B18005:1": {
+      "Service": "HomeMaticThermometerAccessory"
+    }
+  }
+}

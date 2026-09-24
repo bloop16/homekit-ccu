@@ -1,0 +1,78 @@
+{
+  "devices": [
+    {
+      "id": 3000,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "Wandtaster Wohnzimmer",
+      "address": "0021DD89A1B2C3",
+      "type": "HmIP-WRC6",
+      "channels": [
+        {
+          "id": 3001,
+          "name": "0021DD89A1B2C3:0",
+          "intf": 0,
+          "address": "0021DD89A1B2C3:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 3002,
+          "name": "HmIP-WRC6 0021DD89A1B2C3:1",
+          "intf": 0,
+          "address": "0021DD89A1B2C3:1",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 3003,
+          "name": "HmIP-WRC6 0021DD89A1B2C3:2",
+          "intf": 0,
+          "address": "0021DD89A1B2C3:2",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 3004,
+          "name": "HmIP-WRC6 0021DD89A1B2C3:3",
+          "intf": 0,
+          "address": "0021DD89A1B2C3:3",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 3005,
+          "name": "HmIP-WRC6 0021DD89A1B2C3:4",
+          "intf": 0,
+          "address": "0021DD89A1B2C3:4",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 3006,
+          "name": "HmIP-WRC6 0021DD89A1B2C3:5",
+          "intf": 0,
+          "address": "0021DD89A1B2C3:5",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 3007,
+          "name": "HmIP-WRC6 0021DD89A1B2C3:6",
+          "intf": 0,
+          "address": "0021DD89A1B2C3:6",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "0021DD89A1B2C3:1": "HomeMaticRemoteAccessory"
+  },
+  "mappings": {
+    "0021DD89A1B2C3:1": {
+      "Service": "HomeMaticRemoteAccessory"
+    }
+  }
+}

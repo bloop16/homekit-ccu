@@ -55,8 +55,11 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     done()
   })
 
-  it('HomeKit-CCU check number of compatible devices should be also 0 cause of filters', (done) => {
-    expect(Object.keys(that.server._compatibleDevices).length).to.be(0)
+  it('HomeKit-CCU filters the key channel; only the siren channel is compatible', (done) => {
+    // channel 3 (ALARM_SWITCH_VIRTUAL_RECEIVER) is the siren (HomeMaticIPSirenAccessory)
+    expect(Object.keys(that.server._compatibleDevices).length).to.be(1)
+    const channels = that.server._compatibleDevices[0].channels
+    expect(channels.filter(channel => channel.isSuported === true).map(channel => channel.type)).to.eql(['ALARM_SWITCH_VIRTUAL_RECEIVER'])
     done()
   })
 })

@@ -1,0 +1,165 @@
+{
+  "source": "channel layout and datapoints from the eQ-3 device definitions (HmIP server firmware / pydevccu paramset descriptions)",
+  "devices": [
+    {
+      "id": 2000,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-FLC",
+      "address": "0045E0C9B2A009",
+      "type": "HmIP-FLC",
+      "channels": [
+        {
+          "id": 2001,
+          "name": "0045E0C9B2A009:0",
+          "intf": 0,
+          "address": "0045E0C9B2A009:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2002,
+          "name": "0045E0C9B2A009:1",
+          "intf": 0,
+          "address": "0045E0C9B2A009:1",
+          "type": "MULTI_MODE_INPUT_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 2003,
+          "name": "0045E0C9B2A009:2",
+          "intf": 0,
+          "address": "0045E0C9B2A009:2",
+          "type": "MULTI_MODE_INPUT_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 2004,
+          "name": "0045E0C9B2A009:3",
+          "intf": 0,
+          "address": "0045E0C9B2A009:3",
+          "type": "MULTI_MODE_INPUT_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 2005,
+          "name": "0045E0C9B2A009:4",
+          "intf": 0,
+          "address": "0045E0C9B2A009:4",
+          "type": "MULTI_MODE_INPUT_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 2006,
+          "name": "0045E0C9B2A009:5",
+          "intf": 0,
+          "address": "0045E0C9B2A009:5",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2007,
+          "name": "0045E0C9B2A009:6",
+          "intf": 0,
+          "address": "0045E0C9B2A009:6",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2008,
+          "name": "0045E0C9B2A009:7",
+          "intf": 0,
+          "address": "0045E0C9B2A009:7",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2009,
+          "name": "0045E0C9B2A009:8",
+          "intf": 0,
+          "address": "0045E0C9B2A009:8",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2010,
+          "name": "0045E0C9B2A009:9",
+          "intf": 0,
+          "address": "0045E0C9B2A009:9",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2011,
+          "name": "0045E0C9B2A009:10",
+          "intf": 0,
+          "address": "0045E0C9B2A009:10",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2012,
+          "name": "0045E0C9B2A009:11",
+          "intf": 0,
+          "address": "0045E0C9B2A009:11",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2013,
+          "name": "0045E0C9B2A009:12",
+          "intf": 0,
+          "address": "0045E0C9B2A009:12",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2014,
+          "name": "0045E0C9B2A009:13",
+          "intf": 0,
+          "address": "0045E0C9B2A009:13",
+          "type": "SWITCH_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2015,
+          "name": "0045E0C9B2A009:14",
+          "intf": 0,
+          "address": "0045E0C9B2A009:14",
+          "type": "SWITCH_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2016,
+          "name": "0045E0C9B2A009:15",
+          "intf": 0,
+          "address": "0045E0C9B2A009:15",
+          "type": "SWITCH_WEEK_PROFILE",
+          "access": 255
+        },
+        {
+          "id": 2017,
+          "name": "0045E0C9B2A009:16",
+          "intf": 0,
+          "address": "0045E0C9B2A009:16",
+          "type": "ALARM_COND_SWITCH_TRANSMITTER",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "values": {
+    "0.UNREACH": false,
+    "0.ACTUAL_TEMPERATURE": 21.5,
+    "0.ERROR_CODE": 0,
+    "0.ERROR_OVERHEAT": false,
+    "13.STATE": false,
+    "13.PROCESS": 0,
+    "13.SECTION": 0,
+    "13.SECTION_STATUS": 0,
+    "14.STATE": false,
+    "14.PROCESS": 0,
+    "14.SECTION": 0,
+    "14.SECTION_STATUS": 0
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "source": "channel layout and datapoints from the eQ-3 device definitions (HmIP server firmware / pydevccu paramset descriptions)",
+  "devices": [
+    {
+      "id": 2000,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-DLP",
+      "address": "002A20C9A8F001",
+      "type": "HmIP-DLP",
+      "channels": [
+        {
+          "id": 2001,
+          "name": "002A20C9A8F001:0",
+          "intf": 0,
+          "address": "002A20C9A8F001:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2002,
+          "name": "002A20C9A8F001:1",
+          "intf": 0,
+          "address": "002A20C9A8F001:1",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2003,
+          "name": "002A20C9A8F001:2",
+          "intf": 0,
+          "address": "002A20C9A8F001:2",
+          "type": "ACCELERATION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2004,
+          "name": "002A20C9A8F001:3",
+          "intf": 0,
+          "address": "002A20C9A8F001:3",
+          "type": "DOOR_STATE_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2005,
+          "name": "002A20C9A8F001:4",
+          "intf": 0,
+          "address": "002A20C9A8F001:4",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2006,
+          "name": "002A20C9A8F001:5",
+          "intf": 0,
+          "address": "002A20C9A8F001:5",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2007,
+          "name": "002A20C9A8F001:6",
+          "intf": 0,
+          "address": "002A20C9A8F001:6",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2008,
+          "name": "002A20C9A8F001:7",
+          "intf": 0,
+          "address": "002A20C9A8F001:7",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2009,
+          "name": "002A20C9A8F001:8",
+          "intf": 0,
+          "address": "002A20C9A8F001:8",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2010,
+          "name": "002A20C9A8F001:9",
+          "intf": 0,
+          "address": "002A20C9A8F001:9",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2011,
+          "name": "002A20C9A8F001:10",
+          "intf": 0,
+          "address": "002A20C9A8F001:10",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2012,
+          "name": "002A20C9A8F001:11",
+          "intf": 0,
+          "address": "002A20C9A8F001:11",
+          "type": "PERMISSION_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2013,
+          "name": "002A20C9A8F001:12",
+          "intf": 0,
+          "address": "002A20C9A8F001:12",
+          "type": "DOOR_LOCK_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2014,
+          "name": "002A20C9A8F001:13",
+          "intf": 0,
+          "address": "002A20C9A8F001:13",
+          "type": "AUTO_RELOCK_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2015,
+          "name": "002A20C9A8F001:14",
+          "intf": 0,
+          "address": "002A20C9A8F001:14",
+          "type": "SWITCH_WEEK_PROFILE",
+          "access": 255
+        },
+        {
+          "id": 2016,
+          "name": "002A20C9A8F001:15",
+          "intf": 0,
+          "address": "002A20C9A8F001:15",
+          "type": "ALARM_COND_SWITCH_TRANSMITTER",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "values": {
+    "0.SABOTAGE_ACCELERATION": false,
+    "0.ERROR_DOOR_LOCKED_WHILE_OPEN": false,
+    "0.ERROR_DOOR_OPENED_WHILE_LOCKED": false,
+    "0.OPERATING_VOLTAGE_STATUS": 0,
+    "0.SABOTAGE_MAGNETIC_FIELD": false,
+    "0.BOOTED": false,
+    "0.ERROR_CODE": 0,
+    "0.SABOTAGE_BATTERY": false,
+    "0.LOW_BAT": false,
+    "0.UNREACH": false,
+    "0.SABOTAGE_VERTICAL": false,
+    "0.OPERATING_VOLTAGE": 0.0,
+    "3.STATE": 0,
+    "3.STATE_STATUS": 0,
+    "12.ERROR_LOAD_TOO_LOW": false,
+    "12.SECTION_STATUS": 0,
+    "12.PROCESS": 0,
+    "12.LOCK_TEACH_IN_STATE": 0,
+    "12.LOCK_STATE_REASON": 0,
+    "12.ERROR_JAMMED": false,
+    "12.LAST_LOCK_DRIVE_LOAD": 0,
+    "12.LOCK_STATE": 0,
+    "12.SECTION": 0,
+    "12.ACTIVITY_STATE": 0
+  }
+}
