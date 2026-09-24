@@ -4,6 +4,11 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/). Versions up to 0.0.64 are those of hap-homematic.
 
+## [0.1.1] - unreleased
+
+### Fixed
+- Firefox over HTTPS: the configuration stayed empty because Firefox trusts the certificate of the CCU per port and blocked the api on port 49874 ("CORS request did not succeed"). The configuration now says so and offers a page to accept the certificate on that port; it connects by itself afterwards ([#1](https://github.com/bloop16/homekit-ccu/issues/1)).
+
 ## [0.1.0] - 2026-09-24
 
 First release of the fork for OpenCCU 3.89+ (Node.js 22.12+). Moving from hap-homematic is
