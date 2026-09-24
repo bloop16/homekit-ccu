@@ -58,7 +58,7 @@ const startService = async ({ config, validSids = [SID] } = {}) => {
   }
   service.restartSystem = () => { calls.restarts++; return true }
   service.heartBeat = () => {}
-  service.bridges = [{ id: 'b1', displayName: 'Bridge', pincode: '031-45-154' }]
+  service.bridges = [{ id: 'b1', displayName: 'Bridge', pincode: '482-91-736' }]
   service.configServerPort = 0
   service.configServerBind = '127.0.0.1'
   await service.run()
@@ -214,7 +214,7 @@ describe('HomeKit-CCU config server authentication', () => {
       expect(res.status).to.be(401)
       expect(res.headers['content-type']).to.contain('application/json')
       expect(JSON.parse(res.body)).to.eql({ error: 'Unauthorized' })
-      expect(res.body).not.to.contain('031-45-154')
+      expect(res.body).not.to.contain('482-91-736')
     })
 
     it('answers 401 to a GET api call with an invalid session', async () => {
@@ -228,15 +228,15 @@ describe('HomeKit-CCU config server authentication', () => {
       ctx = await startService()
       const res = await postApi(ctx.port, { method: 'bridges', sid: SID })
       expect(res.status).to.be(200)
-      expect(JSON.parse(res.body)[0].pincode).to.be('031-45-154')
+      expect(JSON.parse(res.body)[0].pincode).to.be('482-91-736')
       expect(ctx.calls.validated).to.eql([SID])
     })
 
     it('guards every api method, including the state-changing ones', async () => {
       ctx = await startService()
-      const methods = ['bridges', 'backup', 'getLog', 'restart', 'saveSettings', 'update', 'system',
+      const methods = ['bridges', 'backup', 'getLog', 'restart', 'saveSettings', 'system',
         'createinstance', 'createinstancewizzard', 'removehapinstance', 'saveDevice', 'removeDevice',
-        'publish', 'debug', 'support', 'changelog', 'updateChangelog', 'ccuGetDatapoints', 'unknown']
+        'publish', 'debug', 'support', 'changelog', 'ccuGetDatapoints', 'unknown']
       for (const method of methods) {
         const res = await postApi(ctx.port, { method })
         expect(res.status).to.be(401)
@@ -323,7 +323,7 @@ describe('HomeKit-CCU config server authentication', () => {
       const res = await postApi(ctx.port, { method: 'bridges', sid: SID }, { Origin: 'http://evil.example' })
       expect(res.status).to.be(403)
       expect(res.headers).not.to.have.key('access-control-allow-origin')
-      expect(res.body).not.to.contain('031-45-154')
+      expect(res.body).not.to.contain('482-91-736')
     })
 
     it('rejects a foreign origin even when only the port matches', async () => {

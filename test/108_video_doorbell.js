@@ -7,6 +7,7 @@ const { recordingLog } = require(path.join(__dirname, 'helpers', 'recordingLog.j
 const fs = require('fs')
 const os = require('os')
 
+const { isValidSetupCode } = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'hapIdentity.js'))
 const FAKE = path.join(__dirname, 'fixtures', 'fake-ffmpeg.sh')
 const log = new Logger('HAP Test')
 log.setDebugEnabled(false)
@@ -175,7 +176,21 @@ describe('HomeKit-CCU video doorbell accessory', () => {
     back._accessoryUUID = hap.uuid.generate('SPECIAL:Back door')
     accessories.push(back)
     expect(back.getPublishInfo().username).to.not.be(info.username)
-    expect(back.getPublishInfo().pincode).to.be('031-45-154')
+    // without a configured code every doorbell gets its own random one, kept across restarts
+    const generated = back.getPublishInfo().pincode
+    expect(isValidSetupCode(generated)).to.be(true)
+    expect(generated).to.be(back.getPublishInfo().pincode)
+    expect(back._persistentValues['pin-code']).to.be(generated)
+  })
+
+  it('never uses a fixed code shared by all installations', () => {
+    const codes = new Set()
+    for (let i = 0; i < 5; i++) {
+      codes.add(make({ ffmpegpath: FAKE, video_source: 'rtsp://x' }).getPublishInfo().pincode)
+    }
+    expect(codes.size).to.be.greaterThan(1)
+    const offered = VideoDoorBell.configurationItems()['pin-code'].default
+    expect(isValidSetupCode(offered)).to.be(true)
   })
 
   it('is not published with a trivial or malformed pin', () => {
@@ -183,7 +198,8 @@ describe('HomeKit-CCU video doorbell accessory', () => {
       const rec = recordingLog()
       const accessory = make({ ffmpegpath: FAKE, video_source: 'rtsp://x', 'pin-code': pin }, rec)
       expect(accessory.cameraUnavailable).to.be(true)
-      expect(rec.text('error')).to.contain(pin)
+      expect(rec.text('error')).to.contain('pin code')
+      expect(rec.text('error')).not.to.contain(pin)
     }
   })
 
@@ -192,7 +208,7 @@ describe('HomeKit-CCU video doorbell accessory', () => {
     for (const key of ['vcodec', 'maxWidth', 'maxHeight', 'maxFPS', 'maxBitrate', 'audio', 'audio_return_target']) {
       expect(items[key]).to.have.property('default')
     }
-    expect(items['pin-code'].default).to.be('031-45-154')
+    expect(items['pin-code'].default).to.match(/^\d{3}-\d{2}-\d{3}$/)
     expect(VideoDoorBell.channelTypes()).to.eql(['SPECIAL'])
   })
 })
