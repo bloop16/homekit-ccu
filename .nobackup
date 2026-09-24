@@ -1,2 +1,1 @@
-This file prevents Raspberrymatic from backup the homekit-ccu folder.
-this is fine, just install it again
+This file keeps the HomeKit-CCU program directory out of OpenCCU backups; it is installed again from the add-on package.

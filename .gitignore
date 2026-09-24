@@ -1,18 +1,10 @@
-.vscode
-.DS_Store
-*.tgz
-.nyc_output
-coverage
 node_modules
-tools
-temp
-node_modules.nosync
-test*.sh
-conf.d
+coverage
+*.tgz
+.DS_Store
+.vscode
+# build output of addon_installer/genscript.sh
 addon_installer/*
 !addon_installer/genscript.sh
 !addon_installer/update_script
 !addon_installer/homekit-ccu
-CLAUDE.md
-.claude-commit-plan.md
-.claude-todos.md

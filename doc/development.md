@@ -3,7 +3,7 @@
 ```bash
 npm install          # install dependencies (Node.js 22.12 or newer, see .nvmrc)
 npm test             # run tests
-npm run lint         # standard, enforced in CI
+npm run lint         # neostandard (ESLint 9), enforced in CI
 npm run coverage     # c8, at least 80 % for the camera code
 node index.js -D     # run in debug mode (expects CCU on localhost)
 node index.js -D -H <host>  # run against remote CCU

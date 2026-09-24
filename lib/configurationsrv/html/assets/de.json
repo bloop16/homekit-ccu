@@ -383,5 +383,6 @@
   "CPU": "CPU",
   "Restart HomeKit-CCU": "HomeKit-CCU neu starten",
   "Publish devices": "Geräte veröffentlichen",
-  "All bridges already publish their devices. There is nothing left to do here.": "Alle Bridges veröffentlichen bereits ihre Geräte. Hier ist nichts mehr zu tun."
+  "All bridges already publish their devices. There is nothing left to do here.": "Alle Bridges veröffentlichen bereits ihre Geräte. Hier ist nichts mehr zu tun.",
+  "Saving failed: %s": "Speichern fehlgeschlagen: %s"
 }

@@ -1,16 +1,29 @@
 {
 	"name": "homekit-ccu",
 	"version": "0.1.0-rc.5",
-	"description": "provides a homekit bridge to the ccu",
+	"description": "Apple HomeKit bridge for HomeMatic and HomematicIP devices, running as an add-on on OpenCCU",
+	"author": "bloop16 (https://github.com/bloop16)",
+	"contributors": [
+		"Thomas Kluge (https://github.com/thkl)",
+		"Jochen Britz (https://github.com/Britz)"
+	],
+	"homepage": "https://github.com/bloop16/homekit-ccu#readme",
+	"bugs": {
+		"url": "https://github.com/bloop16/homekit-ccu/issues"
+	},
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/bloop16/homekit-ccu.git"
 	},
 	"keywords": [
-		"HomeKit",
-		"HomeMatic",
-		"CCU"
+		"homekit",
+		"homematic",
+		"homematic-ip",
+		"openccu",
+		"ccu",
+		"hap",
+		"smarthome"
 	],
 	"engines": {
 		"node": ">=22.12.0"
@@ -36,7 +49,7 @@
 		"dev": "node index.js -D || true",
 		"devall": "DEBUG=* node index.js -D || true",
 		"test": "mocha",
-		"lint": "standard",
+		"lint": "eslint .",
 		"coverage": "c8 --include 'lib/services/camera/**' --include lib/services/CustomHomeKitTypes.js --include lib/util/time.js --include lib/util/hapIds.js --include lib/util/instanceMigration.js --include lib/util/configMigration.js --include lib/util/mappingInstances.js --include lib/monitConfig.js --check-coverage --lines 80 mocha"
 	},
 	"overrides": {
@@ -46,28 +59,17 @@
 	},
 	"devDependencies": {
 		"c8": "^12.0.0",
+		"eslint": "^9.39.5",
 		"expect.js": "0.3.1",
+		"globals": "^17.12.0",
 		"mocha": "^12.0.2",
-		"standard": "^17.1.2"
+		"neostandard": "^0.13.0"
 	},
 	"mocha": {
 		"bail": true,
 		"exit": true,
 		"reporter": "spec",
 		"recursive": true
-	},
-	"standard": {
-		"ignore": [
-			"/lib/configurationsrv/html/*",
-			"/lib/vendor/**",
-			"/lib/services/HomeMaticProgrammableSwitchAccessory.js",
-			"/lib/services/HomeMaticSmartSpeakerAccessory.js"
-		],
-		"env": [
-			"commonjs",
-			"node",
-			"mocha"
-		]
 	},
 	"files": [
 		"lib/",

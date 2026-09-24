@@ -9,8 +9,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "dbaeumer.vscode-eslint",
-        "Anthropic.claude-code"
+        "dbaeumer.vscode-eslint"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "sh",
@@ -19,8 +18,13 @@
       }
     }
   },
-  "forwardPorts": [8080, 9874, 9875, 9877, 9878, 9879, 49874],
-  "remoteEnv": {
-    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}"
-  }
+  "forwardPorts": [
+    8080,
+    9874,
+    9875,
+    9877,
+    9878,
+    9879,
+    49874
+  ]
 }

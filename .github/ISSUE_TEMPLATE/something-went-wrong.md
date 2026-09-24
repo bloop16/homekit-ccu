@@ -1,19 +1,24 @@
 ---
-name: There went something wrong
-about: Something went wrong and i need some help
+name: Something went wrong
+about: A device, the configuration or the add-on does not work as expected
 title: ''
-labels: 
+labels: bug
 assignees: ''
-
 ---
 
-**Please describe your problem**
-Which Homematic actor/sensor you want to control ? 
-Which settings y've choosen for this actor/sensor in homekit-ccu ?
+**What happens**
+Describe what you see, for example in Apple Home or in the HomeKit-CCU configuration.
 
-**What happends**
+**What should happen**
 
-**What should be happend**
+**Device and settings**
+- Device type (for example HmIP-eTRV-2) and channel:
+- Service chosen in HomeKit-CCU and its settings:
 
-**Steps to reproduce this issue**
-While you are perfoming these steps please run homekit-ccu in debug mode (https://github.com/bloop16/homekit-ccu) and add the log here
+**Versions**
+- HomeKit-CCU:
+- OpenCCU:
+- iOS / Apple Home:
+
+**Log**
+Turn on debug in the configuration (*Internals → Enable Debug*), reproduce the problem and attach the relevant part of `/var/log/homekit-ccu.log`. The log contains no setup codes, but please check it for anything else you do not want to share.

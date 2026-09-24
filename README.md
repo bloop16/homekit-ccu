@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="doc/HAP-HomeMatic_LogoBlue.png" width="96" alt="HomeKit-CCU logo">
+  <img src="doc/logo.png" width="96" alt="HomeKit-CCU logo">
 </p>
 
 <h1 align="center">HomeKit-CCU</h1>
@@ -21,7 +21,7 @@
 > Not supported: CCU2, CCU3 with the eQ-3 firmware, and older OpenCCU or RaspberryMatic releases. The installer stops with a clear message if Node.js is too old.
 
 <p align="center">
-  <img src="doc/hap_homematic_ui2.png" width="720" alt="Configuration UI">
+  <img src="doc/screenshot.png" width="720" alt="HomeKit-CCU configuration">
 </p>
 
 ## What you get
