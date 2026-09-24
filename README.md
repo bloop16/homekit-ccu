@@ -41,14 +41,20 @@ The CCU needs no internet access for the installation. Progress and errors go to
 
 ## Coming from hap-homematic?
 
-Just install homekit-ccu. It takes over the configuration and the HomeKit pairing of hap-homematic, so bridges, rooms and automations stay in Apple Home. Please read the [upgrade notes](doc/upgrading.md) first, they say what to do if you already uninstalled hap-homematic.
+hap-homematic has to go first, your setup comes along with its backup:
+
+1. In hap-homematic, create a backup under *Internals → Backup*.
+2. Uninstall hap-homematic.
+3. Install homekit-ccu and restore the backup under *Internals → Backup*.
+
+Bridges, devices and the HomeKit pairing come back, so rooms and automations stay in Apple Home. Details are in the [upgrade notes](doc/upgrading.md).
 
 ## Documentation
 
 | Topic | |
 |---|---|
 | Using the configuration UI, device types, special devices | [hap-homematic wiki](https://github.com/thkl/hap-homematic/wiki) |
-| Upgrading from hap-homematic or 0.0.x | [doc/upgrading.md](doc/upgrading.md) |
+| Moving from hap-homematic | [doc/upgrading.md](doc/upgrading.md) |
 | Login, HTTPS and why the UI needs a CCU session | [doc/security.md](doc/security.md) |
 | Video doorbell and ffmpeg | [doc/video-doorbell.md](doc/video-doorbell.md) |
 | Running on another machine, ports | [doc/remote-mode.md](doc/remote-mode.md) |

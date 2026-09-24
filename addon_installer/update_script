@@ -2,6 +2,7 @@
 
 ADDONNAME=homekit-ccu
 CONFIG_DIR=/usr/local/etc/config
+ADDONS_DIR=/usr/local/addons
 ADDONCFG_DIR=${CONFIG_DIR}/addons/${ADDONNAME}
 RCD_DIR=${CONFIG_DIR}/rc.d
 REQUIRED_NODE_MAJOR=22
@@ -24,6 +25,12 @@ fi
 NODE_MAJOR=$(echo "${NODE_VERSION}" | sed 's/^v//' | cut -d. -f1)
 if ! [ "${NODE_MAJOR}" -ge "${REQUIRED_NODE_MAJOR}" ] 2>/dev/null; then
   fail "Node.js ${NODE_VERSION} is too old. HomeKit-CCU needs Node.js ${REQUIRED_NODE_MAJOR} or newer, update to OpenCCU 3.89 or newer."
+fi
+
+# hap-homematic has to be removed first: it runs the same kind of bridges and its backup is
+# how configuration and HomeKit pairing come over
+if [ -e "${RCD_DIR}/hap-homematic" ] || [ -d "${ADDONS_DIR}/hap-homematic" ]; then
+  fail "hap-homematic is still installed. Create a backup in hap-homematic (Internals > Backup), uninstall hap-homematic under Settings > Control panel > Additional software, then install HomeKit-CCU and restore the backup in its configuration (Internals > Backup)."
 fi
 
 # create necessary directories

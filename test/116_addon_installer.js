@@ -56,8 +56,7 @@ const setup = () => {
     LIGHTTPD_CONF_DIR: `${root}/lighttpd`,
     MONIT_DIR: `${root}/monit`,
     MONIT_BIN: `${bin}/monit`,
-    HM_ADDONS_CFG: `${root}/hm_addons.cfg`,
-    LEGACY_ADDON_DIR: `${root}/addons/hap-homematic`
+    HM_ADDONS_CFG: `${root}/hm_addons.cfg`
   }
   let script = fs.readFileSync(INSTALLER, 'utf8')
   Object.entries(vars).forEach(([name, value]) => {
@@ -76,10 +75,8 @@ const setup = () => {
     calls: path.join(root, 'calls'),
     www: path.join(root, 'config', 'addons', 'www', 'homekit-ccu'),
     legacy: {
-      rcScript: path.join(root, 'config', 'rc.d', 'hap-homematic'),
       monitCfg: path.join(root, 'monit', 'monit_hap-homematic.cfg'),
       lighttpdConf: path.join(root, 'lighttpd', 'hap-homematic.conf'),
-      addonDir: path.join(root, 'addons', 'hap-homematic'),
       configDir: path.join(root, 'config', 'addons', 'hap-homematic'),
       hmAddons: path.join(root, 'hm_addons.cfg')
     }
@@ -159,40 +156,32 @@ describe('HomeKit-CCU addon installer', () => {
   describe('legacy hap-homematic cleanup', () => {
     const BUTTONS = 'hap-homematic {CONFIG_URL /addons/hap-homematic/index.html CONFIG_DESCRIPTION {de x en y} ID hap-homematic CONFIG_NAME HAP-HomeMatic} '
 
-    const createLegacy = () => {
+    // hap-homematic is uninstalled first (update_script refuses otherwise); these can stay behind
+    const createLeftovers = () => {
       const l = t.legacy
-      fs.mkdirSync(path.dirname(l.rcScript), { recursive: true })
-      // the old stop fails: the install must go on anyway
-      fs.writeFileSync(l.rcScript, '#!/bin/sh\necho "legacy-rc $1" >> "$STUB_CALLS"\nexit 1\n', { mode: 0o755 })
       fs.mkdirSync(path.dirname(l.monitCfg), { recursive: true })
       fs.writeFileSync(l.monitCfg, 'check process HapHomeMatic with pidfile /var/run/hap-homematic.pid\n')
       fs.mkdirSync(path.dirname(l.lighttpdConf), { recursive: true })
       fs.writeFileSync(l.lighttpdConf, '')
-      fs.mkdirSync(path.join(l.addonDir, 'node_modules', 'hap-homematic'), { recursive: true })
-      fs.writeFileSync(path.join(l.addonDir, 'node_modules', 'hap-homematic', 'index.js'), '')
       fs.mkdirSync(l.configDir, { recursive: true })
       fs.writeFileSync(path.join(l.configDir, 'config.json'), '{}')
       fs.writeFileSync(l.hmAddons, BUTTONS)
     }
 
-    it('stops and removes the old addon but keeps its configuration', () => {
-      createLegacy()
+    it('removes what an uninstalled hap-homematic left behind but keeps its configuration', () => {
+      createLeftovers()
       const res = t.run('install')
       expect(res.status).to.be(0)
       const l = t.legacy
-      expect(t.callLog()).to.contain('legacy-rc stop')
-      expect(fs.existsSync(l.rcScript)).to.be(false)
       expect(fs.existsSync(l.monitCfg)).to.be(false)
       expect(t.callLog()).to.contain('monit reload')
       expect(fs.existsSync(l.lighttpdConf)).to.be(false)
       expect(t.callLog()).to.contain(`node ${path.join(t.moduleDir, 'etc', 'hm_addon.js')} hap-homematic\n`)
-      expect(fs.existsSync(l.addonDir)).to.be(false)
       expect(fs.existsSync(path.join(l.configDir, 'config.json'))).to.be(true)
-      // the stop runs before its code is removed, the button is removed before ours is created
+      // the old button is removed before ours is created
       const calls = t.callLog()
-      expect(calls.indexOf('legacy-rc stop')).to.be.lessThan(calls.indexOf('hap-homematic\n'))
       expect(calls.indexOf('hm_addon.js hap-homematic')).to.be.lessThan(calls.indexOf('hm_addon.js homekit-ccu'))
-      ;['Stopping legacy', 'legacy rc.d script', 'legacy monit config', 'legacy lighttpd config', 'legacy WebUI button', 'legacy program directory']
+      ;['legacy monit config', 'legacy lighttpd config', 'legacy WebUI button']
         .forEach(step => expect(t.log()).to.contain(step))
       expect(t.log()).to.contain('Installation complete.')
     })
@@ -229,9 +218,12 @@ const setupUpdate = () => {
   fs.writeFileSync(path.join(archive, 'homekit-ccu'), '#!/bin/sh\necho "rc $*" >> "$STUB_CALLS"\n')
   fs.writeFileSync(path.join(archive, 'homekit-ccu.tgz'), 'tgz')
   let script = fs.readFileSync(UPDATE_SCRIPT, 'utf8')
-  const line = /^CONFIG_DIR=.*$/m
-  expect(line.test(script)).to.be(true) // update_script must keep defining CONFIG_DIR on its own line
-  script = script.replace(line, `CONFIG_DIR=${configDir}`)
+  const addonsDir = path.join(root, 'addons')
+  ;[['CONFIG_DIR', configDir], ['ADDONS_DIR', addonsDir]].forEach(([name, value]) => {
+    const line = new RegExp(`^${name}=.*$`, 'm')
+    expect(line.test(script)).to.be(true) // update_script must keep defining ${name} on its own line
+    script = script.replace(line, `${name}=${value}`)
+  })
   fs.writeFileSync(path.join(archive, 'update_script'), script, { mode: 0o755 })
   const calls = path.join(root, 'calls')
   const run = (platform, nodeVersion) => childProcess.spawnSync('/bin/sh', ['update_script', platform], {
@@ -242,6 +234,8 @@ const setupUpdate = () => {
   return {
     root,
     configDir,
+    legacyRcScript: path.join(configDir, 'rc.d', 'hap-homematic'),
+    legacyAddonDir: path.join(addonsDir, 'hap-homematic'),
     rcScript: path.join(configDir, 'rc.d', 'homekit-ccu'),
     tgz: path.join(configDir, 'addons', 'homekit-ccu', 'etc', 'homekit-ccu.tgz'),
     run,
@@ -301,6 +295,34 @@ describe('HomeKit-CCU addon update_script', () => {
     expect(res.status).to.be(1)
     expect(res.stderr).to.contain('too old')
     expect(fs.existsSync(u.configDir)).to.be(false)
+  })
+
+  describe('while hap-homematic is still installed', () => {
+    const expectRefusal = (res) => {
+      expect(res.status).to.be(1)
+      expect(res.stderr).to.contain('hap-homematic is still installed')
+      expect(res.stderr).to.contain('backup')
+      expect(res.stderr).to.contain('uninstall hap-homematic')
+      expect(fs.existsSync(u.rcScript)).to.be(false)
+      expect(fs.existsSync(u.tgz)).to.be(false)
+      expect(u.callLog()).to.be('')
+    }
+
+    it('refuses when its rc.d script exists', () => {
+      fs.mkdirSync(path.dirname(u.legacyRcScript), { recursive: true })
+      fs.writeFileSync(u.legacyRcScript, '#!/bin/sh\n')
+      expectRefusal(u.run('HM-RASPBERRYMATIC', 'v22.12.0'))
+    })
+
+    it('refuses when its program directory exists', () => {
+      fs.mkdirSync(u.legacyAddonDir, { recursive: true })
+      expectRefusal(u.run('HM-RASPBERRYMATIC', 'v22.12.0'))
+    })
+
+    it('installs once only its configuration backup is left', () => {
+      fs.mkdirSync(path.join(u.configDir, 'addons', 'hap-homematic'), { recursive: true })
+      expect(u.run('HM-RASPBERRYMATIC', 'v22.12.0').status).to.be(0)
+    })
   })
 
   it('does not mount /usr/local (CCU2-era leftover)', () => {
