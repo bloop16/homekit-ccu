@@ -31,13 +31,38 @@ describe('HomeKit-CCU CCU groups', () => {
       expect(groupMembers(layout, known)).to.eql({ [GROUP]: [TRV, CONTACT], INT0000002: ['OTHER'] })
     })
     expect(groupMembers({ list: [GROUP, 'INT0000002', TRV] }, known)).to.eql({})
-    expect(groupMembers(null, known)).to.eql({})
+  })
+
+  it('reads the groups file of OpenCCU, where the group device is only part of its name', () => {
+    // the layout of /usr/local/etc/config/groups.gson (serial numbers made up)
+    const file = {
+      groups: [
+        {
+          id: 2,
+          groupMembers: [
+            { memberType: { id: 'RADIATOR_THERMOSTAT' }, properties: {}, id: TRV + ':1' },
+            { memberType: { id: 'SENSOR_WINDOW' }, properties: {}, id: CONTACT + ':1' }
+          ],
+          groupType: { id: 'hmip.heating.group', label: 'HmIP-Heizungssteuerung', version: 131072 },
+          groupProperties: { FORBID_SINGLE_OPERATION: false, GROUP_DEVICE_NAME: 'Badezimmer ' + GROUP, NAME: 'Badezimmer' }
+        },
+        {
+          id: 3,
+          groupMembers: [{ memberType: { id: 'WALLMOUNTED_THERMOSTAT' }, properties: {}, id: 'OTHER:1' }],
+          groupType: { id: 'hmip.heating.group' },
+          groupProperties: { GROUP_DEVICE_NAME: 'K\u00fcche INT0000002', NAME: 'K\u00fcche' }
+        }
+      ]
+    }
+    expect(groupMembers(file, [GROUP, 'INT0000002', TRV, CONTACT, 'OTHER'])).to.eql({ [GROUP]: [TRV, CONTACT].sort(), INT0000002: ['OTHER'] })
+    expect(groupMembers(null, [GROUP])).to.eql({})
   })
 
   it('reads the groups file and tolerates a missing or broken one', () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hkccu-199-'))
     const file = path.join(dir, 'groups.gson')
-    fs.writeFileSync(file, JSON.stringify({ groups: [{ virtualDevice: GROUP, groupMembers: [{ id: TRV }] }] }))
+    // latin1 like on the CCU
+    fs.writeFileSync(file, JSON.stringify({ groups: [{ groupMembers: [{ id: TRV + ':1' }], groupProperties: { GROUP_DEVICE_NAME: 'K\u00fcche ' + GROUP } }] }), 'latin1')
     expect(readGroups([GROUP, TRV], file)).to.eql({ [GROUP]: [TRV] })
     fs.writeFileSync(file, '{ broken')
     expect(readGroups([GROUP, TRV], file)).to.eql({})
