@@ -23,3 +23,29 @@ within a week.
 - The event servers only take calls from the CCU, restore uploads are checked before they are stored,
   and a configuration can only name service classes of HomeKit-CCU (see
   [doc/security.md](doc/security.md#further-protection)).
+
+---
+
+## Sicherheitsrichtlinie (Deutsch)
+
+### Unterstützte Versionen
+
+Nur das jeweils neueste Release von HomeKit-CCU erhält Sicherheitskorrekturen.
+
+### Eine Sicherheitslücke melden
+
+Bitte eröffne für Sicherheitsprobleme kein öffentliches Issue. Melde sie vertraulich über
+[GitHub Security Advisories](https://github.com/bloop16/homekit-ccu/security/advisories/new).
+Beschreibe das Problem, die betroffene Version und wie es sich nachstellen lässt. Du bekommst
+innerhalb einer Woche eine Antwort.
+
+### Was HomeKit-CCU schützt
+
+- Die Konfigurationsoberfläche und ihre API verlangen eine CCU-Administrator-Sitzung (siehe
+  [doc/de/security.md](doc/de/security.md)).
+- HomeKit-Setup-Codes und Kopplungsschlüssel werden nur im Konfigurationsverzeichnis des Add-ons
+  auf der CCU gespeichert und nie ins Log geschrieben.
+- Namen, die von der CCU kommen, werden in der Konfigurationsoberfläche als Text angezeigt.
+- Die Event-Server nehmen nur Aufrufe von der CCU an, hochgeladene Datensicherungen werden vor dem Speichern geprüft,
+  und eine Konfiguration kann nur Service-Klassen von HomeKit-CCU angeben (siehe
+  [doc/de/security.md](doc/de/security.md#weiterer-schutz)).

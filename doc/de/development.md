@@ -1,6 +1,6 @@
-🇬🇧 English | [🇩🇪 Deutsch](de/development.md)
+[🇬🇧 English](../development.md) | 🇩🇪 Deutsch
 
-# Development
+# Entwicklung
 
 ```bash
 npm install          # install dependencies (Node.js 22.12 or newer, see .nvmrc)
@@ -13,9 +13,9 @@ node index.js -D -H <host>  # run against remote CCU
 
 ## Devcontainer
 
-A devcontainer in `.devcontainer/` provides a full OpenCCU environment for development and debugging. It runs a single container based on the OpenCCU image (which ships Node.js 22), using Podman.
+Ein Devcontainer in `.devcontainer/` stellt eine vollständige OpenCCU-Umgebung zum Entwickeln und Debuggen bereit. Er startet mit Podman einen einzelnen Container auf Basis des OpenCCU-Images (das Node.js 22 mitbringt).
 
-## Useful commands for debugging
+## Nützliche Befehle zur Fehlersuche
 
 ```shell
 
@@ -62,9 +62,9 @@ tail -f /var/log/homekit-ccu.log
 
 ## Releases
 
-1. Set the version in `package.json`, `package-lock.json` (`npm version <version> --no-git-tag-version`) and `VER=` in `addon_installer/homekit-ccu`, commit and push to `master`.
-2. Start the release, either way:
-   - push the tag: `git tag -a v<version> -m "<version>" && git push origin v<version>`
-   - or GitHub → Actions → Release → "Run workflow" on `master`; it creates the tag `v<version>` itself.
+1. Setze die Version in `package.json`, `package-lock.json` (`npm version <version> --no-git-tag-version`) und `VER=` in `addon_installer/homekit-ccu`, committe und pushe nach `master`.
+2. Starte das Release auf einem der beiden Wege:
+   - Tag pushen: `git tag -a v<version> -m "<version>" && git push origin v<version>`
+   - oder GitHub → Actions → Release → „Run workflow“ auf `master`; der Workflow legt den Tag `v<version>` selbst an.
 
-The workflow tests, builds the add-on package and publishes it; a version with a `-` (e.g. `0.1.0-rc.8`) becomes a pre-release.
+Der Workflow testet, baut das Add-on-Paket und veröffentlicht es; eine Version mit `-` (z. B. `0.1.0-rc.8`) wird zum Pre-Release.
