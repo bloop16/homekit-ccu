@@ -1,3 +1,5 @@
+🇬🇧 English | [🇩🇪 Deutsch](de/remote-mode.md)
+
 # Running modes
 
 homekit-ccu can run in two modes: **local** (as a CCU addon) or **remote** (on a separate machine connecting to the CCU over the network).

@@ -1,3 +1,5 @@
+🇬🇧 English | [🇩🇪 Deutsch](de/devices.md)
+
 # Supported devices
 
 HomeKit-CCU shows HomeMatic, HomematicIP and HomeMatic Wired devices as the accessory types Apple Home knows: a thermostat is a thermostat, a roller shutter a window covering, a remote a set of buttons. When you add a device in the configuration, the native type is preselected. You can pick another type per channel, for example Switch, Outlet or Lightbulb for a switch actuator.

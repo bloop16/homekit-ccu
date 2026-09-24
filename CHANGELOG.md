@@ -32,7 +32,7 @@ described in [doc/upgrading.md](doc/upgrading.md).
 - Bridges are called "HomeKit-CCU" and "HomeKit-CCU <instance>"; accessory names follow Apple's rules. Accessory identities are unchanged, so rooms, scenes and automations stay.
 - Battery level scales between empty and full cells instead of dividing by the nominal voltage.
 - "New device" lists devices instead of single channels: search across device, channel, room and serial, a room filter, devices already in HomeKit and the second and third virtual channel of HomematicIP outputs hidden until asked for. Ticking a device selects its useful channels; the keys of a remote are one row. A second step sets name, Apple Home type (e.g. switch, outlet or light) and bridge for all chosen channels, which are saved at once. Each device shows its picture from the CCU WebUI; filters for CCU function (Gewerk), kind of device and radio system; the virtual CCU keys (HM-RCV-50, HmIP-RCV-50) are hidden until asked for.
-- Configuration UI on Bootstrap 5.3 with a responsive layout; jQuery 4, Chart.js 4, sockjs-client 1.6, showdown 2.1 with DOMPurify, qrcode-generator 2.0. "HomeKit Instances → Settings" is now "Publish devices".
+- Configuration UI on Bootstrap 5.3 with a responsive layout; jQuery 4, Chart.js 4, showdown 2.1 with DOMPurify, qrcode-generator 2.0. "HomeKit Instances → Settings" is now "Publish devices".
 - The configuration UI and its API require a CCU administrator session, also on the CCU; `config.json` gets `"configVersion": 2`, which turns the check on once for configurations from hap-homematic.
 - Moving from hap-homematic works through its backup: the installer refuses to run while hap-homematic is installed; restoring a backup brings back configuration and HomeKit pairing.
 - Installer: only OpenCCU, Node.js check before anything is copied, offline installation from the bundled package (about 3.5 MB), log in `/var/log/homekit-ccu.log` with rotation at 2 MB, monit service `HomekitCCU`.
@@ -59,7 +59,7 @@ described in [doc/upgrading.md](doc/upgrading.md).
 ### Security
 - Names from the CCU are shown as text in the configuration UI; before, a name containing HTML ran as script (stored XSS).
 - Setup codes and the content of `config.json` are no longer written to the log; the video doorbell gets a random setup code instead of a fixed default.
-- Same-origin CORS for the configuration API, session check for the websocket, update-check.cgi without query-string injection, ffmpeg errors in the log with credentials masked.
+- Same-origin CORS for the configuration API, session check for the live updates, update-check.cgi without query-string injection, ffmpeg errors in the log with credentials masked.
 - The event servers (9875/9876) only take calls from the CCU and this machine; on the CCU they listen on 127.0.0.1 and port 9875 is closed in the CCU firewall again. Before, any host on the LAN could send fake device states to HomeKit.
 - Service class names from the API and from `config.json` (also from a restored backup) must be classes of `lib/services`; a path could reach `require()` before.
 - A restore upload is refused before anything is stored unless it carries a valid session (header), one restore at a time; backup and restore use private temp directories that are removed afterwards.

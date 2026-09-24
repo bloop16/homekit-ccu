@@ -1,8 +1,10 @@
+🇬🇧 English | [🇩🇪 Deutsch](de/advanced.md)
+
 # Advanced topics
 
 ## Bridges and rooms
 
-HAP the homekit accessory protocol does not know a room concept. So when you add one or more devices to a bridge they will appear at the same room as the bridge in your homekit client application. Therefore homekit-ccu is able to fire up multiple bridges (hap instances). During the installation wizard you may add an instance for each of your rooms, add these instances to homekit and put them into rooms. From this time on adding a new device to an instance will place this device into the same room as your bridge.
+HAP, the HomeKit Accessory Protocol, has no rooms. Apple Home puts a device added to a bridge into the room of that bridge. homekit-ccu therefore runs several bridges (HAP instances): the setup assistant creates one per CCU room, you add each bridge in Apple Home and choose its room, and every device of that bridge lands there. See [Using the configuration](configuration.md#rooms-why-a-bridge-per-room).
 
 ## Eve history
 
@@ -27,9 +29,9 @@ homekit-ccu connects to these CCU endpoints:
 
 Key source files:
 - `lib/HomeMaticCCU.js` — CCU connection manager, interface discovery, port mapping
-- `lib/HomeMaticRPC.js` — XML-RPC/BinRPC event handling (port 9875)
+- `lib/HomeMaticRPC.js` — XML-RPC/BinRPC event handling (port 9875, only calls from the CCU; on the CCU it listens on 127.0.0.1)
 - `lib/HomeMaticRegaRequest.js` — HTTP POST to Rega at `:8183/tclrega.exe` (internal port on the CCU) or `:8181/tclrega.exe` (remote mode)
-- `lib/configurationsrv/ConfigurationService.js` — config server: JSON-RPC session check, firewall ports, backup/restore
+- `lib/configurationsrv/ConfigurationService.js` — config server: JSON-RPC session check, firewall ports, backup/restore, live updates for the UI by long polling (`lib/util/eventChannel.js`)
 - `lib/services/camera/` — video doorbell streaming (CameraController delegate, ffmpeg handling)
 - `lib/Server.js` — HAP bridge server, instance management (ports 9877+)
 - `index.js` — Entry point

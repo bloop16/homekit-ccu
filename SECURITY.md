@@ -1,3 +1,5 @@
+🇬🇧 English | [🇩🇪 Deutsch](#sicherheitsrichtlinie-deutsch)
+
 # Security policy
 
 ## Supported versions
@@ -18,3 +20,6 @@ within a week.
 - HomeKit setup codes and pairing keys are stored only in the add-on's configuration directory
   on the CCU and are never written to the log.
 - Names coming from the CCU are shown as text in the configuration UI.
+- The event servers only take calls from the CCU, restore uploads are checked before they are stored,
+  and a configuration can only name service classes of HomeKit-CCU (see
+  [doc/security.md](doc/security.md#further-protection)).

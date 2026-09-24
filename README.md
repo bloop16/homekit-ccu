@@ -2,6 +2,8 @@
   <img src="doc/logo.png" width="96" alt="HomeKit-CCU logo">
 </p>
 
+<p align="center">🇬🇧 English | <a href="README.de.md">🇩🇪 Deutsch</a></p>
+
 <h1 align="center">HomeKit-CCU</h1>
 
 <p align="center">
@@ -27,7 +29,8 @@
 ## What you get
 
 - Your devices as native Apple Home accessories with live updates, "No Response" when a device is unreachable and battery levels in percent.
-- One bridge per room if you like, so devices land in the right room automatically.
+- A setup assistant that builds bridges from your CCU rooms, so devices land in the right room automatically.
+- Device selection like in the CCU: devices with pictures, search and filters by room, function and radio system; several switch outputs of a device as one accessory if you like.
 - Eve history for sensors, and power, wind and rain values in the Eve app.
 - A web configuration inside the CCU with light and dark mode, protected by your CCU administrator login.
 
@@ -48,7 +51,7 @@ The [device list](doc/devices.md) shows every family with the models and how the
 
 1. Download `homekit-ccu-x.y.z.tar.gz` from the [latest release](https://github.com/bloop16/homekit-ccu/releases/latest).
 2. On the CCU open *Settings → Control panel → Additional software*, choose the file and install it.
-3. After a minute or two a **HomeKit** button appears in the control panel. Open it, let the wizard create your bridges, and add them in the Home app with the PIN or QR code shown.
+3. After a minute or two a **HomeKit** button appears in the control panel. Open it: the setup assistant proposes bridges and devices from your CCU rooms and shows the QR code of every bridge to add in the Home app. See [Using the configuration](doc/configuration.md).
 
 The CCU needs no internet access for the installation. Progress and errors go to `/var/log/homekit-ccu.log`.
 
@@ -66,7 +69,7 @@ Bridges, devices and the HomeKit pairing come back, so rooms and automations sta
 
 | Topic | |
 |---|---|
-| Using the configuration UI, device types, special devices | [hap-homematic wiki](https://github.com/thkl/hap-homematic/wiki) |
+| Setup assistant, new devices, special devices, rooms | [doc/configuration.md](doc/configuration.md) |
 | Moving from hap-homematic | [doc/upgrading.md](doc/upgrading.md) |
 | Login, HTTPS and why the UI needs a CCU session | [doc/security.md](doc/security.md) |
 | Video doorbell and ffmpeg | [doc/video-doorbell.md](doc/video-doorbell.md) |

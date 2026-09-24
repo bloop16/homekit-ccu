@@ -1,9 +1,11 @@
+🇬🇧 English | [🇩🇪 Deutsch](de/video-doorbell.md)
+
 # Video doorbell and ffmpeg
 
 The video doorbell (special accessory) needs an `ffmpeg` binary. OpenCCU does not ship one.
 
 - **Remote mode** (recommended for cameras): run homekit-ccu on a machine that has ffmpeg with `libx264`, `libopus` and ideally `libfdk_aac`.
-- **On the CCU**: copy a static build (for example the johnvansickle.com builds for arm64/amd64) to `/usr/local/bin/ffmpeg`, make it executable and set *Path to ffmpeg* in the doorbell settings. Audio is offered only for encoders the binary actually has; without `libopus`/`libfdk_aac` the doorbell is published video-only.
+- **On the CCU**: copy a static build (for example the johnvansickle.com builds for arm64/amd64) to `/usr/local/bin/ffmpeg`, make it executable and set *Path to ffmpeg* in the doorbell settings (under *Show advanced settings*). The program has to be named `ffmpeg`; other programs are not started. Audio is offered only for encoders the binary actually has; without `libopus`/`libfdk_aac` the doorbell is published video-only.
 - *Video codec* `copy` avoids transcoding when the camera already delivers H.264. This is the only realistic option on a Raspberry Pi based CCU.
 - *URL RTSP video* accepts a plain RTSP/HTTP URL (homekit-ccu prepends `-re -i`) or, when it starts with `-`, raw ffmpeg input arguments. Raw arguments are passed as they are, so add `-re` yourself for sources that do not deliver at live rate (files, `lavfi` test sources); otherwise ffmpeg reads them as fast as it can. `-re -f lavfi -i testsrc=size=1280x720:rate=15 -re -f lavfi -i sine=frequency=440` gives a test pattern with a tone and needs no camera at all.
 - *Talkback target* is an ffmpeg output; when set, Apple Home shows the talk button. A plain URL (for example `rtsp://camera/talk`) is sent as `-f rtsp <url>` with AAC audio. A value starting with `-` is taken as raw ffmpeg output options that follow the AAC default and override it, for example `-codec:a pcm_mulaw -ar 8000 -f rtsp rtsp://camera/talk` for a G.711 intercom, or `-f null -` to test the return channel without a device.

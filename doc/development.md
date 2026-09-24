@@ -1,3 +1,5 @@
+🇬🇧 English | [🇩🇪 Deutsch](de/development.md)
+
 # Development
 
 ```bash

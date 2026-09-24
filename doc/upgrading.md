@@ -1,10 +1,12 @@
+🇬🇧 English | [🇩🇪 Deutsch](de/upgrading.md)
+
 # Moving from hap-homematic to homekit-ccu
 
 hap-homematic has to be removed before homekit-ccu is installed; the installer refuses to run while it is still there. Your configuration and the HomeKit pairing come over with a backup:
 
 1. **Back up hap-homematic.** In its configuration page open *Internals → Backup* and create a backup. Keep the downloaded `.tar.gz` file. A CCU backup does not hurt either.
 2. **Uninstall hap-homematic** under *Settings → Control panel → Additional software*. This also deletes its configuration directory, so do step 1 first.
-3. **Install homekit-ccu** as described in the [README](../README.md#installation). Close the welcome wizard that opens on the first visit; your devices come with the backup.
+3. **Install homekit-ccu** as described in the [README](../README.md#installation). Close the setup assistant that opens on the first visit; your devices come with the backup.
 4. **Restore the backup** in homekit-ccu under *Internals → Backup*: choose the file from step 1 and click *Restore*. homekit-ccu restarts and brings back your bridges, devices, variables, programs and the HomeKit keys.
 
 Do not remove the bridge from Apple Home. With the restored keys Apple Home recognises it again, and rooms, scenes and automations stay. If you removed it already, add it again with the setup code shown under *Edit instances*.
