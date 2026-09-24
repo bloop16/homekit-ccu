@@ -1,0 +1,38 @@
+{
+  "devices": [
+    {
+      "id": 2600,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-RGBW",
+      "address": "0031A0A9B1C2D3",
+      "type": "HmIP-RGBW",
+      "channels": [
+        {
+          "id": 2601,
+          "name": "HmIP-RGBW 0031A0A9B1C2D3:0",
+          "intf": 0,
+          "address": "0031A0A9B1C2D3:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2602,
+          "name": "HmIP-RGBW 0031A0A9B1C2D3:1",
+          "intf": 0,
+          "address": "0031A0A9B1C2D3:1",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "0031A0A9B1C2D3:1": "HomeMaticIPRGBWAccessory"
+  },
+  "mappings": {
+    "0031A0A9B1C2D3:1": {
+      "Service": "HomeMaticIPRGBWAccessory"
+    }
+  }
+}

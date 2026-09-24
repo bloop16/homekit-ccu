@@ -1,0 +1,41 @@
+{
+  "devices": [
+    {
+      "id": 2100,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-SWO-PL",
+      "address": "00185A49B1C2D3",
+      "type": "HmIP-SWO-PL",
+      "channels": [
+        {
+          "id": 2101,
+          "name": "HmIP-SWO-PL 00185A49B1C2D3:0",
+          "intf": 0,
+          "address": "00185A49B1C2D3:0",
+          "type": "MAINTENANCE_BAT_EL",
+          "access": 255
+        },
+        {
+          "id": 2102,
+          "name": "HmIP-SWO-PL 00185A49B1C2D3:1",
+          "intf": 0,
+          "address": "00185A49B1C2D3:1",
+          "type": "WEATHER_TRANSMIT",
+          "access": 255
+        },
+        {
+          "id": 2103,
+          "name": "HmIP-SWO-PL 00185A49B1C2D3:2",
+          "intf": 0,
+          "address": "00185A49B1C2D3:2",
+          "type": "COND_SWITCH_TRANSMITTER_WIND_SPEED",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "00185A49B1C2D3:1": "HomeMaticWeatherStationAccessory"
+  }
+}

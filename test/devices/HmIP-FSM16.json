@@ -1,0 +1,81 @@
+{
+  "devices": [
+    {
+      "id": 2400,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-FSM16",
+      "address": "0001D5A9B1C2D3",
+      "type": "HmIP-FSM16",
+      "channels": [
+        {
+          "id": 2401,
+          "name": "HmIP-FSM16 0001D5A9B1C2D3:0",
+          "intf": 0,
+          "address": "0001D5A9B1C2D3:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2402,
+          "name": "HmIP-FSM16 0001D5A9B1C2D3:1",
+          "intf": 0,
+          "address": "0001D5A9B1C2D3:1",
+          "type": "SWITCH_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 2403,
+          "name": "HmIP-FSM16 0001D5A9B1C2D3:2",
+          "intf": 0,
+          "address": "0001D5A9B1C2D3:2",
+          "type": "SWITCH_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 2404,
+          "name": "HmIP-FSM16 0001D5A9B1C2D3:3",
+          "intf": 0,
+          "address": "0001D5A9B1C2D3:3",
+          "type": "SWITCH_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 2405,
+          "name": "HmIP-FSM16 0001D5A9B1C2D3:4",
+          "intf": 0,
+          "address": "0001D5A9B1C2D3:4",
+          "type": "SWITCH_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 2406,
+          "name": "HmIP-FSM16 0001D5A9B1C2D3:5",
+          "intf": 0,
+          "address": "0001D5A9B1C2D3:5",
+          "type": "ENERGIE_METER_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 2407,
+          "name": "HmIP-FSM16 0001D5A9B1C2D3:6",
+          "intf": 0,
+          "address": "0001D5A9B1C2D3:6",
+          "type": "COND_SWITCH_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 2408,
+          "name": "HmIP-FSM16 0001D5A9B1C2D3:7",
+          "intf": 0,
+          "address": "0001D5A9B1C2D3:7",
+          "type": "SWITCH_WEEK_PROFILE",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "0001D5A9B1C2D3:5": "HomeMaticIPPowerMeterSwitchAccessory"
+  }
+}

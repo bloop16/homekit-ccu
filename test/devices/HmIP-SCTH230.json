@@ -2,7 +2,7 @@
 	"devices": [{
 		"id": 1000,
 		"intf": 0,
-		"intfName": "",
+		"intfName": "HmIP",
 		"name": "HmIP-SCTH230",
 		"address": "5499157171ABCD",
 		"type": "HmIP-SCTH230",

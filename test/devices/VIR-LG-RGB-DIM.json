@@ -1,0 +1,38 @@
+{
+  "devices": [
+    {
+      "id": 2500,
+      "intf": 0,
+      "intfName": "VirtualDevices",
+      "name": "VIR-LG-RGB-DIM",
+      "address": "1079891752ABCD",
+      "type": "VIR-LG-RGB-DIM",
+      "channels": [
+        {
+          "id": 2501,
+          "name": "VIR-LG-RGB-DIM 1079891752ABCD:0",
+          "intf": 0,
+          "address": "1079891752ABCD:0",
+          "type": "VIP-MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2502,
+          "name": "VIR-LG-RGB-DIM 1079891752ABCD:1",
+          "intf": 0,
+          "address": "1079891752ABCD:1",
+          "type": "VIR-LG-RGB-DIM-CH",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "1079891752ABCD:1": "HomeMaticRGBAccessory"
+  },
+  "mappings": {
+    "1079891752ABCD:1": {
+      "Service": "HomeMaticRGBAccessory"
+    }
+  }
+}

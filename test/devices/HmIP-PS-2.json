@@ -1,0 +1,81 @@
+{
+  "devices": [
+    {
+      "id": 2200,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-PS-2",
+      "address": "0001D709A1B2C3",
+      "type": "HmIP-PS-2",
+      "channels": [
+        {
+          "id": 2201,
+          "name": "HmIP-PS-2 0001D709A1B2C3:0",
+          "intf": 0,
+          "address": "0001D709A1B2C3:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2202,
+          "name": "HmIP-PS-2 0001D709A1B2C3:1",
+          "intf": 0,
+          "address": "0001D709A1B2C3:1",
+          "type": "KEY_TRANSCEIVER",
+          "access": 255
+        },
+        {
+          "id": 2203,
+          "name": "HmIP-PS-2 0001D709A1B2C3:2",
+          "intf": 0,
+          "address": "0001D709A1B2C3:2",
+          "type": "SWITCH_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 2204,
+          "name": "HmIP-PS-2 0001D709A1B2C3:3",
+          "intf": 0,
+          "address": "0001D709A1B2C3:3",
+          "type": "SWITCH_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 2205,
+          "name": "HmIP-PS-2 0001D709A1B2C3:4",
+          "intf": 0,
+          "address": "0001D709A1B2C3:4",
+          "type": "SWITCH_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 2206,
+          "name": "HmIP-PS-2 0001D709A1B2C3:5",
+          "intf": 0,
+          "address": "0001D709A1B2C3:5",
+          "type": "SWITCH_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 2207,
+          "name": "HmIP-PS-2 0001D709A1B2C3:6",
+          "intf": 0,
+          "address": "0001D709A1B2C3:6",
+          "type": "SWITCH_WEEK_PROFILE",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "0001D709A1B2C3:3": "HomeMaticSwitchAccessory"
+  },
+  "mappings": {
+    "0001D709A1B2C3:3": {
+      "Service": "HomeMaticSwitchAccessory",
+      "settings": {
+        "Type": "Outlet"
+      }
+    }
+  }
+}

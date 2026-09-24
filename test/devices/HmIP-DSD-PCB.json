@@ -1,0 +1,38 @@
+{
+  "devices": [
+    {
+      "id": 2300,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-DSD-PCB",
+      "address": "0002DD89A1B2C3",
+      "type": "HmIP-DSD-PCB",
+      "channels": [
+        {
+          "id": 2301,
+          "name": "HmIP-DSD-PCB 0002DD89A1B2C3:0",
+          "intf": 0,
+          "address": "0002DD89A1B2C3:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 2302,
+          "name": "HmIP-DSD-PCB 0002DD89A1B2C3:1",
+          "intf": 0,
+          "address": "0002DD89A1B2C3:1",
+          "type": "MULTI_MODE_INPUT_TRANSMITTER",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "0002DD89A1B2C3:1": "HomeMaticDoorBellAccessory"
+  },
+  "mappings": {
+    "0002DD89A1B2C3:1": {
+      "Service": "HomeMaticDoorBellAccessory"
+    }
+  }
+}
