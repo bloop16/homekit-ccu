@@ -129,7 +129,9 @@ install() {
 
   log "install" "Installing WebUI files."
   mkdir -p ${ADDONWWW_DIR}
-  cp -af ${MODULE_DIR}/lib/configurationsrv/html/* ${ADDONWWW_DIR}
+  # without -a: the files get the time of the installation. npm packs every file with the same
+  # time in 1985, so browsers would take the pages of the last version as years old and fresh.
+  cp -Rf ${MODULE_DIR}/lib/configurationsrv/html/* ${ADDONWWW_DIR}
 
   log "install" "Installing lighttpd config."
   mkdir -p ${LIGHTTPD_CONF_DIR}

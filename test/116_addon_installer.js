@@ -29,6 +29,8 @@ esac
 M=node_modules/homekit-ccu
 mkdir -p "$M/etc" "$M/lib/configurationsrv/html"
 touch "$M/index.js" "$M/etc/hm_addon.js" "$M/etc/homekit_ccu.conf" "$M/etc/homekit_ccu_addon.cfg" "$M/lib/configurationsrv/html/index.html"
+# npm packs every file with the time 1985-10-26
+touch -d '1985-10-26 08:15' "$M/lib/configurationsrv/html/index.html"
 echo '{}' > package-lock.json`,
   'start-stop-daemon': '#!/bin/sh\necho "start-stop-daemon $*" >> "$STUB_CALLS"',
   monit: '#!/bin/sh\necho "monit $*" >> "$STUB_CALLS"',
@@ -101,6 +103,11 @@ describe('HomeKit-CCU addon installer', () => {
     expect(fs.existsSync(path.join(t.moduleDir, 'index.js'))).to.be(true)
     expect(fs.existsSync(path.join(t.www, 'index.html'))).to.be(true)
     expect(t.log()).to.contain('Installation complete.')
+  })
+
+  it('gives the WebUI files the time of the installation, so browsers load the new version', () => {
+    expect(t.run('install').status).to.be(0)
+    expect(Date.now() - fs.statSync(path.join(t.www, 'index.html')).mtimeMs).to.be.lessThan(60 * 1000)
   })
 
   it('removes a half-installed addon directory before npm runs', () => {

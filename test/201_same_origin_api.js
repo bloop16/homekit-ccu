@@ -32,6 +32,9 @@ describe('HomeKit-CCU configuration api on the origin of the WebUI', () => {
     expect(apiBase('http://192.168.1.13:8080/addons/homekit-ccu/?sid=@x@')).to.be('http://192.168.1.13:8080/addons/homekit-ccu')
     // in remote mode the config server serves the page itself
     expect(apiBase('http://pi.local:9874/index.html?sid=@x@')).to.be('http://pi.local:9874')
+    expect(apiBase('http://pi.local:9874/?sid=@x@')).to.be('http://pi.local:9874')
+    // behind a reverse proxy with a path of its own
+    expect(apiBase('https://home.example/ccu/addons/homekit-ccu/index.html')).to.be('https://home.example/ccu/addons/homekit-ccu')
   })
 
   it('lets lighttpd pass only the api and the restore upload to the config server, without own ports', () => {

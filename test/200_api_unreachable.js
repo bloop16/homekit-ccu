@@ -38,6 +38,11 @@ describe('HomeKit-CCU configuration UI: api out of reach', () => {
     expect(messages).to.eql(['unreachable', 'reachable', 'ackn'])
   })
 
+  it('reports a config server that is not running behind lighttpd (502-504)', async () => {
+    const messages = await run([{ status: 503 }, { client: 'c', messages: [] }])
+    expect(messages).to.eql(['unreachable', 'reachable'])
+  })
+
   it('does not call a restart of the server unreachable', async () => {
     const messages = await run([{ client: 'c', messages: [] }, { status: 0 }, { client: 'c', messages: [] }])
     expect(messages).to.eql([])
