@@ -239,3 +239,84 @@ describe('HomeKit-CCU new device catalog: filters and pictures', () => {
     expect(orderedServicesForChannel(serviceTable, 'HmIP-RCV-50', 'KEY_TRANSCEIVER')[0].serviceClazz).to.be('HomeMaticKeyAccessory')
   })
 })
+
+describe('HomeKit-CCU setup assistant: applyAssistant', () => {
+  let scratch
+  let previousConfigPath
+  let serviceTable
+  let sent
+
+  const writeConfig = (config) => fs.writeFileSync(path.join(scratch, 'config.json'), JSON.stringify(config))
+  const readConfig = () => JSON.parse(fs.readFileSync(path.join(scratch, 'config.json')))
+  const apply = (plan) => {
+    const service = Object.create(ConfigurationService.prototype)
+    service.log = quietLog
+    service.compatibleDevices = ['HmIP-BSM.json', 'HmIP-PSM.json'].flatMap(fixture)
+    service.services = serviceTable
+    service.ensureFirewallPorts = () => {}
+    service.process = { send (message) { sent.push(message.topic) } }
+    return service.applyAssistant(typeof plan === 'string' ? plan : JSON.stringify(plan))
+  }
+  const device = (address, bridge) => ({ address, name: 'Gerät ' + address, serviceClass: 'HomeMaticSwitchAccessory', bridge })
+  const PSM = '5857734983ABCD'
+
+  before(async () => {
+    scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'hkccu-193a-'))
+    previousConfigPath = process.env.UIX_CONFIG_PATH
+    process.env.UIX_CONFIG_PATH = scratch
+    serviceTable = await new Server(quietLog).buildServiceList()
+  })
+
+  beforeEach(() => {
+    sent = []
+    writeConfig({ instances: { def: { name: 'default', pincode: '111-22-333' } }, mappings: {}, channels: [] })
+  })
+
+  after(() => {
+    if (previousConfigPath === undefined) {
+      delete process.env.UIX_CONFIG_PATH
+    } else {
+      process.env.UIX_CONFIG_PATH = previousConfigPath
+    }
+    fs.rmSync(scratch, { recursive: true, force: true })
+  })
+
+  it('creates new bridges without published devices and maps the devices onto them', () => {
+    const result = apply({
+      bridges: [{ key: 'room:Küche', name: 'Küche', roomId: 10 }, { key: 'floor:OG', name: 'OG', roomIds: [20, '30', 'x'] }, { key: 'id:def', id: 'def' }],
+      devices: [device(BSM + ':4', 'room:Küche'), device(PSM + ':3', 'floor:OG'), device(BSM + ':5', 'id:def')]
+    })
+    expect(result.result).to.be('saved')
+    expect(result.count).to.be(3)
+    expect(result.created).to.have.length(2)
+    const config = readConfig()
+    const kitchen = config.instances[result.bridges['room:Küche']]
+    expect(kitchen).to.have.keys('name', 'user', 'pincode', 'setupID', 'roomId')
+    expect([kitchen.name, kitchen.roomId, kitchen.publishDevices]).to.eql(['Küche', 10, undefined])
+    expect(config.instances[result.bridges['floor:OG']].roomIds).to.eql([20, 30])
+    expect(result.bridges['id:def']).to.be('def')
+    expect(config.mappings[BSM + ':4'].instance).to.be(result.bridges['room:Küche'])
+    expect(config.mappings[BSM + ':5'].instance).to.be('def')
+    expect(sent).to.eql(['reloadApplicances'])
+  })
+
+  it('refuses the whole plan when a bridge or device is wrong', () => {
+    const cases = [
+      [{ bridges: [{ key: 'a', id: 'nope' }], devices: [] }, 'unknown instance'],
+      [{ bridges: [{ key: 'a', name: 'Default' }], devices: [] }, 'bridge name missing or not unique'],
+      [{ bridges: [{ key: 'a', name: 'Bad' }, { key: 'b', name: 'bad' }], devices: [] }, 'bridge name missing or not unique'],
+      [{ bridges: [{ key: 'a', name: ' ' }], devices: [] }, 'bridge name missing or not unique'],
+      [{ bridges: [{ key: 'a', name: 'Bad' }, { key: 'a', name: 'Flur' }], devices: [] }, 'invalid bridge key'],
+      [{ bridges: [{ key: 'a', name: 'Bad' }], devices: [device(BSM + ':4', 'a'), device(BSM + ':4', 'a')] }, 'channel already in HomeKit'],
+      [{ bridges: [{ key: 'a', name: 'Bad' }], devices: [device(BSM + ':4', 'missing')] }, 'missing instance'],
+      [{ bridges: 'x', devices: [] }, 'invalid payload']
+    ]
+    cases.forEach(([plan, reason]) => {
+      expect(apply(plan).reason).to.be(reason)
+      expect(Object.keys(readConfig().instances)).to.eql(['def'])
+      expect(readConfig().mappings).to.eql({})
+    })
+    expect(apply('not json').reason).to.be('invalid payload')
+    expect(sent).to.eql([])
+  })
+})

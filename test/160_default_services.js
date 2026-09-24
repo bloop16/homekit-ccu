@@ -337,22 +337,18 @@ describe('HomeKit-CCU default services: switch type of new mappings', () => {
       expect(readConfig().mappings[PLUG].settings).to.eql({})
     })
 
-    it('creates native mappings in the setup wizard and leaves stored ones alone', () => {
+    it('creates native mappings in the setup assistant and leaves stored ones alone', () => {
       const stored = { name: 'Old', Service: 'HomeMaticSwitchAccessory', instance: 'x', settings: {} }
-      writeConfig({ mappings: { [INWALL]: stored }, channels: [INWALL] })
+      writeConfig({ instances: { bridge1: { name: 'default' } }, mappings: { [INWALL]: stored }, channels: [INWALL] })
       const service = makeConfigService()
       service.process = { send () {} }
-      service.createapplicancesWizzard('bridge1', [
-        { address: PLUG, name: 'Plug', type: 'SWITCH_VIRTUAL_RECEIVER' },
-        { address: INWALL, name: 'Light', type: 'SWITCH_VIRTUAL_RECEIVER' },
-        { address: '4436784678ABCD:1', name: 'Key', type: 'KEY_TRANSCEIVER' }
-      ])
+      const plan = (devices) => JSON.stringify({ bridges: [{ key: 'b', id: 'bridge1' }], devices })
+      // a stored mapping is never changed: the whole plan is refused
+      expect(service.applyAssistant(plan([{ address: INWALL, name: 'Light', serviceClass: 'HomeMaticSwitchAccessory', bridge: 'b' }])).reason).to.be('channel already in HomeKit')
+      expect(service.applyAssistant(plan([{ address: PLUG, name: 'Plug', serviceClass: 'HomeMaticSwitchAccessory', bridge: 'b' }])).result).to.be('saved')
       const config = readConfig()
-      expect(config.mappings[PLUG].Service).to.be('HomeMaticSwitchAccessory')
-      expect(config.mappings[PLUG].settings).to.eql({ Type: 'Outlet' })
-      expect(config.mappings[INWALL].Service).to.be('HomeMaticSwitchAccessory')
-      expect(config.mappings[INWALL].settings).to.eql({})
-      expect(config.mappings['4436784678ABCD:1'].Service).to.be(firstExisting('HomeMaticRemoteAccessory', 'HomeMaticKeyAccessory'))
+      expect(config.mappings[PLUG]).to.eql({ name: 'Plug', Service: 'HomeMaticSwitchAccessory', instance: 'bridge1', settings: { Type: 'Outlet' } })
+      expect(config.mappings[INWALL]).to.eql(stored)
     })
   })
 

@@ -79,28 +79,27 @@ describe('HomeKit-CCU remote: isCoveredByRemote', () => {
   })
 })
 
-describe('HomeKit-CCU remote: setup wizard', () => {
+describe('HomeKit-CCU remote: setup assistant', () => {
   const fs = require('fs')
   const os = require('os')
   const Server = require(path.join(__dirname, '..', 'lib', 'Server.js'))
   const ConfigurationService = require(path.join(__dirname, '..', 'lib', 'configurationsrv', 'ConfigurationService.js'))
   const quietLog = { debug () {}, info () {}, warn () {}, error () {} }
-  const KEYS = [1, 2, 3, 4].map(key => ({ address: KRC4 + ':' + key, name: 'Key ' + key, type: 'KEY_TRANSCEIVER' }))
   let scratch
   let previousConfigPath
   let serviceConfig
 
-  const writeConfig = (config) => fs.writeFileSync(path.join(scratch, 'config.json'), JSON.stringify(config))
+  const writeConfig = (config) => fs.writeFileSync(path.join(scratch, 'config.json'), JSON.stringify({ instances: { bridge1: { name: 'default' } }, ...config }))
   const readConfig = () => JSON.parse(fs.readFileSync(path.join(scratch, 'config.json')))
-  const runWizard = () => {
+  const apply = (devices) => {
     const service = Object.create(ConfigurationService.prototype)
     service.log = quietLog
     service.compatibleDevices = JSON.parse(fs.readFileSync(path.join(__dirname, 'devices', 'HmIP-KRC4.json'))).devices
     service.services = serviceConfig
     service.process = { send () {} }
-    service.createapplicancesWizzard('bridge1', KEYS)
-    return readConfig()
+    return service.applyAssistant(JSON.stringify({ bridges: [{ key: 'b', id: 'bridge1' }], devices: devices.map(device => ({ bridge: 'b', ...device })) }))
   }
+  const key = (number, serviceClass) => ({ address: KRC4 + ':' + number, name: 'Key ' + number, serviceClass })
 
   before(async () => {
     scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'hkccu-192-'))
@@ -118,23 +117,21 @@ describe('HomeKit-CCU remote: setup wizard', () => {
     fs.rmSync(scratch, { recursive: true, force: true })
   })
 
-  it('adds no keys of a device whose remote is already mapped', () => {
+  it('adds no key of a device whose remote is already mapped', () => {
     writeConfig({ mappings: { [KRC4 + ':1']: { name: 'Remote', Service: REMOTE_SERVICE, settings: {} } }, channels: [KRC4 + ':1'] })
-    const config = runWizard()
-    expect(Object.keys(config.mappings)).to.eql([KRC4 + ':1'])
-    expect(config.mappings[KRC4 + ':1'].Service).to.be(REMOTE_SERVICE)
-    expect(config.channels).to.eql([KRC4 + ':1'])
+    expect(apply([key(2, 'HomeMaticKeyAccessory')]).reason).to.be('channel already in HomeKit')
+    expect(Object.keys(readConfig().mappings)).to.eql([KRC4 + ':1'])
   })
 
-  it('creates at most one remote per device', () => {
+  it('refuses a key that the remote of the same plan covers', () => {
     writeConfig({ mappings: {}, channels: [] })
-    const config = runWizard()
-    const remotes = Object.keys(config.mappings).filter(address => config.mappings[address].Service === REMOTE_SERVICE)
-    expect(remotes.length).to.be.below(2)
-    if (remotes.length === 1) {
-      expect(Object.keys(config.mappings)).to.eql([KRC4 + ':1'])
-    } else {
-      expect(Object.keys(config.mappings)).to.have.length(4)
-    }
+    expect(apply([key(1, REMOTE_SERVICE), key(2, 'HomeMaticKeyAccessory')]).reason).to.be('channel already in HomeKit')
+    expect(apply([key(1, REMOTE_SERVICE)]).result).to.be('saved')
+    expect(Object.keys(readConfig().mappings)).to.eql([KRC4 + ':1'])
+  })
+
+  it('maps every key on its own as programmable switches', () => {
+    writeConfig({ mappings: {}, channels: [] })
+    expect(apply([1, 2, 3, 4].map(number => key(number, 'HomeMaticKeyAccessory'))).count).to.be(4)
   })
 })

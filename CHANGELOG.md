@@ -23,6 +23,7 @@ described in [doc/upgrading.md](doc/upgrading.md).
 - Private security reports (SECURITY.md), Dependabot, CI on Node.js 22 and 24.
 
 ### Changed
+- Setup assistant, first entry of the menu and started on a new installation: proposes bridges from the CCU rooms (one per room, per floor or one for everything, small rooms on a shared bridge, locks and alarm on a bridge of their own) and the devices of the chosen functions. Bridges, rooms, devices, channels, names and Apple Home types stay changeable; a preview shows the result. New bridges start without devices, the assistant shows their QR codes and pairing state, then publishes the devices so they land in the room of their bridge. Devices already in HomeKit are never moved. It replaces the welcome wizard.
 - Native defaults when a device is added: contacts as contact sensors, buttons as programmable buttons, wall thermostats as thermostats, plugs as outlets, switch actuators as switches, rain sensors as leak sensors, garage drive lights as lightbulbs. Devices that are already set up keep their type.
 - Weather stations always show temperature, humidity and light natively in Apple Home; wind, rain and pressure stay in the Eve app. Multi-service accessories mark their main service, so Apple Home shows the right tile.
 - HomeKit core: @homebridge/hap-nodejs 2.2 (was hap-nodejs 0.11), video doorbell on CameraController with Opus/AAC-ELD audio and optional two-way audio (`audio_return_target`), `advertiser` setting (bonjour-hap, ciao, avahi).

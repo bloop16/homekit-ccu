@@ -310,3 +310,15 @@
 .nd-icon img { max-width: 100%; max-height: 100%; object-fit: contain; }
 /* the CCU pictures are drawn for a light background */
 .nd-icon-picture { background-color: #fff; padding: 2px; }
+
+/* ---- setup assistant (js/setupassistant.js) ---- */
+.sa .min-w-0 { min-width: 0; }
+.sa-choice { cursor: pointer; }
+.sa-choice:hover { background-color: var(--bs-tertiary-bg); }
+.sa-number { width: 4rem; }
+.sa-search { max-width: 22rem; }
+.sa-entry + .sa-entry { border-top: 1px dashed var(--bs-border-color); }
+.sa-choice-row { padding-left: 1.75rem; }
+.sa-qr svg { width: 180px; height: 180px; background: #fff; padding: 8px; border-radius: var(--bs-border-radius); }
+.sa-done { font-size: 3rem; }
+.sa-bridge-title { color: var(--bs-secondary-color); }

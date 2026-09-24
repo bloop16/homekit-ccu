@@ -119,7 +119,10 @@ describe('HomeKit-CCU backup hardening', () => {
       service.loadSettings = () => ({ instances: {} })
       let saved
       service.saveSettings = (config) => { saved = config }
-      service.createMultipleInstances(JSON.stringify({ 1: { create: true, name: 'Küche', roomID: '1' } }))
+      service.process = { send () {} }
+      service.ensureFirewallPorts = () => {}
+      service.compatibleDevices = []
+      service.applyAssistant(JSON.stringify({ bridges: [{ key: 'k', name: 'Küche', roomId: 1 }], devices: [] }))
       const instance = Object.values(saved.instances)[0]
       expect(instance.pincode).to.match(/^\d{3}-\d{2}-\d{3}$/)
       expect(lines.join('\n')).not.to.contain(instance.pincode)
