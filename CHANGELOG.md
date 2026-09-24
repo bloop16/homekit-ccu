@@ -4,7 +4,7 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/). Versions up to 0.0.64 are those of hap-homematic.
 
-## [0.1.1] - unreleased
+## [0.1.1] - 2026-09-24
 
 ### Added
 - Setup assistant, step "Bridges and rooms": proposed bridges can be removed and bridges of your own added in every layout, not only floors. A name that is empty or already taken is refused before anything is created.
