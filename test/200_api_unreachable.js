@@ -33,7 +33,7 @@ describe('HomeKit-CCU configuration UI: api out of reach', () => {
     wait()
   })
 
-  it('reports once that the api does not answer (certificate) and when it answers again', async () => {
+  it('reports once that the api does not answer and when it answers again', async () => {
     const messages = await run([{ status: 0 }, { status: 0 }, { client: 'c', messages: [{ message: 'ackn' }] }, { client: 'c', messages: [] }])
     expect(messages).to.eql(['unreachable', 'reachable', 'ackn'])
   })

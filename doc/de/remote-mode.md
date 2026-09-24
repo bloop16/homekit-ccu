@@ -36,12 +36,11 @@ Im Remote-Modus ordnet homekit-ccu die internen Daemon-Ports (32001, 32010, 3929
 
 ## Ports
 
-* 9874 -> Konfigurations-WebUI (lighttpd leitet an den Konfigurationsserver auf 127.0.0.1:39874 weiter; im Remote-Modus lauscht der Konfigurationsserver selbst auf 9874)
-* 49874 -> Konfigurations-WebUI per HTTPS (über lighttpd weitergeleitet)
+* 9874 -> Konfigurations-WebUI im Remote-Modus (der Konfigurationsserver lauscht dort selbst). Auf der CCU nutzt die Konfiguration den Port der WebUI: lighttpd leitet `/addons/homekit-ccu/api/` an den Konfigurationsserver auf 127.0.0.1:39874 weiter.
 * 9875 -> RPC-Event-Server (nimmt nur Aufrufe von der CCU an; auf der CCU selbst lauscht er auf 127.0.0.1)
 * 9876 -> RPC-Event-Server CuxD (optional, gleiche Regel)
 * 9877..n HAP-Instanz 0 .. n
 * 5353/udp -> mDNS (Bonjour), damit HomeKit die Bridges findet
 * zufällige UDP-Ports -> Streams der Video-Türklingel (siehe [Video-Türklingel](video-doorbell.md))
 
-Die Ports 9874 und 49874 werden bei der Installation des Add-ons automatisch in der CCU-Firewall geöffnet.
+Die Installation öffnet für die Konfiguration keinen Port in der CCU-Firewall und schließt 9874/49874, die ältere Versionen geöffnet haben; die Ports der Bridges öffnet HomeKit-CCU selbst.

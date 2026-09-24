@@ -4,7 +4,7 @@
 
 ## Anmeldung
 
-Die Konfigurationsoberfläche und ihre API (Ports 9874/49874 auf der CCU, 9874 im Remote-Modus) sind für jedes Gerät in deinem Netzwerk erreichbar. Sie zeigen die HomeKit-Kopplungscodes, laden Datensicherungen mit den HomeKit-Schlüsseln herunter und können homekit-ccu ändern und neu starten. Deshalb braucht jeder API-Aufruf, die Datensicherung und Wiederherstellung sowie die Live-Aktualisierung (Long Polling über die API) eine gültige Sitzung eines CCU-Administrators:
+Die Konfigurationsoberfläche und ihre API (`/addons/homekit-ccu/api/` der CCU-WebUI, Port 9874 im Remote-Modus) sind für jedes Gerät in deinem Netzwerk erreichbar. Sie zeigen die HomeKit-Kopplungscodes, laden Datensicherungen mit den HomeKit-Schlüsseln herunter und können homekit-ccu ändern und neu starten. Deshalb braucht jeder API-Aufruf, die Datensicherung und Wiederherstellung sowie die Live-Aktualisierung (Long Polling über die API) eine gültige Sitzung eines CCU-Administrators:
 
 - Melde dich als Administrator an der CCU-WebUI an und öffne die Konfiguration mit dem HomeKit-Button unter *Einstellungen → Systemsteuerung → Zusatzsoftware*. Die CCU übergibt ihre Sitzungs-ID (`?sid=@…@`) an die Seite, und die Seite schickt sie bei jeder Anfrage mit. Ein Lesezeichen oder eine eingetippte URL enthält keine Sitzungs-ID und zeigt „Keine gültige CCU-Sitzung“.
 - homekit-ccu prüft die Sitzung gegen die CCU (ReGaHss-Sitzung eines Benutzers mit Administratorrechten) und verlängert sie bei Benutzung; eine geprüfte Sitzung wird 30 Sekunden lang gemerkt.
@@ -24,4 +24,4 @@ Beim Umstieg von hap-homematic oder homekit-ccu 0.0.x wird die Prüfung eingesch
 
 ## HTTPS
 
-Nutzt du die HTTPS-Version deiner CCU-WebUI, ist die Konfigurationsseite automatisch über den HTTPS-Proxy von lighttpd auf Port 49874 erreichbar. homekit-ccu verwendet dasselbe selbstsignierte TLS-Zertifikat wie deine CCU.
+Die Konfiguration und ihre API nutzen Adresse und Port der CCU-WebUI: lighttpd leitet `/addons/homekit-ccu/api/` an den Konfigurationsserver auf 127.0.0.1:39874 weiter. Über HTTPS geöffnet nutzen sie das Zertifikat der WebUI; es braucht keinen eigenen Port und keine zweite Zertifikats-Ausnahme (Firefox fragt pro Port).

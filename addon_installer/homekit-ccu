@@ -142,15 +142,17 @@ install() {
   log "install" "Adding .nobackup to addon dir."
   touch ${ADDON_DIR}/.nobackup
 
-  # open proxy ports in firewall via TCL library (persists through WebUI saves)
+  # older versions opened the ports 9874/49874 for the configuration; it now goes through the
+  # WebUI (lighttpd), so close them again (TCL library, persists through WebUI saves)
   if [ -f /lib/libfirewall.tcl ]; then
-    tclsh - <<EOF
+    tclsh - <<'EOF'
 source /lib/libfirewall.tcl
 Firewall_loadConfiguration
 global Firewall_USER_PORTS
 foreach port {9874 49874} {
-  if {[lsearch $Firewall_USER_PORTS $port] == -1} {
-    lappend Firewall_USER_PORTS $port
+  set idx [lsearch $Firewall_USER_PORTS $port]
+  if {$idx != -1} {
+    set Firewall_USER_PORTS [lreplace $Firewall_USER_PORTS $idx $idx]
   }
 }
 Firewall_saveConfiguration
@@ -202,7 +204,7 @@ uninstall_config() {
   # remove_firewall_ports
   if [ -f /lib/libfirewall.tcl ]; then
     log "uninstall" "Removing firewall ports."
-    tclsh - <<EOF
+    tclsh - <<'EOF'
 source /lib/libfirewall.tcl
 Firewall_loadConfiguration
 global Firewall_USER_PORTS

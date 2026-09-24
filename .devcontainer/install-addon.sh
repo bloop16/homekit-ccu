@@ -76,25 +76,9 @@ echo "[4/6] Installing WebUI files..."
 # at /addons/homekit-ccu/, same as the rc.d install
 cp -rf "${WORKSPACE}/lib/configurationsrv/html/"* "${ADDONWWW_DIR}/"
 chmod +x "${ADDONWWW_DIR}/update-check.cgi"
-# Install lighttpd proxy config (proxies external ports to config server)
+# Install lighttpd config (passes /addons/homekit-ccu/api/ to the config server)
 mkdir -p /etc/config/lighttpd
 cp -f "${WORKSPACE}/etc/homekit_ccu.conf" "/etc/config/lighttpd/${ADDONNAME}.conf"
-# Open proxy ports in firewall via TCL library (persists through WebUI saves)
-if [ -f /lib/libfirewall.tcl ]; then
-  tclsh - <<'FWEOF'
-source /lib/libfirewall.tcl
-Firewall_loadConfiguration
-global Firewall_USER_PORTS
-foreach port {9874 49874} {
-  if {[lsearch $Firewall_USER_PORTS $port] == -1} {
-    lappend Firewall_USER_PORTS $port
-  }
-}
-Firewall_saveConfiguration
-Firewall_configureFirewall
-FWEOF
-  echo "  Opened ports 9874, 49874 in firewall"
-fi
 # Reload lighttpd to pick up the new proxy config
 killall lighttpd 2>/dev/null; sleep 1; lighttpd -f /etc/lighttpd/lighttpd.conf
 echo "  ${ADDONWWW_DIR}/index.html"
@@ -127,4 +111,3 @@ echo "  ${RCD_DIR}/${ADDONNAME} info      # addon info (version, URL)"
 echo "  node ${WORKSPACE}/index.js -D     # run in foreground with debug"
 echo ""
 echo "WebUI addon button: http://localhost:8080/addons/${ADDONNAME}/index.html"
-echo "Config UI:          http://localhost:9874/"

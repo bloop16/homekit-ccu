@@ -534,8 +534,5 @@
   "differs from the room": "abweichend vom Raum",
   "Reload": "Neu laden",
   "No connection to HomeKit-CCU": "Keine Verbindung zu HomeKit-CCU",
-  "The configuration server uses the certificate of the CCU on its own port. Some browsers (e.g. Firefox) ask for every port whether they may trust it.": "Der Konfigurationsserver nutzt das Zertifikat der CCU auf einem eigenen Port. Manche Browser (z. B. Firefox) fragen für jeden Port einzeln, ob sie ihm vertrauen dürfen.",
-  "Open the following page, accept the certificate there as you did for the CCU WebUI, then come back. This page connects by itself.": "Öffne die folgende Seite, akzeptiere dort das Zertifikat wie bei der CCU-WebUI und komm dann zurück. Diese Seite verbindet sich von selbst.",
-  "Accept certificate": "Zertifikat akzeptieren",
-  "The configuration server does not answer. Check that HomeKit-CCU is running and that the ports 9874 and 49874 are open in the firewall of the CCU.": "Der Konfigurationsserver antwortet nicht. Prüfe, ob HomeKit-CCU läuft und die Ports 9874 und 49874 in der Firewall der CCU offen sind."
+  "The configuration server does not answer. Check under Settings → Control panel → Additional software that HomeKit-CCU is running; this page connects by itself once it does.": "Der Konfigurationsserver antwortet nicht. Prüfe unter Einstellungen → Systemsteuerung → Zusatzsoftware, ob HomeKit-CCU läuft; diese Seite verbindet sich danach von selbst."
 }

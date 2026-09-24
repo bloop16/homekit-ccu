@@ -4,7 +4,7 @@
 
 ## Authentication
 
-The configuration UI and its API (ports 9874/49874 on the CCU, 9874 in remote mode) can be reached by every device in your network. They show the HomeKit pairing codes, download backups that contain the HomeKit keys, and change and restart homekit-ccu. That is why every API call, the backup/restore and the live updates (long polling over the API) need a valid session of a CCU administrator:
+The configuration UI and its API (`/addons/homekit-ccu/api/` of the CCU WebUI, port 9874 in remote mode) can be reached by every device in your network. They show the HomeKit pairing codes, download backups that contain the HomeKit keys, and change and restart homekit-ccu. That is why every API call, the backup/restore and the live updates (long polling over the API) need a valid session of a CCU administrator:
 
 - Log in to the CCU WebUI as an administrator and open the configuration with the HomeKit button under *Settings → Control panel → Additional software*. The CCU passes its session id (`?sid=@…@`) to the page, and the page sends it with every request. A bookmark or a typed URL carries no session id and shows "No valid CCU session".
 - homekit-ccu checks the session against the CCU (ReGaHss session of a user with administrator level) and renews it on use; a checked session is remembered for 30 seconds.
@@ -24,4 +24,4 @@ When you upgrade from hap-homematic or homekit-ccu 0.0.x, the check is turned on
 
 ## HTTPS
 
-If you are using the https version of your ccu WebUI page, the configuration page is automatically available on port 49874 via the lighttpd HTTPS proxy. homekit-ccu will use the same self signed tls certificate as your ccu.
+The configuration and its API use the address and port of the CCU WebUI: lighttpd passes `/addons/homekit-ccu/api/` to the configuration server on 127.0.0.1:39874. Opened over HTTPS, they use the certificate of the WebUI; no extra port and no second certificate exception are needed (Firefox asks per port).

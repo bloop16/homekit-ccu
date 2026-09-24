@@ -44,10 +44,10 @@ node /usr/local/addons/homekit-ccu/node_modules/homekit-ccu/index.js -D
 pkill -f 'node.*index.js' 2>/dev/null; sleep 1; node /usr/local/addons/homekit-ccu/node_modules/homekit-ccu/index.js -D 
 
 # check if server is running 
-curl -v http://127.0.0.1:9874/ 2>&1 | head -20
+curl -v http://127.0.0.1:39874/ 2>&1 | head -20
 
 # Check if ports are open
-netstat -tlnp | grep 9874
+netstat -tlnp | grep 39874
 
 # check if ReGaHSS Remote Script API is available
 curl -X POST -d "dom.GetObject(\"HmIP-RF\");" http://127.0.0.1:8181/rega.exe

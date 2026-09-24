@@ -132,7 +132,9 @@ describe('HomeKit-CCU backup hardening', () => {
       service.bridges = [{ port: 9877 }, { port: '9878' }, { port: '1]; exec rm -rf /; #' }]
       service.ensureFirewallPorts()
       service.removeFirewallPort('1]; exec reboot; #')
-      expect(scripts[0]).to.contain('{9874 49874 9877 9878}')
+      expect(scripts[0]).to.contain('foreach port {9877 9878} {')
+      // the configuration goes through the WebUI: its old ports are closed like the event server port
+      expect(scripts[0]).to.contain('foreach port {9875 9874 49874} {')
       expect(scripts.join('\n')).not.to.contain('exec')
       expect(scripts.length).to.be(1)
     })

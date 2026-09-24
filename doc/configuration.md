@@ -4,8 +4,6 @@
 
 Open the configuration with the **HomeKit** button under *Settings → Control panel → Additional software* of the CCU WebUI (logged in as administrator).
 
-**Firefox and HTTPS:** the configuration talks to its server on port 49874 (9874 without HTTPS). Firefox trusts the self-signed certificate of the CCU per port, so after accepting it for the WebUI it still blocks port 49874 (console: "CORS request did not succeed"). The configuration then shows *No connection to HomeKit-CCU* with a button *Accept certificate*: accept the certificate on the page that opens, and the configuration connects by itself.
-
 ## Rooms: why a bridge per room
 
 HomeKit itself knows no rooms. A bridge cannot tell Apple Home in which room a device belongs, so Apple Home puts a **new device into the room of its bridge**. If your bridge sits in the "Default Room", every new device lands there.

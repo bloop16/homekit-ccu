@@ -16,12 +16,10 @@ services:
       - "2001:2001"   # BidCos-RF XML-RPC (proxied via lighttpd)
       - "2010:2010"   # HmIP-RF XML-RPC (proxied via lighttpd)
       - "9292:9292"   # VirtualDevices XML-RPC (proxied via lighttpd)
-      - "9874:9874"   # homekit-ccu Config UI
       - "9875:9875"   # homekit-ccu RPC event server
       - "9877:9877"   # homekit-ccu HAP instance 0
       - "9878:9878"   # homekit-ccu HAP instance 1
       - "9879:9879"   # homekit-ccu HAP instance 2
-      - "49874:49874" # homekit-ccu Config UI (HTTPS via lighttpd)
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost/api/homematic.cgi || exit 1"]
       interval: 15s
