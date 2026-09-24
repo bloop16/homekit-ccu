@@ -9,7 +9,9 @@ const fs = require('fs')
 const expect = require('expect.js')
 const { Service, Characteristic } = require('@homebridge/hap-nodejs')
 const HomeMaticAccessory = require(path.join(__dirname, '..', 'lib', 'services', 'HomeMaticAccessory.js'))
+const espree = require('espree')
 const { simulateDevice, read, findService } = require(path.join(__dirname, 'helpers', 'openingsHarness.js'))
+const { simulateFixture } = require(path.join(__dirname, 'helpers', 'nativeHarness.js'))
 
 const SERVICES_DIR = path.join(__dirname, '..', 'lib', 'services')
 
@@ -19,6 +21,68 @@ function readWithin (characteristic, ms = 500) {
     read(characteristic),
     new Promise((resolve, reject) => setTimeout(() => reject(new Error('read handler did not answer')), ms))
   ])
+}
+
+function walk (node, visit) {
+  if (!node || typeof node.type !== 'string') return
+  visit(node)
+  Object.keys(node).forEach(key => {
+    const child = node[key]
+    if (Array.isArray(child)) child.forEach(c => walk(c, visit))
+    else if (key !== 'range' && key !== 'loc') walk(child, visit)
+  })
+}
+
+const isFunction = node => node && ['ArrowFunctionExpression', 'FunctionExpression'].includes(node.type)
+const isCall = (node, name) => node && node.type === 'CallExpression' && node.callee.type === 'MemberExpression' && node.callee.property.name === name
+
+/**
+ * read handlers ('get' listeners) in lib/services that give no answer when a CCU read fails:
+ * async ones that are not guarded, promise chains without rejection handling that are not guarded
+ * and guarded ones that do not return their promise chain (so guardedGet never sees the failure).
+ * Handlers that hand the callback to a helper (respond, readMeasurement, readTemperature, ...) are
+ * not followed into it: such a helper has to answer on a rejection itself.
+ */
+function readHandlersWithoutAnswerOnFailure () {
+  const found = []
+  fs.readdirSync(SERVICES_DIR).filter(file => file.endsWith('.js')).forEach(file => {
+    const source = fs.readFileSync(path.join(SERVICES_DIR, file), 'utf8')
+    const ast = espree.parse(source, { ecmaVersion: 2022, loc: true })
+    const methods = {}
+    walk(ast, node => {
+      if (node.type === 'MethodDefinition') methods[node.key.name] = node.value
+    })
+    walk(ast, node => {
+      if (!isCall(node, 'on') || !node.arguments[0] || node.arguments[0].value !== 'get') return
+      const where = file + ':' + node.loc.start.line
+      let handler = node.arguments[1]
+      const guarded = isCall(handler, 'guardedGet')
+      if (guarded) handler = handler.arguments[0]
+      // a method of the class passed as this.method.bind(this)
+      if (isCall(handler, 'bind') && handler.callee.object.type === 'MemberExpression') {
+        handler = methods[handler.callee.object.property.name]
+      }
+      if (!isFunction(handler)) {
+        found.push(where + ' handler that can not be checked')
+        return
+      }
+      if (handler.async) {
+        if (!guarded) found.push(where + ' async handler without guardedGet')
+        return
+      }
+      // promise chains started directly in the handler body
+      const statements = (handler.body.type === 'BlockStatement') ? handler.body.body : [{ type: 'ReturnStatement', argument: handler.body }]
+      statements.forEach(statement => {
+        const chain = (statement.type === 'ExpressionStatement') ? statement.expression : (statement.type === 'ReturnStatement') ? statement.argument : undefined
+        if (!isCall(chain, 'then') && !isCall(chain, 'catch')) return
+        const handlesRejection = isCall(chain, 'catch') || chain.arguments.length > 1
+        if (handlesRejection) return
+        if (!guarded) found.push(where + ' promise chain without rejection handling')
+        else if (statement.type !== 'ReturnStatement') found.push(where + ' guarded promise chain not returned')
+      })
+    })
+  })
+  return found
 }
 
 function bareAccessory () {
@@ -86,6 +150,16 @@ describe('HomeKit-CCU guarded read handlers', () => {
       expect(accessory.logs).to.eql([])
     })
 
+    it('answers with the last known value when a returned promise chain rejects', async () => {
+      const accessory = bareAccessory()
+      const on = new Characteristic.On()
+      on.updateValue(true)
+      on.on('get', accessory.guardedGet(callback => {
+        return Promise.reject(new Error('socket hang up')).then(value => callback(null, value))
+      }))
+      expect(await readWithin(on)).to.be(true)
+    })
+
     it('passes a HomeKit error status of the handler on', async () => {
       const accessory = bareAccessory()
       const on = new Characteristic.On()
@@ -97,16 +171,8 @@ describe('HomeKit-CCU guarded read handlers', () => {
   })
 
   describe('read handlers of the accessories', () => {
-    it('are all registered through guardedGet', () => {
-      const unguarded = []
-      fs.readdirSync(SERVICES_DIR).filter(file => file.endsWith('.js')).forEach(file => {
-        fs.readFileSync(path.join(SERVICES_DIR, file), 'utf8').split('\n').forEach((line, index) => {
-          if (/\.on\('get', async/.test(line)) {
-            unguarded.push(file + ':' + (index + 1))
-          }
-        })
-      })
-      expect(unguarded).to.eql([])
+    it('can not leave HomeKit without an answer', () => {
+      expect(readHandlersWithoutAnswerOnFailure()).to.eql([])
     })
   })
 
@@ -135,6 +201,23 @@ describe('HomeKit-CCU guarded read handlers', () => {
       expect(await readWithin(state)).to.be(Characteristic.ContactSensorState.CONTACT_NOT_DETECTED)
       const tampered = contact.getCharacteristic(Characteristic.StatusTampered)
       expect(await readWithin(tampered)).to.be(tampered.value)
+    })
+  })
+
+  describe('a promise based read handler whose CCU read fails', () => {
+    let sim
+
+    before(async () => {
+      sim = await simulateFixture('HmIP-SWD.json', { channel: 1, service: 'HomeMaticIPLeakSensorAccessory' })
+    })
+
+    after(() => sim.shutdown())
+
+    it('answers with the last known value', async () => {
+      const leak = findService(sim.accessory, Service.LeakSensor).getCharacteristic(Characteristic.LeakDetected)
+      leak.updateValue(Characteristic.LeakDetected.LEAK_DETECTED)
+      sim.server._ccu.getValue = () => Promise.reject(new Error('socket hang up'))
+      expect(await readWithin(leak)).to.be(Characteristic.LeakDetected.LEAK_DETECTED)
     })
   })
 })
