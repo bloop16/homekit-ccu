@@ -1,258 +1,148 @@
 <!DOCTYPE html>
 <!--
 * homekit-ccu admin console
-*
 * https://github.com/bloop16/homekit-ccu
-*
-* based on CoreUI - Free Bootstrap Admin Template
-* @version v3.0.0
-* @link https://coreui.io
-* Copyright (c) 2020 creativeLabs Łukasz Holeczek
-* Licensed under MIT (https://coreui.io/license)
+* Bootstrap 5, Bootstrap Icons, jQuery: see vendor/README.md
 -->
-<html lang="en">
+<html lang="en" data-bs-theme="light">
   <head>
-    <base href="./">
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>HomeKit-CCU Configuration</title>
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="assets/favicon/ms-icon-144x144.png"> 
-    <meta name="theme-color" content="#ffffff">
-    <link href="css/style.css" rel="stylesheet">
-    <!-- Main styles for this application-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HomeKit-CCU</title>
+    <link rel="icon" type="image/png" href="img/logo_white_2.png">
+    <script src="js/theme.js"></script>
+    <link href="vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
     <link href="css/application.css" rel="stylesheet">
-    <link href="css/free.min.css" rel="stylesheet">
   </head>
-  <body class="c-app">
+  <body>
+    <div class="app">
+      <aside class="app-sidebar" data-bs-theme="dark">
+        <div class="offcanvas-lg offcanvas-start sidebar-panel" tabindex="-1" id="sidebar" aria-labelledby="sidebarTitle">
+          <div class="sidebar-brand">
+            <img src="img/logo_white_2.png" alt="" width="32" height="32">
+            <span id="sidebarTitle">HomeKit-CCU</span>
+            <button type="button" class="btn-close d-lg-none ms-auto" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Close"></button>
+          </div>
 
+          <nav class="sidebar-nav">
+            <ul class="nav flex-column">
+              <li class="nav-item"><a class="nav-link" href="#" id="showDevices"><i class="bi bi-lightbulb"></i><span data-localize="Devices">Devices</span></a></li>
+              <li class="nav-item"><a class="nav-link" href="#" id="showVariables"><i class="bi bi-braces"></i><span data-localize="Variables">Variables</span></a></li>
+              <li class="nav-item"><a class="nav-link" href="#" id="showPrograms"><i class="bi bi-play-circle"></i><span data-localize="Programs">Programs</span></a></li>
+              <li class="nav-item"><a class="nav-link" href="#" id="showSpecialDevices"><i class="bi bi-stars"></i><span data-localize="Special devices">Special devices</span></a></li>
 
+              <li class="nav-heading" data-localize="HomeKit Instances">HomeKit Instances</li>
+              <li class="nav-item"><a class="nav-link" href="#" id="hapInstances"><i class="bi bi-house-gear"></i><span data-localize="Edit instances">Edit instances</span></a></li>
+              <li class="nav-item"><a class="nav-link" href="#" id="publishingSettings"><i class="bi bi-broadcast"></i><span data-localize="Settings">Settings</span></a></li>
 
+              <li class="nav-heading" data-localize="Internals">Internals</li>
+              <li class="nav-item"><a class="nav-link" href="#" id="btn_settings"><i class="bi bi-sliders"></i><span data-localize="Settings">Settings</span></a></li>
+              <li class="nav-item"><a class="nav-link" href="#" id="btn_backup"><i class="bi bi-archive"></i><span data-localize="Backup">Backup</span></a></li>
+              <li class="nav-item"><a class="nav-link" href="#" id="btn_refreshCache"><i class="bi bi-arrow-repeat"></i><span data-localize="Refresh CCU Cache">Refresh CCU Cache</span></a></li>
+              <li class="nav-item"><a class="nav-link" href="#" id="btn_debug"><i class="bi bi-bug"></i><span id="lbl_btn_debug" data-localize="Enable Debug">Enable Debug</span></a></li>
+              <li class="nav-item"><a class="nav-link" href="#" id="btn_dnlog"><i class="bi bi-download"></i><span data-localize="Download Log">Download Log</span></a></li>
+              <li class="nav-item"><a class="nav-link" href="#" id="btn_support"><i class="bi bi-life-preserver"></i><span data-localize="Support">Support</span></a></li>
+              <li class="nav-item"><a class="nav-link" href="#" id="btn_changelog"><i class="bi bi-journal-text"></i><span data-localize="Show changelog">Show changelog</span></a></li>
+              <li class="nav-item"><a class="nav-link" href="#" id="btn_restart"><i class="bi bi-power"></i><span data-localize="Restart HomeKit-CCU">Restart HomeKit-CCU</span></a></li>
+            </ul>
+          </nav>
+        </div>
+      </aside>
 
-    <div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
-
-
-      <div class="c-sidebar-brand">
-        <img src="img/logo_white_2.png" class="c-sidebar-brand-full" style="max-height: 35px;margin-right: 5px;"/>
-        <img src="img/logo_white_2.png" class="c-sidebar-brand-minimized" style="max-height: 35px;margin-right: 5px;margin-left: 5px;"/>
-        <span class="c-sidebar-brand-full">HomeKit-CCU</span>
-      </div>
-
- 
-
-      <ul class="c-sidebar-nav">
-        <li class="c-sidebar-nav-item">
-          <a class="c-sidebar-nav-link" id="showDevices" style="cursor:pointer;">
-            <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-devices"></i>
-            <span data-localize="Devices">Devices</span>
-          </a>
-        </li>
-        <li class="c-sidebar-nav-item">
-          <a class="c-sidebar-nav-link" id="showVariables"  style="cursor:pointer;">
-            <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-apps"></i>
-            <span data-localize="Variables">Variables</span>
-          </a>
-        </li>   
-        
-        <li class="c-sidebar-nav-item">
-          <a class="c-sidebar-nav-link" id="showPrograms" style="cursor:pointer;">
-            <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-memory"></i>
-            <span data-localize="Programs">Programs</span>
-          </a>
-        </li>
-        
-        <li class="c-sidebar-nav-item">
-          <a class="c-sidebar-nav-link" id="showSpecialDevices"  style="cursor:pointer;" >
-            <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-pizza"></i>
-            <span data-localize="Special devices">Special devices</span>
-          </a>
-        </li>
-
-        <li class="c-sidebar-nav-dropdown">
-          <a class="c-sidebar-nav-dropdown-toggle"  style="cursor:pointer;">
-            <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-factory"></i>
-            <span data-localize="HomeKit Instances">HomeKit Instances</span>
-          </a>
-
-          <ul class="c-sidebar-nav-dropdown-items">
-            <li class="c-sidebar-nav-item">
-              <a class="c-sidebar-nav-link"  style="cursor:pointer;" id="hapInstances" >
-                <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-fork"></i>
-                <span data-localize="Edit instances">Edit instances</span>
-              </a>
-            </li>
-
-            <li class="c-sidebar-nav-item">
-              <a class="c-sidebar-nav-link"  style="cursor:pointer;" id="publishingSettings">
-                <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-settings"></i>
-                <span data-localize="Settings">Settings</span>
-              </a>
-            </li>
-
-          </ul>
-        </li>
-
-
-        <li class="c-sidebar-nav-dropdown">
-        <a class="c-sidebar-nav-dropdown-toggle" style="cursor:pointer;">
-          <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-3d"></i>
-          <span data-localize="Internals">Internals</span>
-        </a>
-        <ul class="c-sidebar-nav-dropdown-items" style="top:-200px">
-          <li class="c-sidebar-nav-item">
-            <a class="c-sidebar-nav-link"  style="cursor:pointer;" id="btn_settings">
-              <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-cog"></i>
-              <span data-localize="Settings">Settings</span>
-            </a>
-            
-          </li>
-          <li class="c-sidebar-nav-item">
-            <a class="c-sidebar-nav-link"  style="cursor:pointer;" id="btn_changelog">
-              <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-description"></i>
-              <span data-localize="Show changelog">Show changelog</span>
-              </a>
-          </li>
-          <li class="c-sidebar-nav-item">
-            <a class="c-sidebar-nav-link"  style="cursor:pointer;" id="btn_debug">
-              <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-gauge"></i>
-              <span  id="lbl_btn_debug" data-localize="Enable Debug">Enable Debug</span>
-              </a>
-          </li>
-          <li class="c-sidebar-nav-item">
-            <a class="c-sidebar-nav-link" style="cursor:pointer;" id="btn_dnlog">
-              <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-image-broken"></i>
-              <span data-localize="Download Log">Download Log</span></a>
-          </li>
-          <li class="c-sidebar-nav-item">
-            <a class="c-sidebar-nav-link" style="cursor:pointer;" id="btn_support">
-              <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-life-ring"></i>
-              <span data-localize="Support">Support</span></a>
-          </li>
-          <li class="c-sidebar-nav-item">
-            <a class="c-sidebar-nav-link" style="cursor:pointer;" id="btn_backup">
-              <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-save"></i>
-              <span data-localize="Backup">Backup</span></a>
-          </li>
-          <li class="c-sidebar-nav-item">
-            <a class="c-sidebar-nav-link" style="cursor:pointer;" id="btn_refreshCache">
-              <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-audio"></i>
-              <span data-localize="Refresh CCU Cache">Refresh CCU Cache</span></a>
-          </li>
-
-          <li class="c-sidebar-nav-item">
-            <a class="c-sidebar-nav-link" style="cursor:pointer;" id="btn_restart">
-              <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-reload"></i>
-              <span data-localize="Restart HAP Service">Restart HAP Service</span></a>
-          </li>
-
-      </ul>
-      </li>
-
-      </ul>
-      <button class="c-sidebar-minimizer c-class-toggler" type="button" data-target="_parent" id="sidebartoggler" data-class="c-sidebar-minimized"></button>
-    </div>
-    <div class="c-wrapper">
-
-      <div style="position: absolute; top: 0; right: 0;z-index: 2000;">
-        <div class="toast fade hide info" id="toast" role="alert" aria-live="assertive" aria-atomic="true">
-          <div class="toast-header">
-            <strong class="mr-auto">Info</strong>
-            <button type="button" class="ml-2 mb-1 close info" data-dismiss="toast" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+      <div class="app-main">
+        <header class="app-header">
+          <button class="btn btn-link text-body d-lg-none px-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Menu">
+            <i class="bi bi-list fs-4"></i>
+          </button>
+          <nav aria-label="breadcrumb" class="me-auto">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">HomeKit-CCU</li>
+              <li class="breadcrumb-item active" id="breadcrum_page" aria-current="page" data-localize="Devices">Devices</li>
+            </ol>
+          </nav>
+          <div class="dropdown">
+            <button class="btn btn-link text-body px-2" type="button" id="themeToggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Theme">
+              <i class="bi bi-circle-half fs-5" id="themeIcon"></i>
             </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeToggle">
+              <li><button type="button" class="dropdown-item" data-theme-value="light"><i class="bi bi-sun me-2"></i><span data-localize="Light">Light</span></button></li>
+              <li><button type="button" class="dropdown-item" data-theme-value="dark"><i class="bi bi-moon-stars me-2"></i><span data-localize="Dark">Dark</span></button></li>
+              <li><button type="button" class="dropdown-item" data-theme-value="auto"><i class="bi bi-circle-half me-2"></i><span data-localize="Automatic">Automatic</span></button></li>
+            </ul>
           </div>
-          <div class="toast-body" id="toastMessage">
-            Oh, hi there
-          </div>
-        </div>
-      </div>
+          <a class="btn btn-link text-body px-2" href="https://github.com/bloop16/homekit-ccu" target="_blank" rel="noopener" aria-label="GitHub">
+            <i class="bi bi-github fs-5"></i>
+          </a>
+        </header>
 
-      <header class="c-header c-header-light c-header-fixed c-header-with-subheader">
-        <!-- c-sidebar-show -->
-        <button class="c-header-toggler c-class-toggler d-lg-none mfe-auto" type="button" data-target="#sidebar" data-class="c-sidebar-show">
-          <i class="c-icon c-icon-lg mt-2 ml-1 mr-3 mb-2 cil-burger"></i>
-        </button>
-        <div class="c-subheader px-3 roe-padding">
-          <!-- Breadcrumb-->
-          <ol class="breadcrumb border-0 m-0">
-            <li class="breadcrumb-item">Home</li>
-            <li class="breadcrumb-item"><a>HomeKit-CCU</a></li>
-            <li class="breadcrumb-item active" id="breadcrum_page">Devices</li>
-            <!-- Breadcrumb Menu-->
-          </ol>
-        </div>
-      </header>
-      <div class="c-body">
-        <main class="c-main">
-          <div class="container-fluid">
-            <div class="fade-in">
-              <div class="row">
-                <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-gradient-primary">
-                    <div class="card-body card-body pb-0 d-flex justify-content-between align-items-start" id="deviceOverview" style="min-height: 200px;">
-                      <br />
-                    </div>
-                  </div>
+        <main class="app-content">
+          <div class="row g-3 mb-3">
+            <div class="col-md-6 col-xl-4">
+              <div class="card stat-card h-100">
+                <div class="card-body">
+                  <div class="stat-icon text-primary bg-primary-subtle"><i class="bi bi-lightbulb"></i></div>
+                  <div id="deviceOverview" class="stat-body"></div>
                 </div>
-                <!-- /.col-->
-
-                <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-gradient-info">
-                    <div class="card-body card-body pb-0 d-flex justify-content-between align-items-start" id="bridgeOverview" style="overflow-y:auto;max-height:200px;min-height: 200px;">
-                     
-                    </div>
-                  </div>
-                </div>
-                <!-- /.col-->
-                <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-gradient-warning">
-                    <div class="card-body card-body pb-0 d-flex justify-content-between align-items-start" id="sysOverview" style="min-height: 200px;">
-
-                    </div>
-                  </div>
-                </div>
-                <!-- /.col-->
               </div>
-              <!-- /.row-->
-              <div class="card">
-                <div class="card-header">
-                  <h2 id="containerTitle"></h2>
+            </div>
+            <div class="col-md-6 col-xl-4">
+              <div class="card stat-card h-100">
+                <div class="card-body">
+                  <div class="stat-icon text-info-emphasis bg-info-subtle"><i class="bi bi-house-gear"></i></div>
+                  <div id="bridgeOverview" class="stat-body stat-scroll"></div>
                 </div>
-                <div class="card-body" id="container">
-                </div>
-                <div class="card-footer" id="container_footer">
+              </div>
+            </div>
+            <div class="col-md-12 col-xl-4">
+              <div class="card stat-card h-100">
+                <div class="card-body">
+                  <div class="stat-icon text-warning-emphasis bg-warning-subtle"><i class="bi bi-cpu"></i></div>
+                  <div id="sysOverview" class="stat-body"></div>
                 </div>
               </div>
             </div>
           </div>
+
+          <div class="card main-card">
+            <div class="card-header">
+              <h1 class="h5 mb-0" id="containerTitle"></h1>
+            </div>
+            <div class="card-body" id="container"></div>
+            <div class="card-footer" id="container_footer"></div>
+          </div>
         </main>
-        <footer class="c-footer">
-          (c) <span id="footer_year"></span> thkl, britz, bloop16 | <a target="_blank" href="https://github.com/bloop16/homekit-ccu">https://github.com/bloop16/homekit-ccu</a>
+
+        <footer class="app-footer">
+          &copy; <span id="footer_year"></span> thkl, britz, bloop16 ·
+          <a target="_blank" rel="noopener" href="https://github.com/bloop16/homekit-ccu">github.com/bloop16/homekit-ccu</a>
         </footer>
-
-
-
       </div>
     </div>
 
-    <!-- CoreUI and necessary plugins-->
-    <script src="js/coreui.bundle.min.js"></script>
-    <!-- Plugins and scripts required by this view-->
-    <script src="js/coreui-utils.js"></script>
-    <script src="js/jquery.min.js"></script>
-    <script src="js/charts.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/bootstrap-notify.js"></script>
-    <script src="js/jquery-ui.min.js"></script>
-    <script src="js/sockjs.min.js"></script>
-    <script src="js/showdown.min.js"></script>
-    <script src="js/qrcode.js"></script>
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+      <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
+        <div class="toast-header">
+          <i class="bi bi-info-circle-fill text-primary me-2"></i>
+          <strong class="me-auto">HomeKit-CCU</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage"></div>
+      </div>
+    </div>
+
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="vendor/chartjs/chart.umd.min.js"></script>
+    <script src="vendor/sockjs/sockjs.min.js"></script>
+    <script src="vendor/showdown/showdown.min.js"></script>
+    <script src="vendor/dompurify/purify.min.js"></script>
+    <script src="vendor/qrcode/qrcode.js"></script>
     <script type="module">
-        $('#footer_year').html('&nbsp;'+ new Date().getFullYear() + '&nbsp;')
-        import { Application } from './js/application.js'
-        let app =  new Application()
-        app.run()
+      import { Application } from './js/application.js'
+      document.getElementById('footer_year').textContent = new Date().getFullYear()
+      const app = new Application()
+      app.run()
     </script>
   </body>
 </html>

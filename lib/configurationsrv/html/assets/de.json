@@ -375,5 +375,13 @@
   "Delay the arming": "Scharfschaltverzögerung",
   "Delay the arming by X seconds. The Arming will be set x seconds after Homekit gets the command.": "Scharfschalten wird um x Sekunden verzögert. Die Variable wird erst nach der angegebenen Zeit (sek) gesetzt.",
   "Use Color Temp": "Farbtemperatur aktivieren",
-  "This will enable the color temperature feature. Please check in your CCU if your device supports this.": "Aktiviert die Farbtemperatur Funktion. Bitte vorher in der CCU prüfen, ob diese Funktion verfügbar ist."
+  "This will enable the color temperature feature. Please check in your CCU if your device supports this.": "Aktiviert die Farbtemperatur Funktion. Bitte vorher in der CCU prüfen, ob diese Funktion verfügbar ist.",
+  "Light": "Hell",
+  "Dark": "Dunkel",
+  "Automatic": "Automatisch",
+  "HomeKit-CCU uptime": "Laufzeit HomeKit-CCU",
+  "CCU uptime": "Laufzeit CCU",
+  "Free memory": "Freier Speicher",
+  "CPU": "CPU",
+  "Restart HomeKit-CCU": "HomeKit-CCU neu starten"
 }

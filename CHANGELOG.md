@@ -10,6 +10,8 @@ Changelog for 0.1.0:
 * GitHub Actions CI and release workflow; addon tarball no longer tracked in git
 * Installer requires Node.js 22 (OpenCCU 3.89+), README no longer claims automatic Node install; the add-on info shows the Node.js version actually installed
 * "Reset" of a bridge in the configuration UI now really removes its pairing (the file name was built without the dot and with only the first colon removed, so nothing was deleted); a failing backup restore is logged
+* Configuration UI moved to Bootstrap 5.3 with a new layout: sidebar that folds into a menu on phones, overview cards, light/dark/automatic theme, icon buttons, dialogs and lists reworked. CoreUI 3, Bootstrap 4, jQuery UI, bootstrap-notify and the CoreUI icon font are gone; jQuery 4.0, Chart.js 4.5, sockjs-client 1.6, showdown 2.1 (changelog now sanitised with DOMPurify) and qrcode-generator 2.0 are vendored under `html/vendor`
+* Configuration UI: names of devices, rooms and instances are shown as text; before, a name containing HTML ran as script in the UI (stored XSS)
 * README shortened to requirements, installation and links; details moved to `doc/` (upgrading, security, video doorbell, remote mode, advanced, development)
 * Update check in the CCU's add-on list reads the latest release of bloop16/homekit-ccu; repository, WebUI and issue links point at the fork
 * Restart from the configuration UI calls the rc.d script directly; configuration restore checks the CCU session when authentication is on and removes rejected uploads
