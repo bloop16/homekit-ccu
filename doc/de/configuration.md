@@ -21,7 +21,7 @@ Der erste Eintrag im Menü. Bei einer neuen Installation startet er von selbst.
    - Optional kannst du Schlösser, Alarm und Sirenen auf eine eigene Bridge legen.
    - Hake die CCU-Gewerke an, deren Geräte du in Apple Home haben möchtest.
 2. **Bridges und Räume:** Ändere die Namen der neuen Bridges und wähle für jeden Raum die Bridge oder „nicht übernehmen“. Bei Etagen kannst du weitere Etagen hinzufügen. Ein Raum, der schon eine Bridge hat, behält sie.
-3. **Geräte:** Jedes Gerät und jeder Kanal lässt sich anhaken, benennen und auf den Typ setzen, den es in Apple Home haben soll (zum Beispiel Schalter, Steckdose oder Licht). Suche, Gerätebilder und der Schalter für Zusatzkanäle funktionieren wie bei „Neues Gerät hinzufügen“.
+3. **Geräte:** Jedes Gerät und jeder Kanal lässt sich anhaken, benennen und auf den Typ setzen, den es in Apple Home haben soll (zum Beispiel Schalter, Steckdose oder Licht). Jedes Gerät hat ein Feld *Bridge*: Es startet mit der Bridge seines Raums und lässt sich ändern; das Gerät wandert dann in den Abschnitt dieser Bridge („abweichend vom Raum“). Geräte auf „nicht übernehmen“ stehen am Ende und lassen sich zurückholen. Suche, Gerätebilder und der Schalter für Zusatzkanäle funktionieren wie bei „Neues Gerät hinzufügen“.
 4. **Vorschau:** Bridges mit ihren Räumen, Geräten und Apple-Geräten. Apple Home nimmt höchstens 149 Geräte pro Bridge an; der Assistent warnt vorher.
 5. **Koppeln:** Die neuen Bridges starten ohne Geräte. Füge jede in Apple Home hinzu (+, *Gerät hinzufügen*, Code scannen) und wähle den angezeigten Raum. Der Status wechselt von selbst auf „gekoppelt“. Danach *Geräte veröffentlichen*: Die Geräte landen im Raum ihrer Bridge.
 
@@ -38,6 +38,12 @@ Geräte, die schon in HomeKit sind, werden nie auf eine andere Bridge verschoben
 - Im zweiten Schritt legst du Name, Typ in Apple Home und Bridge für alle gewählten Kanäle auf einmal fest. Weitere Einstellungen findest du in der Geräteliste unter *Bearbeiten*.
 
 **Mehrere Schaltausgänge als ein Gerät:** Bei einem Gerät mit zwei oder mehr Schaltausgängen (zum Beispiel HmIP-DRSI4, HmIP-BS2, HMW-IO-12) bietet der zweite Schritt „Ein Gerät in Apple Home mit N Schaltern“ an. Alle Schalter teilen sich dann einen Raum; Apple Home kann sie trotzdem als getrennte Kacheln zeigen. Getrennte Geräte können je einen eigenen Raum haben. Diese Option ist standardmäßig aus.
+
+## CCU-Gruppen
+
+Gruppen der CCU (*Einstellungen → Gruppen*, Geräte mit der Adresse `INT…`, z. B. HmIP-Heizungsgruppen) stehen im Einrichtungsassistenten und bei „Neues Gerät hinzufügen“ über ihren Mitgliedsgeräten. Die Gruppe steuert ihre Mitglieder: Hakst du die Gruppe an, wird abgewählt, was sie dort übernimmt (z. B. das Thermostat eines Heizkörpers in einer Heizungsgruppe). Andere Funktionen eines Mitglieds, etwa ein Fensterkontakt, bleiben, wie sie sind. Alles lässt sich weiterhin von Hand anhaken. Die Gruppe bekommt ihre Bridge wie jedes andere Gerät.
+
+HomeKit-CCU liest die Mitglieder aus der Gruppenverwaltung der CCU (`groups.gson`). Im Remote-Modus steht diese Datei nicht zur Verfügung; Gruppen erscheinen dann ohne ihre Mitglieder.
 
 ## Besondere Geräte
 

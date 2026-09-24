@@ -527,5 +527,9 @@
   "One device in Apple Home with %s switches": "Ein Gerät in Apple Home mit %s Schaltern",
   "All switches share one room; Apple Home can still show them as separate tiles. Separate devices can each have their own room.": "Alle Schalter teilen sich einen Raum; Apple Home kann sie trotzdem als getrennte Kacheln zeigen. Getrennte Geräte können je einen eigenen Raum haben.",
   "%s is a switch of %s": "%s ist ein Schalter von %s",
-  "Name of the device": "Name des Geräts"
+  "Name of the device": "Name des Geräts",
+  "member of %s": "Mitglied von %s",
+  "Group with %s devices": "Gruppe mit %s Geräten",
+  "set by the group": "von der Gruppe gesteuert",
+  "differs from the room": "abweichend vom Raum"
 }

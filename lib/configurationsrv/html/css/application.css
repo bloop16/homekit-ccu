@@ -322,3 +322,10 @@
 .sa-qr svg { width: 180px; height: 180px; background: #fff; padding: 8px; border-radius: var(--bs-border-radius); }
 .sa-done { font-size: 3rem; }
 .sa-bridge-title { color: var(--bs-secondary-color); }
+.sa-bridge-select { width: auto; max-width: 14rem; }
+.sa-not-taken .nd-device { opacity: .75; }
+/* a device of a CCU group, shown under its group */
+.nd-member { margin-left: 2rem; border-left: 3px solid var(--bs-info-border-subtle) !important; }
+@media (max-width: 575.98px) {
+  .nd-member { margin-left: .75rem; }
+}

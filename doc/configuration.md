@@ -21,7 +21,7 @@ The first entry of the menu. On a new installation it starts by itself.
    - Optionally put locks, alarm and sirens on a bridge of their own.
    - Tick the CCU functions (Gewerke) whose devices you want in Apple Home.
 2. **Bridges and rooms:** change the names of the new bridges and choose the bridge of every room, or "not taken". With floors you can add more floors. A room that already has its bridge keeps it.
-3. **Devices:** every device and channel can be ticked, named and set to the type it has in Apple Home (for example switch, outlet or light). Search, device pictures and the switch for additional channels work as in "New device".
+3. **Devices:** every device and channel can be ticked, named and set to the type it has in Apple Home (for example switch, outlet or light). Each device has a *Bridge* field: it starts with the bridge of its room and can be changed; the device then moves to that bridge's section ("differs from the room"). Devices set to "not taken" are listed at the end and can be brought back. Search, device pictures and the switch for additional channels work as in "New device".
 4. **Preview:** bridges with their rooms, devices and accessories. Apple Home takes at most 149 accessories per bridge; the assistant warns before that.
 5. **Pair:** the new bridges start without devices. Add each one in Apple Home (+, *Add Accessory*, scan the code) and choose the room shown. The state changes to "paired" by itself. Then *Publish devices*: the devices land in the room of their bridge.
 
@@ -38,6 +38,12 @@ Devices that are already in HomeKit are never moved to another bridge; otherwise
 - The second step sets name, type in Apple Home and bridge for all chosen channels at once. Further settings are in the device list under *Edit*.
 
 **Several switch outputs as one device:** for a device with two or more switch outputs (for example HmIP-DRSI4, HmIP-BS2, HMW-IO-12) the second step offers "One device in Apple Home with N switches". All switches then share one room; Apple Home can still show them as separate tiles. Separate devices can each have their own room. This option is off by default.
+
+## CCU groups
+
+Groups of the CCU (*Settings → Groups*, devices with the address `INT…`, e.g. HmIP heating groups) are shown above their member devices, in the setup assistant and in "New device". The group sets its members, so ticking the group deselects what it controls there (e.g. the thermostat of a radiator in a heating group); other functions of a member, such as a window contact, stay as they are. Everything can still be ticked by hand. The group gets its bridge like any other device.
+
+HomeKit-CCU reads the members from the group management of the CCU (`groups.gson`). In remote mode this file is not available and groups are shown without their members.
 
 ## Special devices
 
