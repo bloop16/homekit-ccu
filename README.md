@@ -28,11 +28,11 @@
 
 ## What you get
 
-- Your devices as native Apple Home accessories with live updates, "No Response" when a device is unreachable and battery levels in percent.
-- A setup assistant that builds bridges from your CCU rooms, so devices land in the right room automatically.
-- Device selection like in the CCU: devices with pictures, search and filters by room, function and radio system; several switch outputs of a device as one accessory if you like.
-- Eve history for sensors, and power, wind and rain values in the Eve app.
-- A web configuration inside the CCU with light and dark mode, protected by your CCU administrator login.
+- Your HomeMatic and HomematicIP devices in the Home app: control them there, use them in scenes and automations, and ask Siri.
+- A setup assistant that takes over the rooms of your CCU, so every device lands in the right room.
+- Choose your devices from a list with pictures, search and filters.
+- History and extra values of your sensors in the Eve app.
+- Configuration right in the CCU, protected by your CCU login.
 
 ## Supported devices
 

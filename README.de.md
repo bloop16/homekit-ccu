@@ -28,11 +28,11 @@
 
 ## Was du bekommst
 
-- Deine Geräte als native Apple-Home-Geräte mit Live-Aktualisierung, „Keine Antwort“, wenn ein Gerät nicht erreichbar ist, und Batteriestand in Prozent.
-- Einen Einrichtungsassistenten, der Bridges aus deinen CCU-Räumen erstellt, damit die Geräte automatisch im richtigen Raum landen.
-- Geräteauswahl wie in der CCU: Geräte mit Bildern, Suche und Filter nach Raum, Gewerk und Funksystem; auf Wunsch mehrere Schaltausgänge eines Geräts als ein Gerät.
-- Eve-Verlauf für Sensoren sowie Leistungs-, Wind- und Regenwerte in der Eve-App.
-- Eine Weboberfläche zur Konfiguration in der CCU mit hellem und dunklem Modus, geschützt durch deine CCU-Administrator-Anmeldung.
+- Deine HomeMatic- und HomematicIP-Geräte in der Home-App: dort steuern, in Szenen und Automationen nutzen und per Siri bedienen.
+- Einen Einrichtungsassistenten, der die Räume deiner CCU übernimmt, damit jedes Gerät im richtigen Raum landet.
+- Geräteauswahl aus einer Liste mit Bildern, Suche und Filtern.
+- Verlauf und zusätzliche Werte deiner Sensoren in der Eve-App.
+- Konfiguration direkt in der CCU, geschützt durch deine CCU-Anmeldung.
 
 ## Unterstützte Geräte
 
