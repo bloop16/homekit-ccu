@@ -28,6 +28,7 @@ described in [doc/upgrading.md](doc/upgrading.md).
 - HomeKit core: @homebridge/hap-nodejs 2.2 (was hap-nodejs 0.11), video doorbell on CameraController with Opus/AAC-ELD audio and optional two-way audio (`audio_return_target`), `advertiser` setting (bonjour-hap, ciao, avahi).
 - Bridges are called "HomeKit-CCU" and "HomeKit-CCU <instance>"; accessory names follow Apple's rules. Accessory identities are unchanged, so rooms, scenes and automations stay.
 - Battery level scales between empty and full cells instead of dividing by the nominal voltage.
+- "New device" lists devices instead of single channels: search across device, channel, room and serial, a room filter, devices already in HomeKit and the second and third virtual channel of HomematicIP outputs hidden until asked for. Ticking a device selects its useful channels; the keys of a remote are one row. A second step sets name, Apple Home type (e.g. switch, outlet or light) and bridge for all chosen channels, which are saved at once.
 - Configuration UI on Bootstrap 5.3 with a responsive layout; jQuery 4, Chart.js 4, sockjs-client 1.6, showdown 2.1 with DOMPurify, qrcode-generator 2.0. "HomeKit Instances → Settings" is now "Publish devices".
 - The configuration UI and its API require a CCU administrator session, also on the CCU; `config.json` gets `"configVersion": 2`, which turns the check on once for configurations from hap-homematic.
 - Moving from hap-homematic works through its backup: the installer refuses to run while hap-homematic is installed; restoring a backup brings back configuration and HomeKit pairing.
@@ -36,6 +37,7 @@ described in [doc/upgrading.md](doc/upgrading.md).
 
 ### Fixed
 - Doorbell buttons (HmIP-DSD-PCB, HmIP-DBB, HM-Sen-DB-PCB) are added as a programmable switch: Apple Home shows a doorbell without a camera as "not supported". The doorbell service stays selectable.
+- Saving a device answered before the configuration was written, so publishing right after could miss the change.
 - Settings that are on by default could not be switched off permanently in the device dialog.
 - Thermostat modes: OFF, HEAT and AUTO switch reliably, HEAT after OFF restores the last temperature, 0.5 °C steps, BidCos valve state no longer ×100, boost switch named "<name> Boost".
 - Contacts: tilted and open count as open; "reverse" no longer flips the battery warning; Eve open/closed times.

@@ -288,3 +288,21 @@
   scrollbar-width: thin;
   scrollbar-color: rgba(128, 128, 128, .5) transparent;
 }
+
+/* ---- new device dialog (js/newdevicewizzard.js) ---- */
+.nd .min-w-0 { min-width: 0; }
+.nd-device { background-color: var(--bs-body-bg); }
+.nd-device-head { cursor: pointer; user-select: none; }
+.nd-device-head:hover { background-color: var(--bs-tertiary-bg); }
+.nd-toggle { width: 2rem; padding: 0; color: var(--bs-secondary-color); }
+.nd-channels { padding-left: 3.5rem; }
+.nd-channel { border-radius: var(--bs-border-radius); }
+.nd-channel:hover { background-color: var(--bs-tertiary-bg); }
+.nd-channel label { cursor: pointer; }
+.nd-chnum { min-width: 2.5rem; font-variant-numeric: tabular-nums; }
+.nd-mapped { max-width: 14rem; }
+.nd-hint { padding: .25rem .5rem; }
+.nd-setup + .nd-setup { border-top: 1px dashed var(--bs-border-color); }
+@media (max-width: 575.98px) {
+  .nd-channels { padding-left: .5rem; }
+}

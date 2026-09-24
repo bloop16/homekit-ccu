@@ -1,69 +1,58 @@
 const path = require('path')
 const expect = require('expect.js')
 const { startServer, shutdown } = require(path.join(__dirname, 'helpers', 'sensorsHap.js'))
-const { buildNewDeviceList, isCoveredByRemote, REMOTE_SERVICE } = require(path.join(__dirname, '..', 'lib', 'util', 'remoteMapping.js'))
+const { isCoveredByRemote, REMOTE_SERVICE } = require(path.join(__dirname, '..', 'lib', 'util', 'remoteMapping.js'))
+const { buildDeviceCatalog } = require(path.join(__dirname, '..', 'lib', 'util', 'newDeviceCatalog.js'))
 
 const KRC4 = '000B1BE9A1B2C3'
-const addresses = (list, serial) => list.find(entry => entry.device === serial).channels.map(channel => channel.address)
+const keysOf = (catalog, serial) => catalog.find(entry => entry.address === serial).channels
 
-describe('HomeKit-CCU remote: new device list', () => {
+describe('HomeKit-CCU remote: new device catalog', () => {
   let server
-  let compatibleDevices
+  let catalog
 
   before(async () => {
     ({ server } = await startServer('HmIP-KRC4.json', { mappings: {} }))
-    compatibleDevices = server._compatibleDevices
+    catalog = (mappings) => buildDeviceCatalog(server._compatibleDevices, mappings, { serviceTable: server.serviceConfig })
   })
 
   after(() => shutdown(server))
 
-  it('lists every key while there is no remote mapping', () => {
-    const list = buildNewDeviceList(compatibleDevices, {})
-    expect(addresses(list, KRC4)).to.eql([1, 2, 3, 4].map(key => KRC4 + ':' + key))
-    expect(list[0]).to.only.have.keys('device', 'name', 'type', 'channels')
-    expect(list[0].channels[0]).to.only.have.keys('id', 'address', 'name', 'type')
+  it('lists every key as free while there is no remote mapping', () => {
+    const keys = keysOf(catalog({}), KRC4)
+    expect(keys.map(channel => channel.address)).to.eql([1, 2, 3, 4].map(key => KRC4 + ':' + key))
+    expect(keys.every(channel => (channel.key === true) && (channel.mapping === undefined) && (channel.coveredBy === undefined))).to.be(true)
+    expect(keys[0].services[0].serviceClazz).to.be(REMOTE_SERVICE)
   })
 
-  it('lists the remote once: the other keys of the device are hidden', () => {
-    const mappings = { [KRC4 + ':1']: { name: 'Fernbedienung', Service: REMOTE_SERVICE } }
-    expect(addresses(buildNewDeviceList(compatibleDevices, mappings), KRC4)).to.eql([KRC4 + ':1'])
+  it('marks the other keys as buttons of a mapped remote', () => {
+    const keys = keysOf(catalog({ [KRC4 + ':1']: { name: 'Fernbedienung', Service: REMOTE_SERVICE } }), KRC4)
+    expect(keys[0].mapping).to.eql({ name: 'Fernbedienung', service: REMOTE_SERVICE })
+    expect(keys.slice(1).map(channel => channel.coveredBy)).to.eql([KRC4 + ':1', KRC4 + ':1', KRC4 + ':1'])
   })
 
-  it('hides the keys also when the remote sits on another key', () => {
-    const mappings = { [KRC4 + ':3']: { Service: REMOTE_SERVICE } }
-    expect(addresses(buildNewDeviceList(compatibleDevices, mappings), KRC4)).to.eql([KRC4 + ':3'])
+  it('also when the remote sits on another key', () => {
+    const keys = keysOf(catalog({ [KRC4 + ':3']: { Service: REMOTE_SERVICE } }), KRC4)
+    expect(keys.map(channel => channel.coveredBy)).to.eql([KRC4 + ':3', KRC4 + ':3', undefined, KRC4 + ':3'])
+    expect(keys[2].mapping.service).to.be(REMOTE_SERVICE)
   })
 
-  it('keeps all keys for per-key mappings (HomeMaticKeyAccessory)', () => {
+  it('keeps unmapped keys free next to per-key mappings (HomeMaticKeyAccessory)', () => {
     const mappings = { [KRC4 + ':1']: { Service: 'HomeMaticKeyAccessory' }, [KRC4 + ':2']: { Service: 'HomeMaticKeyAccessory' } }
-    expect(addresses(buildNewDeviceList(compatibleDevices, mappings), KRC4)).to.have.length(4)
+    const keys = keysOf(catalog(mappings), KRC4)
+    expect(keys.map(channel => Boolean(channel.mapping))).to.eql([true, true, false, false])
+    expect(keys.every(channel => channel.coveredBy === undefined)).to.be(true)
   })
 
   it('does not change the device list it was given', () => {
-    const before = JSON.stringify(compatibleDevices)
-    buildNewDeviceList(compatibleDevices, { [KRC4 + ':1']: { Service: REMOTE_SERVICE } })
-    expect(JSON.stringify(compatibleDevices)).to.be(before)
-  })
-
-  it('keeps the channels of a device that are no keys', () => {
-    const device = {
-      address: 'ABC',
-      name: 'Wandtaster 230V',
-      type: 'HmIP-WRC6-230',
-      channels: [
-        { id: 1, address: 'ABC:1', name: 'k1', type: 'KEY_TRANSCEIVER', isSuported: true },
-        { id: 2, address: 'ABC:2', name: 'k2', type: 'KEY_TRANSCEIVER', isSuported: true },
-        { id: 3, address: 'ABC:8', name: 's', type: 'SWITCH_TRANSMITTER', isSuported: true },
-        { id: 4, address: 'ABC:9', name: 'v', type: 'SWITCH_VIRTUAL_RECEIVER', isSuported: false }
-      ]
-    }
-    const list = buildNewDeviceList([device], { 'ABC:1': { Service: REMOTE_SERVICE } })
-    expect(addresses(list, 'ABC')).to.eql(['ABC:1', 'ABC:8'])
+    const before = JSON.stringify(server._compatibleDevices)
+    catalog({ [KRC4 + ':1']: { Service: REMOTE_SERVICE } })
+    expect(JSON.stringify(server._compatibleDevices)).to.be(before)
   })
 
   it('tolerates missing mappings and devices', () => {
-    expect(buildNewDeviceList(undefined, undefined)).to.eql([])
-    expect(addresses(buildNewDeviceList(compatibleDevices, undefined), KRC4)).to.have.length(4)
+    expect(buildDeviceCatalog(undefined, undefined)).to.eql([])
+    expect(keysOf(catalog(undefined), KRC4)).to.have.length(4)
   })
 })
 
