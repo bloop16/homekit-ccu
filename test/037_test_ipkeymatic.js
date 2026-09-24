@@ -66,7 +66,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     done()
   })
 
-  it('HomeKit-CCU check LOCK_STATE 0 Cur sould be UNSECURED', (done) => {
+  it('HomeKit-CCU check LOCK_STATE 0 (unknown) Cur sould be UNKNOWN', (done) => {
     that.server._ccu.fireEvent('HmIP.7316163726ABCD:1.LOCK_STATE', 0)
     const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     const service = accessory.getService(Service.LockMechanism, 'TestDevice', false, '', true)
@@ -75,7 +75,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
     assert.ok(ch, 'LockCurrentState State Characteristics not found')
     getCharacteristicValue(ch, (context, value) => {
       try {
-        expect(value).to.be(Characteristic.LockCurrentState.UNSECURED)
+        expect(value).to.be(Characteristic.LockCurrentState.UNKNOWN)
         done()
       } catch (e) {
         done(e)
@@ -101,7 +101,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HomeKit-CCU check LOCK_STATE 2 Cur sould be UNSECURED', (done) => {
-    that.server._ccu.fireEvent('HmIP.7316163726ABCD:1.LOCK_STATE', 0)
+    that.server._ccu.fireEvent('HmIP.7316163726ABCD:1.LOCK_STATE', 2)
     const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     const service = accessory.getService(Service.LockMechanism, 'TestDevice', false, '', true)
     assert.ok(service, 'LockMechanism Service not found')

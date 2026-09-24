@@ -67,7 +67,8 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HAP-Homematic open the door', (done) => {
-    that.server._ccu.fireEvent('HmIP.3123456789ABCD:1.DOOR_STATE', 3)
+    // DOOR_STATE 1 is OPEN (3 is POSITION_UNKNOWN, a door stopped half way)
+    that.server._ccu.fireEvent('HmIP.3123456789ABCD:1.DOOR_STATE', 1)
     that.server._ccu.fireEvent('HmIP.3123456789ABCD:1.PROCESS', 0)
     const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     const service = accessory.getService(Service.GarageDoorOpener, 'TestDevice', false, '', true)
