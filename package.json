@@ -1,6 +1,6 @@
 {
 	"name": "homekit-ccu",
-	"version": "0.1.2-rc.5",
+	"version": "0.1.2-rc.6",
 	"description": "Apple HomeKit bridge for HomeMatic and HomematicIP devices, running as an add-on on OpenCCU",
 	"author": "bloop16 (https://github.com/bloop16)",
 	"contributors": [
