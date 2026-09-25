@@ -76,7 +76,7 @@ Die Tabellen listen die Gerätefamilien mit typischen Modellen. Farbvarianten (`
 |---|---|
 | Systemvariablen | Schalter, Sensor (Kontakt, Bewegung, Leck, Präsenz, Rauch), Zahlensensor oder Alarmanlage |
 | Programme | Schalter, der das Programm startet |
-| Besondere Geräte | Video-Türklingel (Kamera mit Gegensprechen), HTTP-Schalter, CCU-Temperatur, Mehrfachtaster |
+| Besondere Geräte | Video-Türklingel (Kamera mit Gegensprechen), CCU-Temperatur (nicht in einer virtuellen Maschine), CCU Duty Cycle, Mehrfachtaster |
 
 ## Was Apple Home nicht anzeigen kann
 

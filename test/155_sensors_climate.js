@@ -1,7 +1,7 @@
 const path = require('path')
 const expect = require('expect.js')
 const { Service, Characteristic } = require('@homebridge/hap-nodejs')
-const { startServer, accessoryAt, shutdown, readAll, findService, read, settle } = require(path.join(__dirname, 'helpers', 'sensorsHap.js'))
+const { startServer, accessoryAt, shutdown, readAll, findService, read } = require(path.join(__dirname, 'helpers', 'sensorsHap.js'))
 
 describe('HomeKit-CCU sensors: HmIP-SWO-PL as thermometer', () => {
   const SWO = '00185A49B1C2D3'
@@ -109,42 +109,5 @@ describe('HomeKit-CCU sensors: HmIP-SCTH230 CO2 sensor', () => {
     const air = findService(accessory, Service.AirQualitySensor)
     expect(air).to.be.ok()
     expect(await read(air.getCharacteristic(Characteristic.AirQuality))).to.be(Characteristic.AirQuality.POOR)
-  })
-})
-
-describe('HomeKit-CCU sensors: battery from a datapoint (HomeMaticBatteryAccessory)', () => {
-  const HomeMaticBatteryAccessory = require(path.join(__dirname, '..', 'lib', 'services', 'HomeMaticBatteryAccessory.js'))
-  const DATAPOINT = 'HmIP.4734919797ABCD:0.BATTERY_STATE'
-  let server
-
-  before(async () => {
-    ({ server } = await startServer('HmIP-STH.json'))
-  })
-
-  after(() => shutdown(server))
-
-  const create = (settings) => {
-    const accessory = new HomeMaticBatteryAccessory({ address: 'SPBAT' + Object.keys(settings).length + ':0', type: 'SPECIAL', name: 'Battery' }, 'Special', server, { settings })
-    accessory.init()
-    return accessory
-  }
-
-  it('takes the value as percent when no maximum is set', async () => {
-    server._ccu.dummyValues[DATAPOINT] = 42
-    const accessory = create({ datapoint: DATAPOINT, lowLevelValue: 0, maxLevelValue: 0 })
-    await settle()
-    const battery = findService(accessory, Service.Battery)
-    expect(await read(battery.getCharacteristic(Characteristic.BatteryLevel))).to.be(42)
-    expect(await readAll(accessory)).to.eql([])
-  })
-
-  it('scales to the maximum and reports low battery', async () => {
-    server._ccu.dummyValues[DATAPOINT] = 2.1
-    const accessory = create({ datapoint: DATAPOINT, lowLevelValue: 2.2, maxLevelValue: 3, x: 1 })
-    await settle()
-    const battery = findService(accessory, Service.Battery)
-    expect(await read(battery.getCharacteristic(Characteristic.BatteryLevel))).to.be(70)
-    expect(await read(battery.getCharacteristic(Characteristic.StatusLowBattery))).to.be(Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW)
-    expect(await readAll(accessory)).to.eql([])
   })
 })

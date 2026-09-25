@@ -4,6 +4,15 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/). Versions up to 0.0.64 are those of hap-homematic.
 
+## [0.1.2] - unreleased
+
+### Fixed
+- "CCU duty cycle" showed no value on a CCU without BidCos-RF devices: only BidCos-RF was asked. Like the CCU itself, the add-on now asks BidCos-RF and HmIP-RF, and the radio module of HmIP-RF can be chosen. A duty cycle of 0 % (an idle radio) is shown now; before, it counted as "no value".
+- "CCU temperature" showed no value in a virtual machine (OVA, Proxmox): there is no CPU temperature there, the system page of the CCU shows "n/a" as well. It is only offered where the system has a temperature (a thermal zone, or the coretemp sensor of x86 hardware); an existing one answers "No Response" instead of an invalid value.
+
+### Removed
+- The special devices "HTTP switch" (unrelated to the CCU; https without a port went to port 80) and "battery indicator from a datapoint" (the devices show their battery level themselves). Stored ones are removed from the configuration at the first start, the log names them.
+
 ## [0.1.1] - 2026-09-24
 
 ### Added

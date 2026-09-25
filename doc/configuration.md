@@ -49,7 +49,7 @@ HomeKit-CCU reads the members from the group management of the CCU (`groups.gson
 
 ## Special devices
 
-*Special devices → New* first asks for the kind: video doorbell, garage door from sensors and actors, window from rotary handle and contact, several keys as one device, HTTP switch, CCU temperature or CCU duty cycle. The form then shows only the settings of this kind; rarely needed ones (ffmpeg, video size, actor delays) are under *Show advanced settings*. The name of a special device must be unique.
+*Special devices → New* first asks for the kind: video doorbell, garage door from sensors and actors, window from rotary handle and contact, several keys as one device, CCU temperature or CCU duty cycle. CCU temperature is only offered where the system has one: a virtual machine (OVA, Proxmox) has none, the system page of the CCU shows "n/a" there as well. The duty cycle is that of the radio module, from BidCos-RF and HmIP-RF like on the system page of the CCU. The form then shows only the settings of this kind; rarely needed ones (ffmpeg, video size, actor delays) are under *Show advanced settings*. The name of a special device must be unique.
 
 ## Doorbell buttons
 

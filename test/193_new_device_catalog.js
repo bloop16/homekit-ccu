@@ -245,7 +245,7 @@ describe('HomeKit-CCU new device catalog: filters and pictures', () => {
   })
 
   it('knows the categories and radio systems', () => {
-    expect(['HomeMaticDimmerAccessory', 'HomeMaticKeyMaticAccessory', 'HomeMaticRemoteAccessory', 'HomeMaticIPWaterStopAccessory', 'HomeMaticIPPowerMeterSwitchAccessory', 'HomeMaticSPHTTPAccessory'].map(categoryOf))
+    expect(['HomeMaticDimmerAccessory', 'HomeMaticKeyMaticAccessory', 'HomeMaticRemoteAccessory', 'HomeMaticIPWaterStopAccessory', 'HomeMaticIPPowerMeterSwitchAccessory', 'HomeMaticSPCCUDutyCycleAccessory'].map(categoryOf))
       .to.eql(['light', 'security', 'button', 'water', 'switch', 'other'])
     expect(['HmIPW-DRAP', 'HmIP-BSM', 'ELV-SH-CTH', 'HMW-IO-12-Sw14-DR', 'HM-LC-Sw1-FM', 'VIR-LG-ONOFF'].map(radioSystemOf))
       .to.eql(['HmIP-Wired', 'HmIP', 'HmIP', 'BidCos-Wired', 'BidCos-RF', 'other'])

@@ -76,7 +76,7 @@ The tables list the device families with typical models. Colour variants (`-A`, 
 |---|---|
 | System variables | Switch, sensor (contact, motion, leak, occupancy, smoke), number sensor or security system |
 | Programs | Switch that starts the program |
-| Special devices | Video doorbell (camera with two-way audio), HTTP switch, CCU temperature, multi-key buttons |
+| Special devices | Video doorbell (camera with two-way audio), CCU temperature (not in a virtual machine), CCU duty cycle, multi-key buttons |
 
 ## What Apple Home cannot show
 

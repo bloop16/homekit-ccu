@@ -49,7 +49,7 @@ HomeKit-CCU liest die Mitglieder aus der Gruppenverwaltung der CCU (`groups.gson
 
 ## Besondere Geräte
 
-*Besondere Geräte → Neu* fragt zuerst nach der Art: Video-Türklingel, Garagentor aus Sensoren und Aktoren, Fenster aus Drehgriff und Kontakt, mehrere Tasten als ein Gerät, HTTP-Schalter, CCU-Temperatur oder CCU Duty Cycle. Das Formular zeigt dann nur die Einstellungen dieser Art; selten gebrauchte (ffmpeg, Videogröße, Verzögerungen der Aktoren) findest du unter *Erweiterte Einstellungen zeigen*. Der Name eines besonderen Geräts muss eindeutig sein.
+*Besondere Geräte → Neu* fragt zuerst nach der Art: Video-Türklingel, Garagentor aus Sensoren und Aktoren, Fenster aus Drehgriff und Kontakt, mehrere Tasten als ein Gerät, CCU-Temperatur oder CCU Duty Cycle. CCU-Temperatur wird nur angeboten, wenn das System eine hat: Eine virtuelle Maschine (OVA, Proxmox) hat keine, auch die Systemseite der CCU zeigt dort „n/a“. Der Duty Cycle ist der des Funkmoduls, von BidCos-RF und HmIP-RF wie auf der Systemseite der CCU. Das Formular zeigt dann nur die Einstellungen dieser Art; selten gebrauchte (ffmpeg, Videogröße, Verzögerungen der Aktoren) findest du unter *Erweiterte Einstellungen zeigen*. Der Name eines besonderen Geräts muss eindeutig sein.
 
 ## Türklingel-Tasten
 
