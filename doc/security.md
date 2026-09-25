@@ -19,6 +19,9 @@ When you upgrade from hap-homematic or homekit-ccu 0.0.x, the check is turned on
 - The event servers (9875, 9876) take calls only from the CCU and from the machine itself; on the CCU they listen on 127.0.0.1. Nobody else in the network can send device states to HomeKit.
 - A restore upload is only stored with a valid session (sent as a header, checked before the upload) and one at a time. Backup and restore use private temporary directories that are removed afterwards.
 - Service classes in the configuration, also from a restored backup, must be classes of homekit-ccu; the video doorbell only starts a program named `ffmpeg`.
+- *Install ffmpeg* downloads one pinned build of the Homebridge project over https only and installs it only when its SHA-256 matches the one in the add-on; nothing else is unpacked or run.
+- A picture upload for a doorbell needs a valid session (checked before the upload), at most 10 MB, and is kept only when it decodes as PNG or JPEG. A picture file named in the settings has to end in .png, .jpg or .jpeg; pictures are decoded with size limits before they are drawn.
+- The UDP ports 9950–9979 for the return channel of live video are opened in the CCU firewall only while there is a video doorbell.
 - CCU session ids, HomeKit setup codes and passwords in URLs are not written to the log; the log file is readable by root only.
 - With the session check turned off, the API only answers requests to the CCU's own addresses and names, so a web page cannot reach it by pointing its own domain at the CCU (DNS rebinding).
 

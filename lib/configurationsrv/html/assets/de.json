@@ -558,5 +558,6 @@
   "There is no ffmpeg build for this system; install ffmpeg yourself and set its path in the advanced settings.": "Für dieses System gibt es keinen ffmpeg-Build; installiere ffmpeg selbst und trage den Pfad in den erweiterten Einstellungen ein.",
   "The installation failed": "Die Installation ist fehlgeschlagen",
   "Not installed": "Nicht installiert",
-  "The status of ffmpeg is not available.": "Der Stand von ffmpeg ist nicht abrufbar."
+  "The status of ffmpeg is not available.": "Der Stand von ffmpeg ist nicht abrufbar.",
+  "The video source must be a URL like rtsp://camera/stream or ffmpeg input arguments starting with - (e.g. -re -f lavfi -i testsrc)": "Die Videoquelle muss eine URL wie rtsp://kamera/stream sein oder ffmpeg-Eingabeargumente, die mit - beginnen (z. B. -re -f lavfi -i testsrc)"
 }

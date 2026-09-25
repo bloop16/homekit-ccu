@@ -342,6 +342,16 @@ describe('HomeKit-CCU default services: switch type of new mappings', () => {
       expect(first.special).to.have.length(1)
     })
 
+    it('refuses a video doorbell whose video source is neither a URL nor ffmpeg arguments', async () => {
+      writeConfig({ mappings: {}, channels: [] })
+      const doorbell = { name: 'Tür', address: 'new:special', serviceClass: 'HomeMaticSPVideoDoorBellAccessory', settings: JSON.stringify({ video_source: 're -f lavfi -i testsrc', instanceIDs: { 0: 'b' } }) }
+      const result = await makeConfigService().saveDevice(doorbell)
+      expect(result.result).to.be('error saving')
+      expect(result.reason).to.contain('URL')
+      expect(readConfig().mappings).to.eql({})
+      expect(await makeConfigService().saveDevice({ ...doorbell, settings: JSON.stringify({ video_source: '-re -f lavfi -i testsrc', instanceIDs: { 0: 'b' } }) })).to.eql({ result: 'saved' })
+    })
+
     it('does not add a type to a stored switch mapping without one', async () => {
       writeConfig({ mappings: { [PLUG]: { name: 'Plug', Service: 'HomeMaticSwitchAccessory', settings: {} } }, channels: [PLUG] })
       await makeConfigService().saveDevice({ name: 'Plug renamed', address: PLUG, serviceClass: 'HomeMaticSwitchAccessory', settings: '{}' })

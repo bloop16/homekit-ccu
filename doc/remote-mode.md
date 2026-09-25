@@ -41,6 +41,6 @@ In remote mode, homekit-ccu automatically remaps internal daemon ports (32001, 3
 * 9876 -> RPC event server CuxD (optional, same rule)
 * 9877..n HAP Instance 0 .. n
 * 5353/udp -> mDNS (Bonjour), so HomeKit can find the bridges
-* random UDP ports -> video doorbell streams (see [video doorbell](video-doorbell.md))
+* UDP 9950–9979 -> return channel of video doorbell streams (see [video doorbell](video-doorbell.md)); on the CCU they are opened while there is a video doorbell, in remote mode the machine has to accept incoming UDP there
 
 The installation opens no port for the configuration in the CCU firewall and closes 9874/49874 that older versions opened; the ports of the bridges are opened by HomeKit-CCU.

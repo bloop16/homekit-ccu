@@ -141,4 +141,27 @@ describe('HomeKit-CCU video doorbell with the ffmpeg of the add-on', () => {
       expect(has(camera, hap.Service.Speaker)).to.be(false)
     })
   })
+
+  // on a real CCU the source 're -f lavfi -i testsrc ...' (the - missing) was taken for a URL:
+  // ffmpeg looked for a file named re and snapshot and stream failed at once
+  describe('video source', () => {
+    it('is a URL or ffmpeg input arguments starting with -', () => {
+      ;['rtsp://cam/stream', 'rtsps://u:p@cam:322/live', 'http://cam/video.mjpg', '-re -f lavfi -i testsrc', '  -rtsp_transport tcp -i rtsp://cam  ']
+        .forEach(source => expect(VideoDoorBell.validateSettings({ video_source: source })).to.be(undefined))
+      ;['re -f lavfi -i testsrc', 'cam/stream', '192.168.0.10:554/live', '']
+        .forEach(source => expect(VideoDoorBell.validateSettings({ video_source: source })).to.contain('URL'))
+    })
+
+    it('is checked when the video doorbell starts', () => {
+      const errors = []
+      const recording = Object.assign(Object.create(log), { error: (...args) => errors.push(require('util').format(...args)) })
+      const server = { isTestMode: true, log: recording, _ccu: { variableWithName: () => undefined, registerAddressForEventProcessingAtAccessory: () => {} } }
+      const doorbell = new VideoDoorBell({ address: 'VIDEODOORBELL:0', type: 'SPECIAL', name: 'Door' }, 'SPECIAL', server, { name: 'Door', settings: { video_source: 're -f lavfi -i testsrc' } })
+      doorbell.createHomeKitAccessory()
+      doorbell.publishServices(hap.Service, hap.Characteristic)
+      accessories.push(doorbell)
+      expect(doorbell.cameraUnavailable).to.be(true)
+      expect(errors.join('\n')).to.contain('starting with -')
+    })
+  })
 })

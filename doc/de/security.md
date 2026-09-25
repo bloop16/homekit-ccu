@@ -19,6 +19,9 @@ Beim Umstieg von hap-homematic oder homekit-ccu 0.0.x wird die Prüfung eingesch
 - Die Event-Server (9875, 9876) nehmen Aufrufe nur von der CCU und vom Rechner selbst an; auf der CCU lauschen sie auf 127.0.0.1. Niemand sonst im Netzwerk kann Gerätezustände an HomeKit senden.
 - Ein Upload zur Wiederherstellung wird nur mit gültiger Sitzung gespeichert (als Header gesendet und vor dem Upload geprüft), und immer nur einer zur selben Zeit. Datensicherung und Wiederherstellung verwenden private temporäre Verzeichnisse, die danach gelöscht werden.
 - Service-Klassen in der Konfiguration, auch aus einer zurückgespielten Datensicherung, müssen Klassen von homekit-ccu sein; die Video-Türklingel startet nur ein Programm namens `ffmpeg`.
+- *ffmpeg installieren* lädt einen fest vorgegebenen Build des Homebridge-Projekts nur über https und installiert ihn nur, wenn seine SHA-256 zu der im Add-on passt; nichts anderes wird entpackt oder ausgeführt.
+- Ein Bild-Upload für eine Türklingel braucht eine gültige Sitzung (vor dem Upload geprüft), höchstens 10 MB, und wird nur behalten, wenn er sich als PNG oder JPEG lesen lässt. Eine in den Einstellungen genannte Bilddatei muss auf .png, .jpg oder .jpeg enden; Bilder werden vor dem Zeichnen mit Größengrenzen dekodiert.
+- Die UDP-Ports 9950–9979 für den Rückkanal des Livebilds werden in der CCU-Firewall nur geöffnet, solange es eine Video-Türklingel gibt.
 - CCU-Sitzungs-IDs, HomeKit-Setup-Codes und Passwörter in URLs werden nicht ins Log geschrieben; die Log-Datei ist nur für root lesbar.
 - Ist die Sitzungsprüfung ausgeschaltet, beantwortet die API nur Anfragen an die eigenen Adressen und Namen der CCU, sodass eine Webseite sie nicht erreichen kann, indem sie ihre eigene Domain auf die CCU zeigen lässt (DNS-Rebinding).
 

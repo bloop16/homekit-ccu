@@ -41,6 +41,6 @@ Im Remote-Modus ordnet homekit-ccu die internen Daemon-Ports (32001, 32010, 3929
 * 9876 -> RPC-Event-Server CuxD (optional, gleiche Regel)
 * 9877..n HAP-Instanz 0 .. n
 * 5353/udp -> mDNS (Bonjour), damit HomeKit die Bridges findet
-* zufällige UDP-Ports -> Streams der Video-Türklingel (siehe [Video-Türklingel](video-doorbell.md))
+* UDP 9950–9979 -> Rückkanal der Streams der Video-Türklingel (siehe [Video-Türklingel](video-doorbell.md)); auf der CCU werden sie geöffnet, solange es eine Video-Türklingel gibt, im Remote-Modus muss der Rechner dort eingehendes UDP annehmen
 
 Die Installation öffnet für die Konfiguration keinen Port in der CCU-Firewall und schließt 9874/49874, die ältere Versionen geöffnet haben; die Ports der Bridges öffnet HomeKit-CCU selbst.

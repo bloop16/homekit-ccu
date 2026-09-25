@@ -31,6 +31,7 @@
 - Deine HomeMatic- und HomematicIP-Geräte in der Home-App: dort steuern, in Szenen und Automationen nutzen und per Siri bedienen.
 - Einen Einrichtungsassistenten, der die Räume deiner CCU übernimmt, damit jedes Gerät im richtigen Raum landet.
 - Geräteauswahl aus einer Liste mit Bildern, Suche und Filtern.
+- Türklingeln, die Apple Home als Türklingel zeigt: eine Mitteilung mit Bild beim Klingeln und den Gong auf deinem HomePod. Mit einer Kamera zeigt die Video-Türklingel dazu Livebild und Ton.
 - Verlauf und zusätzliche Werte deiner Sensoren in der Eve-App.
 - Konfiguration direkt in der CCU, geschützt durch deine CCU-Anmeldung.
 
@@ -43,7 +44,7 @@ HomematicIP-, HomeMatic- und HomeMatic-Wired-Geräte erscheinen als die Gerätet
 - **Sicherheit:** Rauch-, Wasser- und Regenmelder, Sirenen, der CCU-Alarm als Alarmanlage
 - **Licht und Strom:** Dimmer, Farblichter, Schalter, Steckdosen, Bewässerungs- und Wasserventile
 - **Taster und Sensoren:** Fernbedienungen als ein Gerät mit nummerierten Tasten, Türklingeln, Bewegungs-, Präsenz- und Lichtsensoren
-- **CCU:** Systemvariablen, Programme, eine Video-Türklingel
+- **CCU:** Systemvariablen, Programme, der Duty Cycle der CCU, eine Video-Türklingel für eine Kamera (RTSP) und eine Türklingel an jedem Taster oder Kontakt
 
 Die [Geräteliste](doc/de/devices.md) zeigt jede Gerätefamilie mit ihren Modellen und wie sie in Apple Home aussieht.
 
@@ -72,7 +73,7 @@ Bridges, Geräte und die HomeKit-Kopplung kommen zurück, Räume und Automatione
 | Einrichtungsassistent, neue Geräte, besondere Geräte, Räume | [doc/de/configuration.md](doc/de/configuration.md) |
 | Umstieg von hap-homematic | [doc/de/upgrading.md](doc/de/upgrading.md) |
 | Anmeldung, HTTPS und warum die Oberfläche eine CCU-Sitzung braucht | [doc/de/security.md](doc/de/security.md) |
-| Video-Türklingel und ffmpeg | [doc/de/video-doorbell.md](doc/de/video-doorbell.md) |
+| Türklingeln, Video-Türklingel und ffmpeg | [doc/de/video-doorbell.md](doc/de/video-doorbell.md) |
 | Betrieb auf einem anderen Rechner, Ports | [doc/de/remote-mode.md](doc/de/remote-mode.md) |
 | Unterstützte Geräte und wie sie in Apple Home aussehen | [doc/de/devices.md](doc/de/devices.md) |
 | Räume, Eve-Verlauf, mDNS, Architektur | [doc/de/advanced.md](doc/de/advanced.md) |

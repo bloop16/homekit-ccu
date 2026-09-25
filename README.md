@@ -31,6 +31,7 @@
 - Your HomeMatic and HomematicIP devices in the Home app: control them there, use them in scenes and automations, and ask Siri.
 - A setup assistant that takes over the rooms of your CCU, so every device lands in the right room.
 - Choose your devices from a list with pictures, search and filters.
+- Doorbells that Apple Home shows as doorbells: a ring notification with a picture and the chime on your HomePod. With a camera, the video doorbell adds live video and sound.
 - History and extra values of your sensors in the Eve app.
 - Configuration right in the CCU, protected by your CCU login.
 
@@ -43,7 +44,7 @@ HomematicIP, HomeMatic and HomeMatic Wired devices appear as the accessory types
 - **Safety:** smoke, water and rain sensors, sirens, the CCU alarm as a security system
 - **Lights and power:** dimmers, colour lights, switches, outlets, irrigation and water valves
 - **Buttons and sensors:** remotes as one accessory with numbered buttons, doorbells, motion, presence and light sensors
-- **CCU:** system variables, programs, a video doorbell
+- **CCU:** system variables, programs, the CCU duty cycle, a video doorbell for a camera (RTSP) and a doorbell on any key or contact
 
 The [device list](doc/devices.md) shows every family with the models and how they look in Apple Home.
 
@@ -72,7 +73,7 @@ Bridges, devices and the HomeKit pairing come back, so rooms and automations sta
 | Setup assistant, new devices, special devices, rooms | [doc/configuration.md](doc/configuration.md) |
 | Moving from hap-homematic | [doc/upgrading.md](doc/upgrading.md) |
 | Login, HTTPS and why the UI needs a CCU session | [doc/security.md](doc/security.md) |
-| Video doorbell and ffmpeg | [doc/video-doorbell.md](doc/video-doorbell.md) |
+| Doorbells, video doorbell and ffmpeg | [doc/video-doorbell.md](doc/video-doorbell.md) |
 | Running on another machine, ports | [doc/remote-mode.md](doc/remote-mode.md) |
 | Supported devices and how they look in Apple Home | [doc/devices.md](doc/devices.md) |
 | Rooms, Eve history, mDNS, architecture | [doc/advanced.md](doc/advanced.md) |
