@@ -153,7 +153,7 @@ install() {
 source /lib/libfirewall.tcl
 Firewall_loadConfiguration
 global Firewall_USER_PORTS
-foreach port {9874 49874} {
+foreach port {9874 49874 9950 9951 9952 9953 9954 9955 9956 9957 9958 9959 9960 9961 9962 9963 9964 9965 9966 9967 9968 9969 9970 9971 9972 9973 9974 9975 9976 9977 9978 9979} {
   set idx [lsearch $Firewall_USER_PORTS $port]
   if {$idx != -1} {
     set Firewall_USER_PORTS [lreplace $Firewall_USER_PORTS $idx $idx]

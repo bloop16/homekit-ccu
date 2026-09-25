@@ -7,7 +7,6 @@ const { recordingLog } = require(path.join(__dirname, 'helpers', 'recordingLog.j
 const fs = require('fs')
 const os = require('os')
 
-const { isValidSetupCode } = require(path.join(__dirname, '..', 'lib', 'services', 'camera', 'hapIdentity.js'))
 // the accessory only starts a program named ffmpeg
 const FAKE = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'hkccu-fake-')), 'ffmpeg')
 fs.symlinkSync(path.join(__dirname, 'fixtures', 'fake-ffmpeg.sh'), FAKE)
@@ -103,10 +102,8 @@ describe('HomeKit-CCU video doorbell accessory', () => {
     const accessory = make({ ffmpegpath: '/nonexistent/ffmpeg', video_source: 'rtsp://x' })
     expect(accessory.cameraUnavailable).to.be(true)
     expect(accessory.cameraController).to.be(undefined)
-    let published = false
-    accessory.homeKitAccessory.publish = () => { published = true }
-    accessory.publishSingleAccessory(51000)
-    expect(published).to.be(false)
+    // the server keeps it out of its bridge (see 221_video_doorbell_bridge_ports.js)
+    expect(accessory.canBePublished()).to.be(false)
   })
 
   it('is not published when ffmpeg cannot be executed, with an actionable hint', () => {
@@ -177,50 +174,13 @@ describe('HomeKit-CCU video doorbell accessory', () => {
     expect(rec.text('error')).to.contain('video source')
   })
 
-  it('publishes with a username derived from its uuid and the configured pin', () => {
-    const front = make({ ffmpegpath: FAKE, video_source: 'rtsp://x', 'pin-code': '482-91-736' })
-    const info = front.getPublishInfo()
-    expect(info.username).to.match(/^[0-9A-F]{2}(:[0-9A-F]{2}){5}$/)
-    expect(info.username).to.not.be('00:00:11:22:22:11')
-    expect(info.pincode).to.be('482-91-736')
-    expect(info.category).to.be(hap.Categories.VIDEO_DOORBELL)
-    const back = createDoorBell({ ffmpegpath: FAKE, video_source: 'rtsp://x' })
-    back._accessoryUUID = hap.uuid.generate('SPECIAL:Back door')
-    accessories.push(back)
-    expect(back.getPublishInfo().username).to.not.be(info.username)
-    // without a configured code every doorbell gets its own random one, kept across restarts
-    const generated = back.getPublishInfo().pincode
-    expect(isValidSetupCode(generated)).to.be(true)
-    expect(generated).to.be(back.getPublishInfo().pincode)
-    expect(back._persistentValues['pin-code']).to.be(generated)
-  })
-
-  it('never uses a fixed code shared by all installations', () => {
-    const codes = new Set()
-    for (let i = 0; i < 5; i++) {
-      codes.add(make({ ffmpegpath: FAKE, video_source: 'rtsp://x' }).getPublishInfo().pincode)
-    }
-    expect(codes.size).to.be.greaterThan(1)
-    const offered = VideoDoorBell.configurationItems()['pin-code'].default
-    expect(isValidSetupCode(offered)).to.be(true)
-  })
-
-  it('is not published with a trivial or malformed pin', () => {
-    for (const pin of ['123-45-678', '1234']) {
-      const rec = recordingLog()
-      const accessory = make({ ffmpegpath: FAKE, video_source: 'rtsp://x', 'pin-code': pin }, rec)
-      expect(accessory.cameraUnavailable).to.be(true)
-      expect(rec.text('error')).to.contain('pin code')
-      expect(rec.text('error')).not.to.contain(pin)
-    }
-  })
-
   it('offers every configuration item with a default for the new camera settings', () => {
     const items = VideoDoorBell.configurationItems()
     for (const key of ['vcodec', 'maxWidth', 'maxHeight', 'maxFPS', 'maxBitrate', 'audio', 'audio_return_target']) {
       expect(items[key]).to.have.property('default')
     }
-    expect(items['pin-code'].default).to.match(/^\d{3}-\d{2}-\d{3}$/)
+    // an accessory of its bridge: no setup code of its own
+    expect(items['pin-code']).to.be(undefined)
     expect(VideoDoorBell.channelTypes()).to.eql(['SPECIAL'])
   })
 })
