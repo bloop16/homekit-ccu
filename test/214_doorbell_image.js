@@ -142,6 +142,22 @@ describe('HomeKit-CCU doorbell still image', () => {
     }
   })
 
+  it('sends the user and password of a URL (basic auth of a webhook)', async () => {
+    let authorization
+    const server = http.createServer((request, response) => {
+      authorization = request.headers.authorization
+      response.writeHead(200, { 'Content-Type': 'image/png' })
+      response.end(redSquarePng(20))
+    })
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
+    try {
+      await loadImage({ kind: 'url', value: 'http://homekit:s3cret@127.0.0.1:' + server.address().port + '/webhook/bell' })
+      expect(authorization).to.be('Basic ' + Buffer.from('homekit:s3cret').toString('base64'))
+    } finally {
+      server.close()
+    }
+  })
+
   it('refuses a picture from a path outside the CCU pictures for the kind "ccu"', async () => {
     let error
     await loadImage({ kind: 'ccu', value: '/../../etc/passwd', wwwRoot: tmp }).catch(e => { error = e })
@@ -168,5 +184,88 @@ describe('HomeKit-CCU doorbell still image', () => {
     const still = new StillImage([{ kind: 'file', value: path.join(tmp, 'missing.png') }, { kind: 'file', value: file }], log, 'Door')
     const image = jpeg.decode(await still.snapshot(320, 180), { useTArray: true })
     expect(near(pixel(image, 160, 90), [255, 0, 0])).to.be(true)
+  })
+
+  describe('a picture that is replaced (the snapshot a camera stores)', () => {
+    const solid = (value) => {
+      const image = new PNG({ width: 16, height: 9 })
+      for (let i = 0; i < image.data.length; i += 4) {
+        image.data[i] = value
+        image.data[i + 1] = value
+        image.data[i + 2] = value
+        image.data[i + 3] = 255
+      }
+      return PNG.sync.write(image)
+    }
+    const centre = async (still) => {
+      const image = jpeg.decode(await still.snapshot(320, 180), { useTArray: true })
+      return pixel(image, 160, 90)[0]
+    }
+    const settle = () => new Promise(resolve => setTimeout(resolve, 50))
+
+    it('is read again after the refresh interval, in the background, and shown once changed', async () => {
+      const file = path.join(tmp, 'cam.png')
+      fs.writeFileSync(file, solid(20))
+      let now = 1000
+      const log = { warn: () => {}, debug: () => {} }
+      const still = new StillImage([{ kind: 'file', value: file }], log, 'Door', { refreshSeconds: 10, now: () => now })
+      expect(await centre(still)).to.be.below(40)
+      fs.writeFileSync(file, solid(230))
+      now += 5000
+      // within the interval: the stored picture, the file is not read
+      expect(await centre(still)).to.be.below(40)
+      now += 6000
+      // interval over: answered at once with the stored picture, read again meanwhile
+      expect(await centre(still)).to.be.below(40)
+      await settle()
+      expect(await centre(still)).to.be.above(200)
+    })
+
+    it('keeps the picture when reading it again fails', async () => {
+      const file = path.join(tmp, 'cam.png')
+      fs.writeFileSync(file, solid(20))
+      let now = 1000
+      const still = new StillImage([{ kind: 'file', value: file }], { warn: () => {}, debug: () => {} }, 'Door', { refreshSeconds: 10, now: () => now })
+      const first = await still.snapshot(320, 180)
+      fs.rmSync(file)
+      now += 20000
+      await still.snapshot(320, 180)
+      await settle()
+      expect(await still.snapshot(320, 180)).to.be(first)
+    })
+
+    it('does not render again when the content did not change', async () => {
+      const file = path.join(tmp, 'cam.png')
+      fs.writeFileSync(file, solid(20))
+      let now = 1000
+      const still = new StillImage([{ kind: 'file', value: file }], { warn: () => {}, debug: () => {} }, 'Door', { refreshSeconds: 10, now: () => now })
+      const first = await still.snapshot(320, 180)
+      now += 20000
+      await still.snapshot(320, 180)
+      await settle()
+      expect(await still.snapshot(320, 180)).to.be(first)
+    })
+
+    it('never reads again with a refresh of 0', async () => {
+      const file = path.join(tmp, 'cam.png')
+      fs.writeFileSync(file, solid(20))
+      let now = 1000
+      const still = new StillImage([{ kind: 'file', value: file }], { warn: () => {}, debug: () => {} }, 'Door', { refreshSeconds: 0, now: () => now })
+      await centre(still)
+      fs.writeFileSync(file, solid(230))
+      now += 3600000
+      await centre(still)
+      await settle()
+      expect(await centre(still)).to.be.below(40)
+    })
+
+    it('fills the snapshot with a camera picture, without the white border of a device picture', async () => {
+      const file = path.join(tmp, 'cam.png')
+      fs.writeFileSync(file, solid(20))
+      const still = new StillImage([{ kind: 'file', value: file }], { warn: () => {}, debug: () => {} }, 'Door')
+      const image = jpeg.decode(await still.snapshot(320, 180), { useTArray: true })
+      // a 16:9 picture fills a 16:9 snapshot up to its corners
+      expect(pixel(image, 2, 2)[0]).to.be.below(40)
+    })
   })
 })

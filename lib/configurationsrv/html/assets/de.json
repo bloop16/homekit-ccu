@@ -539,5 +539,7 @@
   "Doorbell": "Türklingel",
   "A PNG or JPEG, for a URL or a file on the CCU only; an uploaded picture is stored with the configuration": "Ein PNG oder JPEG, nur für eine URL oder eine Datei auf der CCU; ein hochgeladenes Bild wird mit der Konfiguration gespeichert",
   "Upload picture": "Bild hochladen",
-  "The picture was not stored.": "Das Bild wurde nicht gespeichert."
+  "The picture was not stored.": "Das Bild wurde nicht gespeichert.",
+  "Read the picture again after (seconds)": "Bild erneut lesen nach (Sekunden)",
+  "For a URL or file that is replaced, e.g. the snapshot a camera stores: it is read again when Apple Home asks for the picture, at most this often. 0 reads it once. Only what is stored is read, no camera is asked for a new picture": "Für eine URL oder Datei, die ersetzt wird, z. B. das Standbild, das eine Kamera ablegt: Sie wird erneut gelesen, wenn Apple Home das Bild anfragt, höchstens so oft. 0 liest sie einmal. Gelesen wird nur, was abgelegt ist, keine Kamera wird um ein neues Bild gebeten"
 }

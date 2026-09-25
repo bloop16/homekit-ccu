@@ -130,6 +130,8 @@ describe('HomeKit-CCU doorbell without camera', () => {
           { kind: 'url', value: 'http://camera/still.jpg' },
           { kind: 'ccu', value: '/config/img/devices/250/HmIP-DSD-PCB.png' }
         ])
+        // a stored camera picture is read again every 10 s by default
+        expect(configured.accessory.stillImage.refreshMs).to.be(10000)
       } finally {
         [first, configured].forEach(t => { t.accessory.shutdown(); t.sim.shutdown() })
       }
@@ -164,7 +166,7 @@ describe('HomeKit-CCU doorbell without camera', () => {
     })
 
     it('rings when a chosen state datapoint becomes active', async () => {
-      const { sim, accessory } = await specialDoorbell({ address_door_bell_key: 'HmIP.' + DSD.address + ':1.STATE', imageSource: 'File on the CCU', image: '/usr/local/etc/config/addons/homekit-ccu/bell.jpg' })
+      const { sim, accessory } = await specialDoorbell({ address_door_bell_key: 'HmIP.' + DSD.address + ':1.STATE', imageSource: 'File on the CCU', image: '/usr/local/etc/config/addons/homekit-ccu/bell.jpg', imageRefresh: 0 })
       try {
         const rings = ringsOf(accessory)
         sim.fire('1.STATE', false)
@@ -172,6 +174,7 @@ describe('HomeKit-CCU doorbell without camera', () => {
         await settle()
         expect(rings.length).to.be(1)
         expect(accessory.stillImage.sources[0]).to.eql({ kind: 'file', value: '/usr/local/etc/config/addons/homekit-ccu/bell.jpg' })
+        expect(accessory.stillImage.refreshMs).to.be(0)
       } finally {
         accessory.shutdown()
         sim.shutdown()
