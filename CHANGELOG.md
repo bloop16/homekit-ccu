@@ -7,6 +7,7 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 ## [0.1.2] - unreleased
 
 ### Fixed
+- The first press of every key after the add-on started never reached Apple Home, also the first ring of a doorbell (since 0.1.1-rc.4). The key accessories took the first event as the answer to the start query, but since the start values are read in bulk a key press has no start value. The other way round, a key accessory created later (saving the configuration) could report the last press again as a new one. A key press now never gets a start value, and every key event is a press.
 - "CCU duty cycle" showed no value on a CCU without BidCos-RF devices: only BidCos-RF was asked. Like the CCU itself, the add-on now asks BidCos-RF and HmIP-RF, and the radio module of HmIP-RF can be chosen. A duty cycle of 0 % (an idle radio) is shown now; before, it counted as "no value".
 - "CCU temperature" showed no value in a virtual machine (OVA, Proxmox): there is no CPU temperature there, the system page of the CCU shows "n/a" as well. It is only offered where the system has a temperature (a thermal zone, or the coretemp sensor of x86 hardware); an existing one answers "No Response" instead of an invalid value.
 

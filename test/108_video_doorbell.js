@@ -83,7 +83,7 @@ describe('HomeKit-CCU video doorbell accessory', () => {
     expect(accessory.streamingDelegate.settings.audio).to.be(false)
   })
 
-  it('adds the doorbell service and rings on events after the initial query', () => {
+  it('adds the doorbell service and rings on every press of a key datapoint (it has no start value)', () => {
     const accessory = make({ ffmpegpath: FAKE, video_source: 'rtsp://x', address_door_bell_key: 'BidCos-RF.KEQ0000001:1.PRESS_SHORT' })
     const doorbell = accessory.homeKitAccessory.getService(hap.Service.Doorbell)
     expect(doorbell).to.be.ok()
@@ -95,7 +95,7 @@ describe('HomeKit-CCU video doorbell accessory', () => {
     accessory.registered[0].callback(true)
     accessory.registered[0].callback(true)
     // every ring is sent as event notification, also when the value does not change
-    expect(events).to.eql([[0, 'event'], [0, 'event']])
+    expect(events).to.eql([[0, 'event'], [0, 'event'], [0, 'event']])
   })
 
   it('is not published when the ffmpeg binary is missing', () => {
