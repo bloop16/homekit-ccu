@@ -33,14 +33,18 @@
 		"binrpc": "^4.3.0",
 		"commander": "^15.0.0",
 		"formidable": "^3.5.4",
-		"homematic-xmlrpc": "^2.0.0"
+		"homematic-xmlrpc": "^2.0.0",
+		"jpeg-js": "^0.4.4",
+		"pngjs": "^7.0.0"
 	},
 	"bundleDependencies": [
 		"@homebridge/hap-nodejs",
 		"binrpc",
 		"commander",
 		"formidable",
-		"homematic-xmlrpc"
+		"homematic-xmlrpc",
+		"jpeg-js",
+		"pngjs"
 	],
 	"scripts": {
 		"start": "node index.js || true",

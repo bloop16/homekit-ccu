@@ -64,7 +64,7 @@ Die Tabellen listen die Gerätefamilien mit typischen Modellen. Farbvarianten (`
 |---|---|---|
 | Fernbedienungen und Wandtaster HmIP-WRC2, WRC6, BRC2, KRC4, KRCA, RC8, HM-RC, HM-PB | Ein Gerät mit nummerierten Tasten | Kurzer und langer Tastendruck für Automationen |
 | Virtuelle CCU-Tasten HM-RCV-50 / HmIP-RCV-50 | Programmierbarer Schalter pro Taste | Oder ein Schalter, der die Taste drückt |
-| Türklingel HmIP-DSD-PCB, HmIP-DBB, HM-Sen-DB-PCB | Programmierbarer Schalter | Startet Automationen; Apple Home zeigt eine Türklingel ohne Kamera als „Nicht unterstützt“ an |
+| Türklingel HmIP-DSD-PCB, HmIP-DBB, HM-Sen-DB-PCB | Türklingel mit Standbild | Eine echte Klingel in Apple Home (Kachel, Mitteilung beim Klingeln, Gong); das Bild des Geräts statt eines Livebilds. Alternativ ein programmierbarer Schalter |
 | Bewegungsmelder HmIP-SMI, SMO, SMI55, HM-Sec-MDIR | Bewegungssensor + Lichtsensor | |
 | Präsenzmelder HmIP-SPI | Präsenzsensor + Lichtsensor | |
 | Lichtsensor HmIP-SLO, HM-Sen-LI-O | Lichtsensor | |
@@ -76,7 +76,7 @@ Die Tabellen listen die Gerätefamilien mit typischen Modellen. Farbvarianten (`
 |---|---|
 | Systemvariablen | Schalter, Sensor (Kontakt, Bewegung, Leck, Präsenz, Rauch), Zahlensensor oder Alarmanlage |
 | Programme | Schalter, der das Programm startet |
-| Besondere Geräte | Video-Türklingel (Kamera mit Gegensprechen), CCU-Temperatur (nicht in einer virtuellen Maschine), CCU Duty Cycle, Mehrfachtaster |
+| Besondere Geräte | Türklingel an beliebigem Taster oder Kontakt, Video-Türklingel (Kamera mit Gegensprechen), CCU-Temperatur (nicht in einer virtuellen Maschine), CCU Duty Cycle, Mehrfachtaster |
 
 ## Was Apple Home nicht anzeigen kann
 

@@ -6,6 +6,9 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 
 ## [0.1.2] - unreleased
 
+### Added
+- Doorbells that Apple Home shows as doorbell: Apple Home knows a doorbell only as part of a camera, so a doorbell now has a camera with a still image, without ffmpeg and without live video. It is listed under "Cameras & Doorbells", a ring is notified with the picture and plays the chime on a HomePod. HmIP-DSD-PCB, HmIP-DBB and HM-Sen-DB-PCB are added as doorbell (the other choice is a programmable switch; windows, doors and the like are no longer offered for them); any other key or contact becomes one as special device "Doorbell". The picture is the one of the device in the CCU, or a URL or file. The HmIP-DSD-PCB rings on a key press, or on its state when its channel is set to switch or contact mode in the CCU. Rings closer than 3 s count once.
+
 ### Fixed
 - The first press of every key after the add-on started never reached Apple Home, also the first ring of a doorbell (since 0.1.1-rc.4). The key accessories took the first event as the answer to the start query, but since the start values are read in bulk a key press has no start value. The other way round, a key accessory created later (saving the configuration) could report the last press again as a new one. A key press now never gets a start value, and every key event is a press.
 - "CCU duty cycle" showed no value on a CCU without BidCos-RF devices: only BidCos-RF was asked. Like the CCU itself, the add-on now asks BidCos-RF and HmIP-RF, and the radio module of HmIP-RF can be chosen. A duty cycle of 0 % (an idle radio) is shown now; before, it counted as "no value".

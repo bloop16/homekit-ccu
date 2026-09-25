@@ -100,17 +100,18 @@ describe('HomeKit-CCU sensors: HmIP-DSD-PCB doorbell button', () => {
 
   after(() => shutdown(server))
 
-  // Apple Home shows a Doorbell service without a camera as "not supported"
-  it('is a programmable switch by default, no Doorbell service', () => {
-    expect(accessory.serviceClass).to.be('HomeMaticKeyAccessory')
-    expect(findService(accessory, Service.StatelessProgrammableSwitch)).to.be.ok()
-    expect(findService(accessory, Service.Doorbell)).to.not.be.ok()
+  // Apple Home shows a doorbell only as part of a camera: the default doorbell has a still image camera
+  it('is a doorbell with a still image camera by default', () => {
+    expect(accessory.serviceClass).to.be('HomeMaticDoorBellAccessory')
+    expect(findService(accessory, Service.Doorbell).isPrimaryService).to.be(true)
+    expect(findService(accessory, Service.CameraRTPStreamManagement)).to.be.ok()
   })
 
-  it('reports a ring as a single press', () => {
-    const button = findService(accessory, Service.StatelessProgrammableSwitch).getCharacteristic(Characteristic.ProgrammableSwitchEvent)
-    const events = recordEvents(button)
+  it('reports a ring as a single press', async () => {
+    const bell = findService(accessory, Service.Doorbell).getCharacteristic(Characteristic.ProgrammableSwitchEvent)
+    const events = recordEvents(bell)
     server._ccu.fireEvent(DP('PRESS_SHORT'), true)
+    await settle()
     events.stop()
     expect(events.list).to.eql([SINGLE_PRESS])
   })
@@ -147,12 +148,13 @@ describe('HomeKit-CCU sensors: HmIP-DSD-PCB as Doorbell service', () => {
     expect(await readAll(accessory)).to.eql([])
   })
 
-  it('rings on every PRESS_SHORT', () => {
+  // presses closer than 3 s ring once (util/doorbellTrigger.js)
+  it('rings on PRESS_SHORT, twice in quick succession once', () => {
     const events = recordEvents(ring)
     server._ccu.fireEvent(DP('PRESS_SHORT'), true)
     server._ccu.fireEvent(DP('PRESS_SHORT'), true)
     events.stop()
-    expect(events.list).to.eql([SINGLE_PRESS, SINGLE_PRESS])
+    expect(events.list).to.eql([SINGLE_PRESS])
   })
 })
 

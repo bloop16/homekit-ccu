@@ -49,8 +49,14 @@ HomeKit-CCU reads the members from the group management of the CCU (`groups.gson
 
 ## Special devices
 
-*Special devices → New* first asks for the kind: video doorbell, garage door from sensors and actors, window from rotary handle and contact, several keys as one device, CCU temperature or CCU duty cycle. CCU temperature is only offered where the system has one: a virtual machine (OVA, Proxmox) has none, the system page of the CCU shows "n/a" there as well. The duty cycle is that of the radio module, from BidCos-RF and HmIP-RF like on the system page of the CCU. The form then shows only the settings of this kind; rarely needed ones (ffmpeg, video size, actor delays) are under *Show advanced settings*. The name of a special device must be unique.
+*Special devices → New* first asks for the kind: doorbell, video doorbell, garage door from sensors and actors, window from rotary handle and contact, several keys as one device, CCU temperature or CCU duty cycle. CCU temperature is only offered where the system has one: a virtual machine (OVA, Proxmox) has none, the system page of the CCU shows "n/a" there as well. The duty cycle is that of the radio module, from BidCos-RF and HmIP-RF like on the system page of the CCU. The form then shows only the settings of this kind; rarely needed ones (ffmpeg, video size, actor delays) are under *Show advanced settings*. The name of a special device must be unique.
 
-## Doorbell buttons
+## Doorbells
 
-Apple Home shows a doorbell without a camera as "Not Supported". HmIP-DSD-PCB, HmIP-DBB and HM-Sen-DB-PCB are therefore added as a programmable switch: a ring can start automations. For a doorbell notification with picture use the video doorbell (special device).
+Apple Home shows a doorbell only as part of a camera; a doorbell on its own is "Not Supported". A doorbell of HomeKit-CCU therefore has a camera that shows a still image: Apple Home lists it under *Cameras & Doorbells*, notifies a ring with the picture and plays the chime on a HomePod. Tapping the tile shows no live video, there is none.
+
+- **HmIP-DSD-PCB, HmIP-DBB, HM-Sen-DB-PCB** are added as doorbell; the other choice is a programmable switch for automations. The HmIP-DSD-PCB rings on a key press (its factory setting "Taster"); when its channel is set to switch or contact mode in the CCU, it rings when the bell voltage appears.
+- **Any other key or contact** becomes a doorbell with *Special devices → New → Doorbell*: choose the datapoint that rings, a key press (`PRESS_SHORT`) or a state (`STATE`) that becomes active.
+- **Picture:** the picture of the device in the CCU; instead a URL (for example the snapshot of a camera) or a PNG/JPEG file on the CCU. If it cannot be loaded, the picture of the device is shown, otherwise a plain image.
+- Rings closer than 3 seconds count once.
+- With a camera at the door use the video doorbell (special device), it needs ffmpeg.

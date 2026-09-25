@@ -223,7 +223,6 @@
   "Please make sure, the given port for the bridge is not blocked by the firewall of your ccu.": "Bitte vergewissere Dich, das die angegebenen Ports nicht durch die CCU Firewall blockiert werden",
   "This service provides a battery indicator based on a HomeMatic variable": "Dieser Service stellt eine Batterieanzeige basierend auf einer HomeMatic Variable zur Verfügung",
   "This service provides a door based on a ccu contact in HomeKit": "Dieser Service stellt eine Tür basierend auf einem HomeMatic Kontakt zur Verfügung",
-  "This service provides a door bell in HomeKit, based on a KEY event at your CCU. Apple Home shows a door bell without a camera as not supported, use a programmable switch there": "Dieser Service stellt eine Türklingel basierend auf einem KEY Ereignis der CCU zur Verfügung. Apple Home zeigt eine Türklingel ohne Kamera als „Nicht unterstützt“ an, dafür besser die Taste (Programmable Switch) nutzen",
   "This service provides a garage door opener in HomeKit": "Dieser Service stellt einen Garagentoröffner in HomeKit zur Verfügung",
   "This service provides a motion sensor in HomeKit based on a acceleration device.": "Dieser Service stellt einen Bewegungsmelder basierend auf einem Beschleunigungsmesser zur Verfügung",
   "This service provides a leak sensor in HomeKit": "Dieser Service stellt einen Wassermelder zur Verfügung",
@@ -526,5 +525,17 @@
   "Reload": "Neu laden",
   "No connection to HomeKit-CCU": "Keine Verbindung zu HomeKit-CCU",
   "The configuration server does not answer. Check under Settings → Control panel → Additional software that HomeKit-CCU is running; this page connects by itself once it does.": "Der Konfigurationsserver antwortet nicht. Prüfe unter Einstellungen → Systemsteuerung → Zusatzsoftware, ob HomeKit-CCU läuft; diese Seite verbindet sich danach von selbst.",
-  "The download failed (%s).": "Der Download ist fehlgeschlagen (%s)."
+  "The download failed (%s).": "Der Download ist fehlgeschlagen (%s).",
+  "This service provides a doorbell in Apple Home: it rings on a key press of the channel (or when its state becomes active in switch or contact mode). Apple Home shows a doorbell only with a camera, so it gets a still image and no live video": "Dieser Service stellt eine Türklingel in Apple Home zur Verfügung: Sie klingelt bei einem Tastendruck des Kanals (oder wenn sein Zustand im Schalter- oder Kontaktbetrieb aktiv wird). Apple Home zeigt eine Klingel nur mit Kamera an, deshalb bekommt sie ein Standbild und kein Livebild",
+  "This service provides a doorbell in Apple Home that rings on a key press or when a state becomes active. Apple Home shows a doorbell only with a camera, so it gets a still image and no live video": "Dieser Service stellt eine Türklingel in Apple Home zur Verfügung, die bei einem Tastendruck klingelt oder wenn ein Zustand aktiv wird. Apple Home zeigt eine Klingel nur mit Kamera an, deshalb bekommt sie ein Standbild und kein Livebild",
+  "Picture": "Bild",
+  "Apple Home shows it in the doorbell tile and the ring notification; a doorbell without camera has no live video": "Apple Home zeigt es in der Kachel der Klingel und in der Mitteilung beim Klingeln; eine Klingel ohne Kamera hat kein Livebild",
+  "URL or file of the picture": "URL oder Datei des Bilds",
+  "A PNG or JPEG, for a URL or a file on the CCU only": "Ein PNG oder JPEG, nur für eine URL oder eine Datei auf der CCU",
+  "Picture of the device": "Bild des Geräts",
+  "URL": "URL",
+  "File on the CCU": "Datei auf der CCU",
+  "Datapoint that rings": "Datenpunkt, der klingelt",
+  "A key press (PRESS_SHORT) or a state (STATE) that becomes active": "Ein Tastendruck (PRESS_SHORT) oder ein Zustand (STATE), der aktiv wird",
+  "Doorbell": "Türklingel"
 }

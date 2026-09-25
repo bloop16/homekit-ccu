@@ -49,8 +49,14 @@ HomeKit-CCU liest die Mitglieder aus der Gruppenverwaltung der CCU (`groups.gson
 
 ## Besondere Geräte
 
-*Besondere Geräte → Neu* fragt zuerst nach der Art: Video-Türklingel, Garagentor aus Sensoren und Aktoren, Fenster aus Drehgriff und Kontakt, mehrere Tasten als ein Gerät, CCU-Temperatur oder CCU Duty Cycle. CCU-Temperatur wird nur angeboten, wenn das System eine hat: Eine virtuelle Maschine (OVA, Proxmox) hat keine, auch die Systemseite der CCU zeigt dort „n/a“. Der Duty Cycle ist der des Funkmoduls, von BidCos-RF und HmIP-RF wie auf der Systemseite der CCU. Das Formular zeigt dann nur die Einstellungen dieser Art; selten gebrauchte (ffmpeg, Videogröße, Verzögerungen der Aktoren) findest du unter *Erweiterte Einstellungen zeigen*. Der Name eines besonderen Geräts muss eindeutig sein.
+*Besondere Geräte → Neu* fragt zuerst nach der Art: Türklingel, Video-Türklingel, Garagentor aus Sensoren und Aktoren, Fenster aus Drehgriff und Kontakt, mehrere Tasten als ein Gerät, CCU-Temperatur oder CCU Duty Cycle. CCU-Temperatur wird nur angeboten, wenn das System eine hat: Eine virtuelle Maschine (OVA, Proxmox) hat keine, auch die Systemseite der CCU zeigt dort „n/a“. Der Duty Cycle ist der des Funkmoduls, von BidCos-RF und HmIP-RF wie auf der Systemseite der CCU. Das Formular zeigt dann nur die Einstellungen dieser Art; selten gebrauchte (ffmpeg, Videogröße, Verzögerungen der Aktoren) findest du unter *Erweiterte Einstellungen zeigen*. Der Name eines besonderen Geräts muss eindeutig sein.
 
-## Türklingel-Tasten
+## Türklingeln
 
-Apple Home zeigt eine Türklingel ohne Kamera als „Nicht unterstützt“ an. HmIP-DSD-PCB, HmIP-DBB und HM-Sen-DB-PCB werden deshalb als programmierbarer Schalter hinzugefügt: Ein Klingeln kann Automationen starten. Für eine Klingel-Mitteilung mit Bild nutze die Video-Türklingel (besonderes Gerät).
+Apple Home zeigt eine Türklingel nur als Teil einer Kamera an; eine Klingel allein ist „Nicht unterstützt“. Eine Türklingel von HomeKit-CCU hat deshalb eine Kamera, die ein Standbild zeigt: Apple Home führt sie unter *Kameras und Türklingeln*, meldet ein Klingeln mit dem Bild und spielt den Gong auf einem HomePod. Tippst du die Kachel an, gibt es kein Livebild, weil es keines gibt.
+
+- **HmIP-DSD-PCB, HmIP-DBB, HM-Sen-DB-PCB** werden als Türklingel hinzugefügt; die andere Wahl ist ein programmierbarer Schalter für Automationen. Der HmIP-DSD-PCB klingelt bei einem Tastendruck (Werkseinstellung „Taster“); ist sein Kanal in der CCU auf Schalter- oder Kontaktbetrieb gestellt, klingelt er, wenn die Klingelspannung anliegt.
+- **Jeder andere Taster oder Kontakt** wird mit *Besondere Geräte → Neu → Türklingel* zur Klingel: Wähle den Datenpunkt, der klingelt, einen Tastendruck (`PRESS_SHORT`) oder einen Zustand (`STATE`), der aktiv wird.
+- **Bild:** das Bild des Geräts in der CCU; stattdessen eine URL (zum Beispiel das Standbild einer Kamera) oder eine PNG-/JPEG-Datei auf der CCU. Lässt es sich nicht laden, erscheint das Bild des Geräts, sonst ein einfarbiges Bild.
+- Klingeln im Abstand unter 3 Sekunden zählt einmal.
+- Mit einer Kamera an der Tür nutze die Video-Türklingel (besonderes Gerät), sie braucht ffmpeg.
