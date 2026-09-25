@@ -37,10 +37,11 @@ describe('HomeKit-CCU configuration api on the origin of the WebUI', () => {
     expect(apiBase('https://home.example/ccu/addons/homekit-ccu/index.html')).to.be('https://home.example/ccu/addons/homekit-ccu')
   })
 
-  it('lets lighttpd pass only the api and the restore upload to the config server, without own ports', () => {
+  it('lets lighttpd pass only the api, the restore and the picture upload to the config server, without own ports', () => {
     const conf = fs.readFileSync(CONF, 'utf8')
-    expect(conf).to.contain('$HTTP["url"] =~ "^/addons/homekit-ccu/(api|restore)/"')
+    expect(conf).to.contain('$HTTP["url"] =~ "^/addons/homekit-ccu/(api|restore|upload)/"')
     expect(conf).to.contain('"/addons/homekit-ccu/api/" => "/api/"')
+    expect(conf).to.contain('"/addons/homekit-ccu/upload/" => "/upload/"')
     expect(conf).not.to.contain('$SERVER["socket"]')
     // lighttpd auth of the WebUI (if any) stays in force for the api
     expect(conf).not.to.match(/^\s*auth\.require/m)

@@ -531,11 +531,13 @@
   "Picture": "Bild",
   "Apple Home shows it in the doorbell tile and the ring notification; a doorbell without camera has no live video": "Apple Home zeigt es in der Kachel der Klingel und in der Mitteilung beim Klingeln; eine Klingel ohne Kamera hat kein Livebild",
   "URL or file of the picture": "URL oder Datei des Bilds",
-  "A PNG or JPEG, for a URL or a file on the CCU only": "Ein PNG oder JPEG, nur für eine URL oder eine Datei auf der CCU",
   "Picture of the device": "Bild des Geräts",
   "URL": "URL",
   "File on the CCU": "Datei auf der CCU",
   "Datapoint that rings": "Datenpunkt, der klingelt",
   "A key press (PRESS_SHORT) or a state (STATE) that becomes active": "Ein Tastendruck (PRESS_SHORT) oder ein Zustand (STATE), der aktiv wird",
-  "Doorbell": "Türklingel"
+  "Doorbell": "Türklingel",
+  "A PNG or JPEG, for a URL or a file on the CCU only; an uploaded picture is stored with the configuration": "Ein PNG oder JPEG, nur für eine URL oder eine Datei auf der CCU; ein hochgeladenes Bild wird mit der Konfiguration gespeichert",
+  "Upload picture": "Bild hochladen",
+  "The picture was not stored.": "Das Bild wurde nicht gespeichert."
 }

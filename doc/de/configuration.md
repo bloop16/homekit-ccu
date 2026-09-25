@@ -57,6 +57,6 @@ Apple Home zeigt eine Türklingel nur als Teil einer Kamera an; eine Klingel all
 
 - **HmIP-DSD-PCB, HmIP-DBB, HM-Sen-DB-PCB** werden als Türklingel hinzugefügt; die andere Wahl ist ein programmierbarer Schalter für Automationen. Der HmIP-DSD-PCB klingelt bei einem Tastendruck (Werkseinstellung „Taster“); ist sein Kanal in der CCU auf Schalter- oder Kontaktbetrieb gestellt, klingelt er, wenn die Klingelspannung anliegt.
 - **Jeder andere Taster oder Kontakt** wird mit *Besondere Geräte → Neu → Türklingel* zur Klingel: Wähle den Datenpunkt, der klingelt, einen Tastendruck (`PRESS_SHORT`) oder einen Zustand (`STATE`), der aktiv wird.
-- **Bild:** das Bild des Geräts in der CCU; stattdessen eine URL (zum Beispiel das Standbild einer Kamera) oder eine PNG-/JPEG-Datei auf der CCU. Lässt es sich nicht laden, erscheint das Bild des Geräts, sonst ein einfarbiges Bild.
+- **Bild:** das Bild des Geräts in der CCU; stattdessen eine URL (zum Beispiel das Standbild einer Kamera) oder eine PNG-/JPEG-Datei auf der CCU. *Bild hochladen* neben dem Feld speichert ein PNG oder JPEG (höchstens 10 MB) mit der Konfiguration, so dass es im Backup ist, und wählt es aus. Lässt es sich nicht laden, erscheint das Bild des Geräts, sonst ein einfarbiges Bild.
 - Klingeln im Abstand unter 3 Sekunden zählt einmal.
 - Mit einer Kamera an der Tür nutze die Video-Türklingel (besonderes Gerät), sie braucht ffmpeg.

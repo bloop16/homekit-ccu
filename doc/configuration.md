@@ -57,6 +57,6 @@ Apple Home shows a doorbell only as part of a camera; a doorbell on its own is "
 
 - **HmIP-DSD-PCB, HmIP-DBB, HM-Sen-DB-PCB** are added as doorbell; the other choice is a programmable switch for automations. The HmIP-DSD-PCB rings on a key press (its factory setting "Taster"); when its channel is set to switch or contact mode in the CCU, it rings when the bell voltage appears.
 - **Any other key or contact** becomes a doorbell with *Special devices → New → Doorbell*: choose the datapoint that rings, a key press (`PRESS_SHORT`) or a state (`STATE`) that becomes active.
-- **Picture:** the picture of the device in the CCU; instead a URL (for example the snapshot of a camera) or a PNG/JPEG file on the CCU. If it cannot be loaded, the picture of the device is shown, otherwise a plain image.
+- **Picture:** the picture of the device in the CCU; instead a URL (for example the snapshot of a camera) or a PNG/JPEG file on the CCU. *Upload picture* next to the field stores a PNG or JPEG (10 MB at most) with the configuration, so the backup has it, and selects it. If it cannot be loaded, the picture of the device is shown, otherwise a plain image.
 - Rings closer than 3 seconds count once.
 - With a camera at the door use the video doorbell (special device), it needs ffmpeg.
