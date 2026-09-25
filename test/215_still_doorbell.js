@@ -13,15 +13,31 @@ const stillImage = () => ({ snapshot: async (width, height) => jpeg.encode({ wid
 const log = { debug: () => {}, info: () => {}, warn: () => {}, error: () => {} }
 
 describe('HomeKit-CCU doorbell with a still image', () => {
-  it('shows the doorbell as primary service of a camera without microphone and speaker', () => {
+  // HAP 11.3.2: a video doorbell requires Camera RTP Stream Management, Microphone and Speaker;
+  // without them Apple Home showed the camera but never asked for a snapshot
+  it('is a complete video doorbell: doorbell as primary service, two streams, microphone and speaker', () => {
     const accessory = new Accessory('Door', uuid.generate('still-doorbell-1'))
     configureStillDoorbell(accessory, stillImage(), 'Door', log)
     const doorbell = accessory.getService(Service.Doorbell)
     expect(doorbell).to.be.ok()
     expect(doorbell.isPrimaryService).to.be(true)
-    expect(accessory.getService(Service.CameraRTPStreamManagement)).to.be.ok()
-    expect(accessory.getService(Service.Microphone)).to.be(undefined)
-    expect(accessory.getService(Service.Speaker)).to.be(undefined)
+    expect(accessory.services.filter(service => service.UUID === Service.CameraRTPStreamManagement.UUID).length).to.be(2)
+    expect(accessory.getService(Service.Microphone)).to.be.ok()
+    expect(accessory.getService(Service.Speaker)).to.be.ok()
+  })
+
+  it('logs the first snapshot and the first live video request, then only in debug mode', async () => {
+    const lines = []
+    const recording = { debug: () => {}, info: (...args) => lines.push(args.join(' ')), warn: () => {}, error: () => {} }
+    const delegate = new StillImageDelegate(stillImage(), 'Door', recording)
+    const snapshot = () => new Promise(resolve => delegate.handleSnapshotRequest({ width: 64, height: 36 }, resolve))
+    await snapshot()
+    await snapshot()
+    await new Promise(resolve => delegate.prepareStream({ sessionID: 'a' }, resolve))
+    await new Promise(resolve => delegate.prepareStream({ sessionID: 'b' }, resolve))
+    expect(lines.length).to.be(2)
+    expect(lines[0]).to.contain('snapshot')
+    expect(lines[1]).to.contain('live video')
   })
 
   it('rings with SINGLE_PRESS, as often as it rings', () => {
