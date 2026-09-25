@@ -58,7 +58,8 @@ const setup = () => {
     LIGHTTPD_CONF_DIR: `${root}/lighttpd`,
     MONIT_DIR: `${root}/monit`,
     MONIT_BIN: `${bin}/monit`,
-    HM_ADDONS_CFG: `${root}/hm_addons.cfg`
+    HM_ADDONS_CFG: `${root}/hm_addons.cfg`,
+    FFMPEG_DIR: `${root}/addons/homekit-ccu-ffmpeg`
   }
   let script = fs.readFileSync(INSTALLER, 'utf8')
   Object.entries(vars).forEach(([name, value]) => {
@@ -72,6 +73,7 @@ const setup = () => {
   const paths = {
     root,
     addonDir,
+    ffmpegDir: path.join(root, 'addons', 'homekit-ccu-ffmpeg'),
     moduleDir: path.join(addonDir, 'node_modules', 'homekit-ccu'),
     logfile: vars.LOGFILE,
     calls: path.join(root, 'calls'),
@@ -103,6 +105,16 @@ describe('HomeKit-CCU addon installer', () => {
     expect(fs.existsSync(path.join(t.moduleDir, 'index.js'))).to.be(true)
     expect(fs.existsSync(path.join(t.www, 'index.html'))).to.be(true)
     expect(t.log()).to.contain('Installation complete.')
+  })
+
+  // the ffmpeg the add-on installed for the video doorbell (lib/util/ffmpegInstaller.js)
+  it('keeps the installed ffmpeg on an update and removes it with the add-on', () => {
+    fs.mkdirSync(t.ffmpegDir, { recursive: true })
+    fs.writeFileSync(path.join(t.ffmpegDir, 'ffmpeg'), '')
+    expect(t.run('install').status).to.be(0)
+    expect(fs.existsSync(path.join(t.ffmpegDir, 'ffmpeg'))).to.be(true)
+    expect(t.run('uninstall').status).to.be(0)
+    expect(fs.existsSync(t.ffmpegDir)).to.be(false)
   })
 
   it('gives the WebUI files the time of the installation, so browsers load the new version', () => {

@@ -541,5 +541,22 @@
   "Upload picture": "Bild hochladen",
   "The picture was not stored.": "Das Bild wurde nicht gespeichert.",
   "Read the picture again after (seconds)": "Bild erneut lesen nach (Sekunden)",
-  "For a URL or file that is replaced, e.g. the snapshot a camera stores: it is read again when Apple Home asks for the picture, at most this often. 0 reads it once. Only what is stored is read, no camera is asked for a new picture": "Für eine URL oder Datei, die ersetzt wird, z. B. das Standbild, das eine Kamera ablegt: Sie wird erneut gelesen, wenn Apple Home das Bild anfragt, höchstens so oft. 0 liest sie einmal. Gelesen wird nur, was abgelegt ist, keine Kamera wird um ein neues Bild gebeten"
+  "For a URL or file that is replaced, e.g. the snapshot a camera stores: it is read again when Apple Home asks for the picture, at most this often. 0 reads it once. Only what is stored is read, no camera is asked for a new picture": "Für eine URL oder Datei, die ersetzt wird, z. B. das Standbild, das eine Kamera ablegt: Sie wird erneut gelesen, wenn Apple Home das Bild anfragt, höchstens so oft. 0 liest sie einmal. Gelesen wird nur, was abgelegt ist, keine Kamera wird um ein neues Bild gebeten",
+  "ffmpeg": "ffmpeg",
+  "The video needs ffmpeg, which OpenCCU does not have. The add-on installs a static build of the Homebridge project (it contains the non-free fdk-aac and is therefore not part of the add-on)": "Das Video braucht ffmpeg, das OpenCCU nicht hat. Das Add-on installiert einen statischen Build des Homebridge-Projekts (er enthält das nicht freie fdk-aac und ist deshalb nicht Teil des Add-ons)",
+  "The snapshot Apple Home shows in the tile and the ring notification; from the video it is taken through ffmpeg, which wakes a battery camera every time": "Das Standbild, das Apple Home in der Kachel und in der Mitteilung beim Klingeln zeigt; aus dem Video wird es per ffmpeg geholt, was eine Akku-Kamera jedes Mal weckt",
+  "From the video": "Aus dem Video",
+  "With the picture \"From the video\": another ffmpeg input for the snapshot, e.g. a substream": "Beim Bild „Aus dem Video“: eine andere ffmpeg-Quelle für das Standbild, z. B. ein Substream",
+  "Empty: the ffmpeg installed by the add-on": "Leer: das vom Add-on installierte ffmpeg",
+  "Checking ffmpeg ...": "ffmpeg wird geprüft …",
+  "Install ffmpeg": "ffmpeg installieren",
+  "Try again": "Erneut versuchen",
+  "Downloading ffmpeg ...": "ffmpeg wird heruntergeladen …",
+  "Installing ffmpeg ...": "ffmpeg wird installiert …",
+  "Installed": "Installiert",
+  "Video": "Video",
+  "There is no ffmpeg build for this system; install ffmpeg yourself and set its path in the advanced settings.": "Für dieses System gibt es keinen ffmpeg-Build; installiere ffmpeg selbst und trage den Pfad in den erweiterten Einstellungen ein.",
+  "The installation failed": "Die Installation ist fehlgeschlagen",
+  "Not installed": "Nicht installiert",
+  "The status of ffmpeg is not available.": "Der Stand von ffmpeg ist nicht abrufbar."
 }

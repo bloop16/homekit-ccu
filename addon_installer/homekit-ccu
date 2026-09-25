@@ -17,6 +17,8 @@ LIGHTTPD_CONF_DIR=/etc/config/lighttpd
 MONIT_DIR=/usr/local/etc
 MONIT_BIN=/usr/bin/monit
 HM_ADDONS_CFG=/etc/config/hm_addons.cfg
+# ffmpeg installed from the configuration for the video doorbell; kept on updates
+FFMPEG_DIR=/usr/local/addons/homekit-ccu-ffmpeg
 # leftovers of hap-homematic, the name of this addon before the rename. update_script refuses to
 # install while hap-homematic is installed; its uninstall can leave these behind. Its
 # configuration directory ${CONFIG_DIR}/addons/hap-homematic is kept.
@@ -197,6 +199,9 @@ uninstall_config() {
   #remove_addon_config
   log "uninstall" "Removing addon config."
   rm -rf ${ADDONCFG_DIR}
+
+  # remove the ffmpeg the configuration installed
+  rm -rf "${FFMPEG_DIR}"
 
   # remove_lighttpd_config
   log "uninstall" "Removing lighttpd config and reloading."

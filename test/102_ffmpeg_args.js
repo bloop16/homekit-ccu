@@ -89,6 +89,23 @@ describe('HomeKit-CCU ffmpegArgs', () => {
       expect(a).to.contain('srtp://192.168.1.20:50002?rtcpport=50002&pkt_size=188')
     })
 
+    // a real ffmpeg refused 60 ms Opus packets at 24 kbit/s: 180 bytes do not fit the 162 byte
+    // payload of 188 byte packets, and the stream died with its video
+    it('makes the audio packets large enough for the packet time, at least 188 bytes', () => {
+      const pktSize = (audio) => /srtp:\/\/192\.168\.1\.20:50002\?rtcpport=50002&pkt_size=(\d+)/.exec(args.buildStreamArgs(settings, session, { video: videoRequest, audio }).join(' '))[1]
+      expect(pktSize(opusRequest)).to.be('188')
+      expect(pktSize(aacRequest)).to.be('188')
+      // 24 kbit/s for 60 ms: 180 bytes, half of it again for a variable bit rate, 26 bytes of RTP and SRTP
+      expect(pktSize({ ...opusRequest, packet_time: 60 })).to.be('296')
+    })
+
+    it('takes the next Opus frame duration when HomeKit asks for a packet time Opus does not know', () => {
+      const frame = (packetTime) => /-frame_duration (\S+)/.exec(args.buildStreamArgs(settings, session, { video: videoRequest, audio: { ...opusRequest, packet_time: packetTime } }).join(' '))[1]
+      expect([20, 40, 60].map(frame)).to.eql(['20', '40', '60'])
+      expect(frame(30)).to.be('20')
+      expect(frame(undefined)).to.be('20')
+    })
+
     it('adds an aac-eld audio stream', () => {
       const a = args.buildStreamArgs(settings, session, { video: videoRequest, audio: aacRequest }).join(' ')
       expect(a).to.contain('-codec:a libfdk_aac -profile:a aac_eld -flags +global_header -ar 16k -b:a 24k -ac 1')
