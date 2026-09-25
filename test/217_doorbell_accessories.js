@@ -199,6 +199,16 @@ describe('HomeKit-CCU doorbell without camera', () => {
       expect(offered('HM-Sen-DB-PCB', 'KEY')).to.eql(['HomeMaticDoorBellAccessory', 'HomeMaticKeyAccessory'])
     })
 
+    it('still offers the stored service of a doorbell channel mapped before as something else', () => {
+      const ConfigurationService = require(path.join(__dirname, '..', 'lib', 'configurationsrv', 'ConfigurationService.js'))
+      const service = Object.create(ConfigurationService.prototype)
+      service.services = table
+      service.compatibleDevices = [{ type: 'HmIP-DSD-PCB', address: DSD.address, channels: [{ address: DSD.address + ':1', type: 'MULTI_MODE_INPUT_TRANSMITTER' }] }]
+      service.storedMappingFor = () => ({ Service: 'HomeMaticContactSensorAccessory' })
+      const listed = service.serviceSettingsFor(DSD.address + ':1').service.map(entry => entry.serviceClazz)
+      expect(listed).to.eql(['HomeMaticDoorBellAccessory', 'HomeMaticKeyAccessory', 'HomeMaticContactSensorAccessory'])
+    })
+
     it('keeps every service for other devices with these channel types', () => {
       expect(offered('HmIP-FCI1', 'MULTI_MODE_INPUT_TRANSMITTER')).to.contain('HomeMaticDoorBellAccessory')
       expect(offered('HmIP-FCI1', 'MULTI_MODE_INPUT_TRANSMITTER')).to.contain('HomeMaticContactSensorAccessory')

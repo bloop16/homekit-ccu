@@ -12,7 +12,7 @@ const expect = require('expect.js')
 const { PNG } = require('pngjs')
 const jpeg = require('jpeg-js')
 const { parseDevDb, parsePictures } = require(path.join(__dirname, '..', 'lib', 'util', 'deviceIcons.js'))
-const { decodeImage, renderSnapshot, loadImage, StillImage } = require(path.join(__dirname, '..', 'lib', 'util', 'doorbellImage.js'))
+const { decodeImage, renderSnapshot, renderSnapshotInWorker, loadImage, StillImage } = require(path.join(__dirname, '..', 'lib', 'util', 'doorbellImage.js'))
 
 /** a PNG: red square with a transparent border */
 function redSquarePng (size = 40, border = 10) {
@@ -57,6 +57,31 @@ describe('HomeKit-CCU doorbell still image', () => {
     expect(() => decodeImage(Buffer.alloc(0))).to.throwError(/PNG or JPEG/)
   })
 
+  it('refuses a PNG that declares a huge size before decoding it', () => {
+    // signature, IHDR of 30000 x 30000 RGBA (3.6 GB decoded), a tiny IDAT, IEND
+    const ihdr = Buffer.alloc(13)
+    ihdr.writeUInt32BE(30000, 0)
+    ihdr.writeUInt32BE(30000, 4)
+    ihdr[8] = 8
+    ihdr[9] = 6
+    const chunk = (type, data) => {
+      const length = Buffer.alloc(4)
+      length.writeUInt32BE(data.length)
+      return Buffer.concat([length, Buffer.from(type), data, Buffer.alloc(4)])
+    }
+    const bomb = Buffer.concat([Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]), chunk('IHDR', ihdr), chunk('IDAT', Buffer.from([0x78, 0x9C, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01])), chunk('IEND', Buffer.alloc(0))])
+    expect(() => decodeImage(bomb)).to.throwError(/too large/)
+  })
+
+  it('reads only picture files from a path', async () => {
+    let error
+    await loadImage({ kind: 'file', value: '/etc/shadow' }).catch(e => { error = e })
+    expect(error.message).to.contain('.png, .jpg or .jpeg')
+    error = undefined
+    await loadImage({ kind: 'file', value: 'relative/bell.png' }).catch(e => { error = e })
+    expect(error.message).to.contain('absolute')
+  })
+
   it('renders a JPEG of the requested size, the picture centered on white', () => {
     const snapshot = renderSnapshot(decodeImage(redSquarePng()), 320, 180)
     expect(snapshot[0]).to.be(0xFF)
@@ -67,6 +92,17 @@ describe('HomeKit-CCU doorbell still image', () => {
     expect(near(pixel(image, 3, 3), [255, 255, 255])).to.be(true)
     // the transparent border of the PNG is white as well
     expect(near(pixel(image, 160, 12), [255, 255, 255])).to.be(true)
+  })
+
+  it('renders in a worker thread, so the add-on keeps answering meanwhile, with the same result', async () => {
+    const image = decodeImage(redSquarePng())
+    let ticks = 0
+    const timer = setInterval(() => { ticks++ }, 1)
+    const jpg = await renderSnapshotInWorker(image, 1920, 1080)
+    clearInterval(timer)
+    expect(Buffer.compare(jpg, renderSnapshot(image, 1920, 1080))).to.be(0)
+    // the event loop ran while the worker rendered
+    expect(ticks).to.be.greaterThan(0)
   })
 
   it('does not blow a small picture up beyond twice its size', () => {
@@ -120,6 +156,9 @@ describe('HomeKit-CCU doorbell still image', () => {
     expect([image.width, image.height]).to.eql([640, 360])
     expect(log.messages.length).to.be(1)
     expect(await still.snapshot(640, 360)).to.be(first)
+    // requests at the same time share one rendering
+    const [a, b] = await Promise.all([still.snapshot(320, 240), still.snapshot(320, 240)])
+    expect(a).to.be(b)
   })
 
   it('takes the first source that works', async () => {
