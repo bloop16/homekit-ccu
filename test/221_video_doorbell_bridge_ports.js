@@ -49,6 +49,17 @@ describe('HomeKit-CCU video doorbell in a bridge, stream ports the firewall open
       expect(pair.rtcp).to.be(pair.rtp + 1)
     })
 
+    // the pair is free again when it is handed out (ffmpeg binds it); a second stream asking before
+    // that must not get the same pair
+    it('never hands out the same audio port pair twice before ffmpeg binds it', async () => {
+      const first = await reserveUdpPortPair('ipv4')
+      const second = await reserveUdpPortPair('ipv4')
+      const concurrent = await Promise.all([reserveUdpPortPair('ipv4'), reserveUdpPortPair('ipv4')])
+      const rtps = [first, second, ...concurrent].map(pair => pair.rtp)
+      expect(new Set(rtps).size).to.be(4)
+      rtps.forEach(rtp => expect(inRange(rtp)).to.be(true))
+    })
+
     it('fails clearly when every port of the range is taken', async () => {
       const taken = []
       try {
@@ -140,9 +151,12 @@ describe('HomeKit-CCU video doorbell in a bridge, stream ports the firewall open
       expect(portsFor({ mappings: {} }).removed).to.eql([9875, 9874, 49874, ...streamPorts()])
     })
 
-    it('closes the stream ports when the add-on is uninstalled', () => {
+    it('closes the stream ports when the add-on is uninstalled, not on an update', () => {
       const installer = fs.readFileSync(path.join(__dirname, '..', 'addon_installer', 'homekit-ccu'), 'utf8')
-      expect(installer).to.contain('foreach port {9874 49874 ' + streamPorts().join(' ') + '}')
+      const block = (name) => installer.slice(installer.indexOf('\n' + name + '() {'), installer.indexOf('\n}\n', installer.indexOf('\n' + name + '() {')))
+      expect(block('uninstall_config')).to.contain('foreach port {9874 49874 ' + streamPorts().join(' ') + '}')
+      // an update keeps them open for the video doorbells
+      expect(block('install')).to.not.contain('9950')
     })
   })
 })
