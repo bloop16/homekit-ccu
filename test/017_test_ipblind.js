@@ -13,6 +13,7 @@ log.setDebugEnabled(false)
 
 const testCase = 'HmIP-BBL.json'
 
+// the real level is the one of the status channel (3), not the commanded level of the control channel (4)
 describe('HomeKit-CCU Tests ' + testCase, () => {
   const that = this
 
@@ -71,7 +72,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HomeKit-CCU check LEVEL 0%', (done) => {
-    that.server._ccu.fireEvent('HmIP.7515755417ABCD:4.LEVEL', 0)
+    that.server._ccu.fireEvent('HmIP.7515755417ABCD:3.LEVEL', 0)
     const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     const service = accessory.getService(Service.WindowCovering, 'TestDevice', false, '', true)
     assert.ok(service, 'WindowCovering not found')
@@ -89,7 +90,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HomeKit-CCU check LEVEL 50%', (done) => {
-    that.server._ccu.fireEvent('HmIP.7515755417ABCD:4.LEVEL', 0.5)
+    that.server._ccu.fireEvent('HmIP.7515755417ABCD:3.LEVEL', 0.5)
     const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     const service = accessory.getService(Service.WindowCovering)
     assert.ok(service, 'WindowCovering not found')
@@ -107,7 +108,7 @@ describe('HomeKit-CCU Tests ' + testCase, () => {
   })
 
   it('HomeKit-CCU check LEVEL 100%', (done) => {
-    that.server._ccu.fireEvent('HmIP.7515755417ABCD:4.LEVEL', 1)
+    that.server._ccu.fireEvent('HmIP.7515755417ABCD:3.LEVEL', 1)
     const accessory = that.server._publishedAccessories[Object.keys(that.server._publishedAccessories)[0]]
     const service = accessory.getService(Service.WindowCovering)
     assert.ok(service, 'WindowCovering not found')
