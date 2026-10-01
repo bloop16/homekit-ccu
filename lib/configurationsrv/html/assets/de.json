@@ -566,5 +566,8 @@
   "unknown program": "Das Programm gibt es in der CCU nicht (mehr).",
   "unknown service": "Unbekannter Gerätetyp.",
   "unknown variable": "Die Variable gibt es in der CCU nicht (mehr).",
-  "no answer": "keine Antwort vom Konfigurationsdienst"
+  "no answer": "keine Antwort vom Konfigurationsdienst",
+  "This service provides a motion sensor for each direction of a passage detector in HomeKit": "Dieser Dienst stellt für jede Richtung eines Durchgangssensors einen Bewegungsmelder in HomeKit bereit",
+  "Swap the directions": "Richtungen vertauschen",
+  "Direction 1 detects motion when the sensor reports true, direction 2 when it reports false; this swaps them": "Richtung 1 meldet Bewegung, wenn der Sensor true meldet, Richtung 2 bei false; mit dieser Einstellung werden sie vertauscht"
 }

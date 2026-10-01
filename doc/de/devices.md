@@ -69,6 +69,7 @@ Die Tabellen listen die Gerätefamilien mit typischen Modellen. Farbvarianten (`
 | Präsenzmelder HmIP-SPI | Präsenzsensor + Lichtsensor | |
 | Lichtsensor HmIP-SLO, HM-Sen-LI-O | Lichtsensor | |
 | Neigungs-/Erschütterungssensor HmIP-SAM, HM-Sec-TiS | Kontaktsensor | |
+| Durchgangssensor HmIP-SPDR | Zwei Bewegungsmelder, einer je Richtung | Jeder Durchgang ist eine Sekunde Bewegung; Kanal 2 oder 3 hinzufügen (sie melden dasselbe). Welche Richtung welche ist, hängt von der Montage ab, *Richtungen vertauschen* dreht sie um. Der Zähler (Kanal 4) zählt jede Richtung ständig hoch und wird nicht angezeigt |
 
 ## CCU-Objekte
 

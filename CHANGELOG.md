@@ -8,6 +8,9 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 
 ## [0.1.4] - unreleased
 
+### Added
+- Passage detector HmIP-SPDR: two motion sensors in Apple Home, one per direction, each detecting motion for one second per passage, so an automation can react to somebody coming in and somebody going out. Add channel 2 or 3 of the device (they report the same); *Swap the directions* turns the two around. The counter of the device is not shown, because it counts each direction up for ever and not the people in the room. (hap-homematic #564)
+
 ### Fixed
 - A device could not be added when its file of saved values (`<host>_<device>_<channel>.pstore`, which keeps for example the last activation) was empty or cut off, as a power loss or a full disk leaves it ("Unexpected end of JSON input"). Such a file is now put aside as `.pstore.corrupt` with one warning in the log, the device starts without its old values, and a values file is written whole or not at all. A value that cannot be written (disk full) is logged instead of failing the device.
 - The add-on did not start at all when its restart counter (`persist/restartCounter.json`, written at every start) was empty or cut off, as a power loss leaves it ("Unexpected end of JSON input"). Such a file counts from 0 now, with one warning in the log, and the counter is written whole or not at all; a counter that cannot be saved is logged instead of ignored.
