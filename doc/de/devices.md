@@ -52,6 +52,7 @@ Die Tabellen listen die Gerätefamilien mit typischen Modellen. Farbvarianten (`
 | Dimmer HmIP-BDT, FDT, PDT, DRDI3, WUA, HM-LC-Dim | Licht mit Helligkeit | |
 | Farblichter HmIP-RGBW, LSC, E27, GU10 | Licht mit Farbe und Weißton | |
 | RGBW-Controller HM-LC-RGBW-WM, Dual White HM-LC-DW-WM | Licht mit Farbe oder Weißton | |
+| Signalleuchte HmIP-BSL, Kombi-Signalgeber HmIP-MP3P (Leuchtkanäle) | Lampe mit Helligkeit und einer von acht Farben | Den ersten Leuchtkanal hinzufügen (HmIP-MP3P: 6; 7 und 8 tun dasselbe). Der Ton und die Signale des HmIP-MP3P sind in Apple Home nicht verfügbar |
 | Zwischenstecker HmIP-PS, PS-2, PSM, HM-LC-Sw1-Pl, HM-ES-PMSw1-Pl | Steckdose | Leistung und Energie nur in der Eve-App |
 | Schaltaktoren HmIP-BSM, FSM, FSI16, PCBS, DRSI1/4, MOD-OC8, HM-LC-Sw, HMW-IO | Schalter | Pro Kanal als Steckdose, Licht, Ventilator oder Ventil einstellbar |
 | Bewässerungsventil HmIP-WSM | Ventil (Bewässerung) | Laufzeit in Apple Home einstellbar |
