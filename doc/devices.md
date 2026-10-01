@@ -69,6 +69,7 @@ The tables list the device families with typical models. Colour variants (`-A`, 
 | Presence detector HmIP-SPI | Occupancy sensor + light sensor | |
 | Light sensor HmIP-SLO, HM-Sen-LI-O | Light sensor | |
 | Tilt/vibration sensor HmIP-SAM, HM-Sec-TiS | Contact sensor | |
+| Passage detector HmIP-SPDR | Two motion sensors, one per direction | Each passage is motion for one second; add channel 2 or 3 (they report the same). Which direction is which depends on how the sensor is mounted, *Swap the directions* turns them around. The counter (channel 4) counts each direction for ever, it is not shown |
 
 ## CCU objects
 
