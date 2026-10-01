@@ -1,0 +1,102 @@
+{
+  "devices": [
+    {
+      "id": 1000,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-MP3P",
+      "address": "8033170220ABCD",
+      "type": "HmIP-MP3P",
+      "channels": [
+        {
+          "id": 1001,
+          "name": "8033170220ABCD:0",
+          "intf": 0,
+          "address": "8033170220ABCD:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 1002,
+          "name": "8033170220ABCD:1",
+          "intf": 0,
+          "address": "8033170220ABCD:1",
+          "type": "ACOUSTIC_SIGNAL_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 1003,
+          "name": "8033170220ABCD:2",
+          "intf": 0,
+          "address": "8033170220ABCD:2",
+          "type": "ACOUSTIC_SIGNAL_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1004,
+          "name": "8033170220ABCD:3",
+          "intf": 0,
+          "address": "8033170220ABCD:3",
+          "type": "ACOUSTIC_SIGNAL_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1005,
+          "name": "8033170220ABCD:4",
+          "intf": 0,
+          "address": "8033170220ABCD:4",
+          "type": "ACOUSTIC_SIGNAL_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1006,
+          "name": "8033170220ABCD:5",
+          "intf": 0,
+          "address": "8033170220ABCD:5",
+          "type": "DIMMER_TRANSMITTER",
+          "access": 255
+        },
+        {
+          "id": 1007,
+          "name": "8033170220ABCD:6",
+          "intf": 0,
+          "address": "8033170220ABCD:6",
+          "type": "DIMMER_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1008,
+          "name": "8033170220ABCD:7",
+          "intf": 0,
+          "address": "8033170220ABCD:7",
+          "type": "DIMMER_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1009,
+          "name": "8033170220ABCD:8",
+          "intf": 0,
+          "address": "8033170220ABCD:8",
+          "type": "DIMMER_VIRTUAL_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1010,
+          "name": "8033170220ABCD:9",
+          "intf": 0,
+          "address": "8033170220ABCD:9",
+          "type": "DIMMER_OUTPUT_BEHAVIOUR_WEEK_PROFILE",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "8033170220ABCD:6": "HomeMaticDimmerAccessory"
+  },
+  "mappings": {
+    "8033170220ABCD:6": {
+      "Service": "HomeMaticDimmerAccessory"
+    }
+  }
+}
