@@ -9,6 +9,7 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 ## [0.1.4] - unreleased
 
 ### Added
+- DALI gateway HmIP-DRG-DALI: each DALI channel gets only the controls its lamp can use. The channels were colour lights with a colour wheel and white temperature whatever lamp was connected; the capability the gateway reports for the channel (switch, dimmer, tunable white, RGB or RGBW) now decides: a plain dimmable lamp has brightness only, a tunable white lamp brightness and white temperature, a switch only on and off. A channel nothing is connected to, or one the CCU does not answer for, keeps everything. (hap-homematic #721)
 - Combined signal giver HmIP-MP3P: its light channels (6 to 8) are a lightbulb with brightness and one of the eight colours of the device, like the HmIP-BSL. They showed up before as plain dimmers without an effect. The sound and the signals of the device are not available in Apple Home. (hap-homematic #624)
 
 ### Fixed
