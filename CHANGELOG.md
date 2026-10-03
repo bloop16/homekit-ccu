@@ -11,6 +11,10 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 ### Added
 - A language menu in the header of the settings page (next to the theme): *Browser language* (as before), *English* or *Deutsch*. The choice is kept per browser and reloads the page.
 
+### Added
+- DALI gateway HmIP-DRG-DALI: each DALI channel gets only the controls its lamp can use. The channels were colour lights with a colour wheel and white temperature whatever lamp was connected; the capability the gateway reports for the channel (switch, dimmer, tunable white, RGB or RGBW) now decides: a plain dimmable lamp has brightness only, a tunable white lamp brightness and white temperature, a switch only on and off. A channel nothing is connected to, or one the CCU does not answer for, keeps everything. (hap-homematic #721)
+- Combined signal giver HmIP-MP3P: its light channels (6 to 8) are a lightbulb with brightness and one of the eight colours of the device, like the HmIP-BSL. They showed up before as plain dimmers without an effect. The sound and the signals of the device are not available in Apple Home. (hap-homematic #624)
+
 ### Fixed
 - A device could not be added when its file of saved values (`<host>_<device>_<channel>.pstore`, which keeps for example the last activation) was empty or cut off, as a power loss or a full disk leaves it ("Unexpected end of JSON input"). Such a file is now put aside as `.pstore.corrupt` with one warning in the log, the device starts without its old values, and a values file is written whole or not at all. A value that cannot be written (disk full) is logged instead of failing the device.
 - The add-on did not start at all when its restart counter (`persist/restartCounter.json`, written at every start) was empty or cut off, as a power loss leaves it ("Unexpected end of JSON input"). Such a file counts from 0 now, with one warning in the log, and the counter is written whole or not at all; a counter that cannot be saved is logged instead of ignored.
