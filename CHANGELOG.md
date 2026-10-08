@@ -6,6 +6,9 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+- Right after the add-on started, Apple Home sometimes showed a device as "No Response" for a few seconds, and the log said that its read handler "didn't respond at all", for example for a thermostat whose values were not known yet. Its reads waited behind the scripts the add-on runs on the CCU at the start (databases, values of all devices). Every read of Apple Home is now answered within 2.5 s, with the last known value when the CCU is late; the value read follows as soon as it comes. The reads and commands of Apple Home also go before that background work on the CCU.
+
 ## [0.1.4] - 2026-10-03
 
 ### Added
