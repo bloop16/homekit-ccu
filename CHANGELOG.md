@@ -10,6 +10,10 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 - A switch channel (STATE on/off) can be added as a contact sensor (window or door contact) in Apple Home, … A switch still gets the switch service unless the contact sensor is chosen.
 - CI builds the add-on package of every pull request and push to master, … so the CCU offers the next release as update.
 
+### Fixed
+- An update of the add-on restarted the CCU's web server (lighttpd) also when its configuration for the add-on had not changed, and the installation log showed "Reloading lighttpd: ERROR". lighttpd now only reloads when that configuration changes (a new installation, or a version that changes it).
+- The installation log showed no npm version ("NPM is:"): the CCU removes the upload directory while the installation still runs in it, and npm fails without a working directory. The installation now runs from `/`.
+
 ## [0.1.4] - 2026-10-03
 
 ### Added
