@@ -20,7 +20,7 @@ if [ "$1" = "--version" ]; then echo "\${STUB_NODE_VERSION:-v22.1.0}"; exit 0; f
 echo "node $*" >> "$STUB_CALLS"`,
   // npm i records whether a stale package-lock.json was still there, then acts per STUB_NPM
   npm: `#!/bin/sh
-if [ "$1" = "--version" ]; then echo "10.0.0"; exit 0; fi
+if [ "$1" = "--version" ]; then echo "npm-version-cwd $(pwd)" >> "$STUB_CALLS"; echo "10.0.0"; exit 0; fi
 if [ -e package-lock.json ]; then echo "npm stale-lock" >> "$STUB_CALLS"; else echo "npm clean" >> "$STUB_CALLS"; fi
 case "\${STUB_NPM:-ok}" in
   fail) echo "npm ERR! code ENOTCACHED"; exit 1 ;;
@@ -126,6 +126,14 @@ describe('HomeKit-CCU addon installer', () => {
     expect(Date.now() - fs.statSync(path.join(t.www, 'index.html')).mtimeMs).to.be.lessThan(60 * 1000)
   })
 
+  // the CCU removes the upload directory update_script ran in while the background install
+  // still works; npm needs a working directory that exists
+  it('runs npm from an existing directory, not from the upload directory of update_script', () => {
+    expect(t.run('install').status).to.be(0)
+    expect(t.callLog()).to.contain('npm-version-cwd /\n')
+    expect(t.log()).to.contain('NPM is: 10.0.0')
+  })
+
   it('removes a half-installed addon directory before npm runs', () => {
     fs.mkdirSync(t.addonDir, { recursive: true })
     fs.writeFileSync(path.join(t.addonDir, 'package-lock.json'), '{}')
@@ -187,6 +195,25 @@ describe('HomeKit-CCU addon installer', () => {
       expect(t.run('install').status).to.be(0)
       expect(t.run('uninstall').status).to.be(0)
       expect(lighttpdCalls()).to.eql(['S50lighttpd reload', 'S50lighttpd reload'])
+    })
+
+    // a reload restarts lighttpd: only for a changed config
+    it('does not reload lighttpd on an update that leaves its config unchanged', () => {
+      withInitScript()
+      fs.writeFileSync(t.angelPidfile, `${process.pid}\n`)
+      expect(t.run('install').status).to.be(0)
+      expect(t.run('install').status).to.be(0)
+      expect(lighttpdCalls()).to.eql(['S50lighttpd reload'])
+      expect(t.log()).to.contain('lighttpd config unchanged')
+    })
+
+    it('reloads lighttpd on an update that changes its config', () => {
+      withInitScript()
+      fs.writeFileSync(t.angelPidfile, `${process.pid}\n`)
+      fs.mkdirSync(path.join(t.root, 'lighttpd'), { recursive: true })
+      fs.writeFileSync(path.join(t.root, 'lighttpd', 'homekit-ccu.conf'), '# config of an older version\n')
+      expect(t.run('install').status).to.be(0)
+      expect(lighttpdCalls()).to.eql(['S50lighttpd reload'])
     })
 
     it('starts lighttpd again through the init script when lighttpd-angel is gone', () => {
