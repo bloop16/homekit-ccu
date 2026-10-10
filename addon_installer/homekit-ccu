@@ -111,6 +111,9 @@ remove_legacy_hap_homematic() {
 
 install() {
   check_node_version || return 1
+  # update_script starts the install in the upload directory, which the CCU removes while the
+  # install still runs; npm fails without a working directory
+  cd / || return 1
 
   if [ -f ${MODULE_DIR}/index.js ]; then
     log "install" "Existing installation found, removing package first..."
@@ -154,10 +157,15 @@ install() {
   # time in 1985, so browsers would take the pages of the last version as years old and fresh.
   cp -Rf ${MODULE_DIR}/lib/configurationsrv/html/* ${ADDONWWW_DIR}
 
-  log "install" "Installing lighttpd config."
-  mkdir -p ${LIGHTTPD_CONF_DIR}
-  cp -af ${MODULE_DIR}/etc/homekit_ccu.conf ${LIGHTTPD_CONF_DIR}/${ADDON_NAME}.conf
-  reload_lighttpd
+  # a reload restarts lighttpd, which is only needed for a changed config
+  if cmp -s "${MODULE_DIR}/etc/homekit_ccu.conf" "${LIGHTTPD_CONF_DIR}/${ADDON_NAME}.conf"; then
+    log "install" "lighttpd config unchanged."
+  else
+    log "install" "Installing lighttpd config."
+    mkdir -p ${LIGHTTPD_CONF_DIR}
+    cp -af ${MODULE_DIR}/etc/homekit_ccu.conf ${LIGHTTPD_CONF_DIR}/${ADDON_NAME}.conf
+    reload_lighttpd
+  fi
 
   log "install" "Creating HomeKit Button."
   node "${MODULE_DIR}/etc/hm_addon.js" homekit-ccu ${MODULE_DIR}/etc/homekit_ccu_addon.cfg >> ${LOGFILE} 2>&1

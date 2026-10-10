@@ -14,6 +14,10 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 - The interfaces were registered at the CCU before the add-on listened for its events, and when that port (9875) was in use, the add-on kept running without any changes from the CCU (Apple Home showed old states) until it was restarted, with only an error in the log. The interfaces are registered now once the add-on listens; a port in use is tried again after 30 s, then after twice as long each time, at most every 10 minutes.
 - Every save in the settings (which reloads the accessories) added one more listener for new devices of the CCU: after many saves, one message of the CCU about new devices made the add-on read the device list from the CCU as many times at once. It is read once now, however often the settings were saved.
 
+### Fixed
+- An update of the add-on restarted the CCU's web server (lighttpd) also when its configuration for the add-on had not changed, and the installation log showed "Reloading lighttpd: ERROR". lighttpd now only reloads when that configuration changes (a new installation, or a version that changes it).
+- The installation log showed no npm version ("NPM is:"): the CCU removes the upload directory while the installation still runs in it, and npm fails without a working directory. The installation now runs from `/`.
+
 ## [0.1.4] - 2026-10-03
 
 ### Added
