@@ -52,6 +52,8 @@ The tables list the device families with typical models. Colour variants (`-A`, 
 | Dimmers HmIP-BDT, FDT, PDT, DRDI3, WUA, HM-LC-Dim | Lightbulb with brightness | |
 | Colour lights HmIP-RGBW, LSC, E27, GU10 | Lightbulb with colour and white temperature | |
 | RGBW controller HM-LC-RGBW-WM, dual white HM-LC-DW-WM | Lightbulb with colour or white temperature | |
+| DALI gateway HmIP-DRG-DALI | Lightbulb per DALI channel | Every channel offers what the connected lamp can do (switch, dimmer, tunable white, RGB or RGBW), as the gateway reports it; a channel nothing is connected to keeps all controls |
+| Notification light HmIP-BSL, combined signal giver HmIP-MP3P (light channels) | Lightbulb with brightness and one of eight colours | Add the first light channel (HmIP-MP3P: 6; 7 and 8 do the same). The sound and the signals of the HmIP-MP3P are not available in Apple Home |
 | Plugs HmIP-PS, PS-2, PSM, HM-LC-Sw1-Pl, HM-ES-PMSw1-Pl | Outlet | Power and energy only in the Eve app |
 | Switch actuators HmIP-BSM, FSM, FSI16, PCBS, DRSI1/4, MOD-OC8, HM-LC-Sw, HMW-IO | Switch | Can be set to Outlet, Lightbulb, Fan or Valve per channel |
 | Irrigation valve HmIP-WSM | Valve (irrigation) | Run time settable in Apple Home |
