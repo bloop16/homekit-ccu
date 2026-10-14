@@ -6,6 +6,9 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+- The CCU showed *Configuration data pending* (*Konfigurationsdaten stehen zur Übertragung an*) for an HmIP doorbell (e.g. HmIP-DSD-PCB) mapped as doorbell: the add-on had reported its key presses to the CCU as unused ([#32](https://github.com/bloop16/homekit-ccu/issues/32)). It reported the datapoints it uses before those that it registers only after asking the CCU (low battery, tamper, faults, keys, remotes, doorbells), and one of them reported before was then reported as unused. Now only the datapoints of a device without any accessory are reported as unused, and a datapoint registered after the report is reported as used then, also one that an older version reported as unused.
+
 ## [0.2.0] - 2026-10-12
 
 ### Added

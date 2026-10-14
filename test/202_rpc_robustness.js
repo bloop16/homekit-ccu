@@ -76,6 +76,17 @@ describe('HomeKit-CCU RPC robustness', () => {
     expect(log.text('debug')).to.contain('Transmission is pending')
     expect(log.text('error')).to.be('')
   })
+
+  it('resolves reportValueUsage with the datapoints the daemon accepted', async () => {
+    const iface = addInterface('HmIP-RF')
+    iface.client.methodCall = (method, params, cb) => (params[0] === '000A2:1')
+      ? cb(new Error('XML-RPC fault: Transmission is pending.'))
+      : cb(null, '')
+
+    const accepted = await iface.reportValueUsage({ 'HmIP-RF.000A1:1.STATE': 1, 'HmIP-RF.000A2:1.STATE': 1 })
+
+    expect(accepted).to.eql(['HmIP-RF.000A1:1.STATE'])
+  })
 })
 
 describe('HomeKit-CCU RPC connection handling', () => {
