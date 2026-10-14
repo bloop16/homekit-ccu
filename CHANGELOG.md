@@ -6,6 +6,9 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+- Right after a start, Apple Home showed some devices as "No Response", and the log said that their read handlers "didn't respond at all", for example for thermostats. Every Apple device connects to every bridge at once after a start, and the handshake of each connection ran in JavaScript: on a Raspberry Pi about 115 ms each, which kept the add-on busy for some 15 seconds. The handshakes now use the crypto built into Node.js (about 2 ms each).
+
 ## [0.2.0] - 2026-10-12
 
 ### Added
