@@ -63,3 +63,9 @@ Apple Home shows a doorbell only as part of a camera; a doorbell on its own is "
 - **A camera picture that is replaced** (a URL or file with the snapshot a camera stores, e.g. an n8n webhook that returns the last snapshot): *Read the picture again after* (default 10 seconds) reads it again when Apple Home asks for the picture, at most that often, in the background; a changed picture is shown from then on, also by a live video that is running (*Picture as live video*). Only what is stored is read, no camera is woken. A URL may contain a user and password (`https://user:password@host/…`, basic auth). Camera pictures fill the tile; 0 reads the picture once.
 - Rings closer than 3 seconds count once.
 - With a camera at the door use the video doorbell (special device), it needs ffmpeg.
+
+## Reset
+
+*Internals → Reset HomeKit-CCU* deletes the whole configuration after a question: all HomeKit instances, devices, variables, programs and settings, the cached data of the CCU and the HomeKit pairing of all instances. HomeKit-CCU stops for that, starts again as after a new installation, and the page loads again once it is back. Remove the bridges of HomeKit-CCU from the Home app first and add them again afterwards; create a backup first (*Internals → Backup*) if you may want the configuration back. The ffmpeg installed for the video doorbell stays.
+
+Over SSH the same is `/usr/local/etc/config/rc.d/homekit-ccu reset`. Uninstalling the add-on also deletes the configuration, but uploading the add-on again without uninstalling it first is an update and keeps it.

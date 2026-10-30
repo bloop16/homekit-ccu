@@ -121,6 +121,29 @@ describe('HomeKit-CCU addon installer', () => {
     expect(fs.existsSync(t.ffmpegDir)).to.be(false)
   })
 
+  it('reset deletes the configuration and the pairing but keeps the package, stopping the server first', () => {
+    const configDir = path.join(t.root, 'config', 'addons', 'homekit-ccu')
+    fs.mkdirSync(path.join(configDir, 'etc'), { recursive: true })
+    fs.mkdirSync(path.join(configDir, 'persist'))
+    fs.writeFileSync(path.join(configDir, 'etc', 'homekit-ccu.tgz'), '')
+    fs.writeFileSync(path.join(configDir, 'config.json'), '{}')
+    fs.writeFileSync(path.join(configDir, 'persist', 'AccessoryInfo.0E1234567890.json'), '{}')
+    fs.writeFileSync(path.join(configDir, '.hidden'), '')
+    const res = t.run('reset')
+    expect(res.status).to.be(0)
+    expect(fs.readdirSync(configDir)).to.eql(['etc'])
+    expect(fs.existsSync(path.join(configDir, 'etc', 'homekit-ccu.tgz'))).to.be(true)
+    const daemon = t.callLog().split('\n').filter(line => line.startsWith('start-stop-daemon'))
+    expect(daemon[0]).to.contain('--stop')
+    expect(daemon[daemon.length - 1]).to.contain('--start')
+    expect(t.log()).to.contain('Reset complete.')
+  })
+
+  it('reset starts the server also without a configuration directory', () => {
+    expect(t.run('reset').status).to.be(0)
+    expect(t.callLog()).to.contain('--start')
+  })
+
   it('gives the WebUI files the time of the installation, so browsers load the new version', () => {
     expect(t.run('install').status).to.be(0)
     expect(Date.now() - fs.statSync(path.join(t.www, 'index.html')).mtimeMs).to.be.lessThan(60 * 1000)

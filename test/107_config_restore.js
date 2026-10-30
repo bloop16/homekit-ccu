@@ -142,7 +142,8 @@ describe('HomeKit-CCU ConfigurationService.restartSystem', () => {
   it('reports that restart is unavailable without the rc.d script', () => {
     const { service, errors } = makeBare()
     expect(service.restartSystem()).to.be(false)
-    expect(errors[0][0]).to.contain('restart not available')
+    expect(errors[0][0]).to.contain('%s not available')
+    expect(errors[0][1]).to.be('restart')
   })
 
   it('runs the rc.d script with restart', async function () {
@@ -152,6 +153,16 @@ describe('HomeKit-CCU ConfigurationService.restartSystem', () => {
     const { service, errors } = makeBare()
     expect(service.restartSystem()).to.be(true)
     await waitFor(() => fs.existsSync(marker) && fs.readFileSync(marker, 'utf8').trim() === 'restart')
+    expect(errors).to.have.length(0)
+  })
+
+  it('runs the rc.d script with reset for the full reset', async function () {
+    this.timeout(5000)
+    const marker = path.join(scratch, 'called-reset')
+    fs.writeFileSync(rcdScript, `#!/bin/sh\necho "$1" > "${marker}"\n`, { mode: 0o755 })
+    const { service, errors } = makeBare()
+    expect(service.resetSystem()).to.be(true)
+    await waitFor(() => fs.existsSync(marker) && fs.readFileSync(marker, 'utf8').trim() === 'reset')
     expect(errors).to.have.length(0)
   })
 })
@@ -186,6 +197,22 @@ describe('HomeKit-CCU ConfigurationService API restart', () => {
       const { json } = await callApi({ method }, false)
       expect(json).to.eql({ error: 'restart not available' })
     }
+  })
+
+  it('runs the full reset through the rc.d script, or reports that it is not available', async () => {
+    const callReset = async (resetResult) => {
+      const service = Object.create(ConfigurationService.prototype)
+      service.log = { error () {}, warn () {}, info () {}, debug () {} }
+      service.useAuth = false
+      let resets = 0
+      service.restartSystem = () => { throw new Error('a reset must not restart') }
+      service.resetSystem = () => { resets++; return resetResult }
+      const response = { headersSent: false, writeHead () { this.headersSent = true }, end (body) { this.body = body } }
+      await service.processApiCall({ method: 'resetAll' }, response)
+      return { json: JSON.parse(response.body), resets }
+    }
+    expect(await callReset(true)).to.eql({ json: { response: 'ok' }, resets: 1 })
+    expect(await callReset(false)).to.eql({ json: { error: 'reset not available' }, resets: 1 })
   })
 
   it('has no update methods (updates come from the CCU addon installer)', async () => {

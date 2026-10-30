@@ -63,3 +63,9 @@ Apple Home zeigt eine Türklingel nur als Teil einer Kamera an; eine Klingel all
 - **Ein Kamerabild, das ersetzt wird** (eine URL oder Datei mit dem Standbild, das eine Kamera ablegt, z. B. ein n8n-Webhook, der das letzte Standbild liefert): *Bild erneut lesen nach* (Standard 10 Sekunden) liest es erneut, wenn Apple Home das Bild anfragt, höchstens so oft und im Hintergrund; ein geändertes Bild erscheint ab dann, auch in einem laufenden Livebild (*Bild als Livebild*). Gelesen wird nur, was abgelegt ist, keine Kamera wird geweckt. Eine URL darf Benutzer und Passwort enthalten (`https://benutzer:passwort@host/…`, Basic Auth). Kamerabilder füllen die Kachel; 0 liest das Bild einmal.
 - Klingeln im Abstand unter 3 Sekunden zählt einmal.
 - Mit einer Kamera an der Tür nutze die Video-Türklingel (besonderes Gerät), sie braucht ffmpeg.
+
+## Zurücksetzen
+
+*Internes → HomeKit-CCU zurücksetzen* löscht nach einer Rückfrage die gesamte Konfiguration: alle HomeKit-Instanzen, Geräte, Variablen, Programme und Einstellungen, die zwischengespeicherten Daten der CCU und die HomeKit-Kopplung aller Instanzen. HomeKit-CCU hält dafür an, startet wie nach einer Neuinstallation und die Seite lädt neu, sobald es wieder läuft. Entferne vorher die Bridges von HomeKit-CCU aus der Home-App und füge sie danach neu hinzu; erstelle vorher eine Datensicherung (*Internes → Datensicherung*), falls du die Konfiguration eventuell zurückhaben möchtest. Das für die Video-Türklingel installierte ffmpeg bleibt.
+
+Über SSH geht dasselbe mit `/usr/local/etc/config/rc.d/homekit-ccu reset`. Auch das Deinstallieren des Add-ons löscht die Konfiguration; das Add-on erneut hochzuladen, ohne es vorher zu deinstallieren, ist dagegen ein Update und behält sie.

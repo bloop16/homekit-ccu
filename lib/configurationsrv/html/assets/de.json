@@ -609,5 +609,10 @@
   "The trigger was not saved (%s).": "Der Trigger wurde nicht gespeichert (%s).",
   "not a program": "kein Programm",
   "failed": "fehlgeschlagen",
-  "no answer": "keine Antwort vom Konfigurationsdienst"
+  "no answer": "keine Antwort vom Konfigurationsdienst",
+  "Reset HomeKit-CCU": "HomeKit-CCU zurücksetzen",
+  "Yes, delete everything": "Ja, alles löschen",
+  "HomeKit-CCU was not reset (%s).": "HomeKit-CCU wurde nicht zurückgesetzt (%s).",
+  "This deletes the whole configuration of HomeKit-CCU: all HomeKit instances, devices, variables, programs and settings, and the HomeKit pairing of all instances. HomeKit-CCU then starts as after a new installation.": "Damit wird die gesamte Konfiguration von HomeKit-CCU gelöscht: alle HomeKit-Instanzen, Geräte, Variablen, Programme und Einstellungen sowie die HomeKit-Kopplung aller Instanzen. HomeKit-CCU startet danach wie nach einer Neuinstallation.",
+  "Remove the bridges of HomeKit-CCU from the Home app first, and add them again after the reset. Create a backup first if you may want the configuration back.": "Entferne zuerst die Bridges von HomeKit-CCU aus der Home-App und füge sie nach dem Zurücksetzen neu hinzu. Erstelle vorher eine Datensicherung, falls Du die Konfiguration eventuell zurückhaben möchtest."
 }

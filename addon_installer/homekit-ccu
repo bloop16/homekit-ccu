@@ -302,6 +302,19 @@ uninstall() {
   log "uninstall" "Uninstall complete."
 }
 
+# Deletes the configuration, the cached CCU data and the HomeKit pairing, and starts again as
+# after a new installation. Only etc/ stays: it holds the package of the installation. The
+# server is stopped first, its bridges would otherwise write their pairing data again.
+reset() {
+  log "reset" "Resetting HomeKit-CCU, the configuration and the HomeKit pairing are deleted."
+  stop
+  if [ -d "${ADDONCFG_DIR}" ]; then
+    find "${ADDONCFG_DIR}" -mindepth 1 -maxdepth 1 ! -name etc -exec rm -rf {} +
+  fi
+  log "reset" "Reset complete."
+  start
+}
+
 # ------------------------------------------------------------------
 # Daemon functions required by CCU
 # ------------------------------------------------------------------
