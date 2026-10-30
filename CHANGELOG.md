@@ -6,6 +6,8 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-30
+
 ### Added
 - *Reset HomeKit-CCU* (*HomeKit-CCU zurücksetzen*) on the settings page, under *Internals*: deletes the whole configuration after a question, with all HomeKit instances, devices, variables, programs and settings and the HomeKit pairing of all instances, and starts the add-on again as after a new installation ([#39](https://github.com/bloop16/homekit-ccu/issues/39)). The page loads again once the add-on is back. Before, a fresh start needed SSH, or uninstalling and installing the add-on again. Over SSH the same is `/usr/local/etc/config/rc.d/homekit-ccu reset`. The installed ffmpeg of the video doorbell stays.
 
