@@ -1,0 +1,422 @@
+{
+  "devices": [
+    {
+      "id": 1000,
+      "intf": 0,
+      "intfName": "HmIP",
+      "name": "HmIP-DRG-DALI",
+      "address": "7093107518ABCD",
+      "type": "HmIP-DRG-DALI",
+      "channels": [
+        {
+          "id": 1001,
+          "name": "7093107518ABCD:0",
+          "intf": 0,
+          "address": "7093107518ABCD:0",
+          "type": "MAINTENANCE",
+          "access": 255
+        },
+        {
+          "id": 1002,
+          "name": "7093107518ABCD:1",
+          "intf": 0,
+          "address": "7093107518ABCD:1",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1003,
+          "name": "7093107518ABCD:2",
+          "intf": 0,
+          "address": "7093107518ABCD:2",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1004,
+          "name": "7093107518ABCD:3",
+          "intf": 0,
+          "address": "7093107518ABCD:3",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1005,
+          "name": "7093107518ABCD:4",
+          "intf": 0,
+          "address": "7093107518ABCD:4",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1006,
+          "name": "7093107518ABCD:5",
+          "intf": 0,
+          "address": "7093107518ABCD:5",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1007,
+          "name": "7093107518ABCD:6",
+          "intf": 0,
+          "address": "7093107518ABCD:6",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1008,
+          "name": "7093107518ABCD:7",
+          "intf": 0,
+          "address": "7093107518ABCD:7",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1009,
+          "name": "7093107518ABCD:8",
+          "intf": 0,
+          "address": "7093107518ABCD:8",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1010,
+          "name": "7093107518ABCD:9",
+          "intf": 0,
+          "address": "7093107518ABCD:9",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1011,
+          "name": "7093107518ABCD:10",
+          "intf": 0,
+          "address": "7093107518ABCD:10",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1012,
+          "name": "7093107518ABCD:11",
+          "intf": 0,
+          "address": "7093107518ABCD:11",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1013,
+          "name": "7093107518ABCD:12",
+          "intf": 0,
+          "address": "7093107518ABCD:12",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1014,
+          "name": "7093107518ABCD:13",
+          "intf": 0,
+          "address": "7093107518ABCD:13",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1015,
+          "name": "7093107518ABCD:14",
+          "intf": 0,
+          "address": "7093107518ABCD:14",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1016,
+          "name": "7093107518ABCD:15",
+          "intf": 0,
+          "address": "7093107518ABCD:15",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1017,
+          "name": "7093107518ABCD:16",
+          "intf": 0,
+          "address": "7093107518ABCD:16",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1018,
+          "name": "7093107518ABCD:17",
+          "intf": 0,
+          "address": "7093107518ABCD:17",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1019,
+          "name": "7093107518ABCD:18",
+          "intf": 0,
+          "address": "7093107518ABCD:18",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1020,
+          "name": "7093107518ABCD:19",
+          "intf": 0,
+          "address": "7093107518ABCD:19",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1021,
+          "name": "7093107518ABCD:20",
+          "intf": 0,
+          "address": "7093107518ABCD:20",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1022,
+          "name": "7093107518ABCD:21",
+          "intf": 0,
+          "address": "7093107518ABCD:21",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1023,
+          "name": "7093107518ABCD:22",
+          "intf": 0,
+          "address": "7093107518ABCD:22",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1024,
+          "name": "7093107518ABCD:23",
+          "intf": 0,
+          "address": "7093107518ABCD:23",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1025,
+          "name": "7093107518ABCD:24",
+          "intf": 0,
+          "address": "7093107518ABCD:24",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1026,
+          "name": "7093107518ABCD:25",
+          "intf": 0,
+          "address": "7093107518ABCD:25",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1027,
+          "name": "7093107518ABCD:26",
+          "intf": 0,
+          "address": "7093107518ABCD:26",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1028,
+          "name": "7093107518ABCD:27",
+          "intf": 0,
+          "address": "7093107518ABCD:27",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1029,
+          "name": "7093107518ABCD:28",
+          "intf": 0,
+          "address": "7093107518ABCD:28",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1030,
+          "name": "7093107518ABCD:29",
+          "intf": 0,
+          "address": "7093107518ABCD:29",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1031,
+          "name": "7093107518ABCD:30",
+          "intf": 0,
+          "address": "7093107518ABCD:30",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1032,
+          "name": "7093107518ABCD:31",
+          "intf": 0,
+          "address": "7093107518ABCD:31",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1033,
+          "name": "7093107518ABCD:32",
+          "intf": 0,
+          "address": "7093107518ABCD:32",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1034,
+          "name": "7093107518ABCD:33",
+          "intf": 0,
+          "address": "7093107518ABCD:33",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1035,
+          "name": "7093107518ABCD:34",
+          "intf": 0,
+          "address": "7093107518ABCD:34",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1036,
+          "name": "7093107518ABCD:35",
+          "intf": 0,
+          "address": "7093107518ABCD:35",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1037,
+          "name": "7093107518ABCD:36",
+          "intf": 0,
+          "address": "7093107518ABCD:36",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1038,
+          "name": "7093107518ABCD:37",
+          "intf": 0,
+          "address": "7093107518ABCD:37",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1039,
+          "name": "7093107518ABCD:38",
+          "intf": 0,
+          "address": "7093107518ABCD:38",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1040,
+          "name": "7093107518ABCD:39",
+          "intf": 0,
+          "address": "7093107518ABCD:39",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1041,
+          "name": "7093107518ABCD:40",
+          "intf": 0,
+          "address": "7093107518ABCD:40",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1042,
+          "name": "7093107518ABCD:41",
+          "intf": 0,
+          "address": "7093107518ABCD:41",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1043,
+          "name": "7093107518ABCD:42",
+          "intf": 0,
+          "address": "7093107518ABCD:42",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1044,
+          "name": "7093107518ABCD:43",
+          "intf": 0,
+          "address": "7093107518ABCD:43",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1045,
+          "name": "7093107518ABCD:44",
+          "intf": 0,
+          "address": "7093107518ABCD:44",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1046,
+          "name": "7093107518ABCD:45",
+          "intf": 0,
+          "address": "7093107518ABCD:45",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1047,
+          "name": "7093107518ABCD:46",
+          "intf": 0,
+          "address": "7093107518ABCD:46",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1048,
+          "name": "7093107518ABCD:47",
+          "intf": 0,
+          "address": "7093107518ABCD:47",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1049,
+          "name": "7093107518ABCD:48",
+          "intf": 0,
+          "address": "7093107518ABCD:48",
+          "type": "UNIVERSAL_LIGHT_RECEIVER",
+          "access": 255
+        },
+        {
+          "id": 1050,
+          "name": "7093107518ABCD:49",
+          "intf": 0,
+          "address": "7093107518ABCD:49",
+          "type": "UNIVERSAL_LIGHT_WEEK_PROFILE",
+          "access": 255
+        }
+      ]
+    }
+  ],
+  "ccu": {
+    "7093107518ABCD:1": "HomeMaticIPRGBWAccessory"
+  },
+  "mappings": {
+    "7093107518ABCD:1": {
+      "Service": "HomeMaticIPRGBWAccessory"
+    }
+  }
+}
