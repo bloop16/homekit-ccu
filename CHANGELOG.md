@@ -6,6 +6,9 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+- The file of a backup downloaded on the settings page was named day first and without leading zeros (`homekit-ccu-backup-31_10_2026_7_4_1.tar.gz`), so sorted by name the backups were not in the order of their time ([#42](https://github.com/bloop16/homekit-ccu/issues/42)). It is named year first with leading zeros now (`homekit-ccu-backup-2026-10-31_07-04-01.tar.gz`), in the local time of the CCU as before. Older backups can be restored as before.
+
 ## [0.2.1] - 2026-10-30
 
 ### Added
