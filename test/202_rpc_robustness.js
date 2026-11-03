@@ -200,11 +200,13 @@ describe('HomeKit-CCU RPC connection handling', () => {
       expect(inits).to.eql(['http://192.168.1.100:9875', 'http://192.168.1.100:9875'])
     })
 
-    it('keeps the port of CUxD (event server port + 1) when reconnecting', () => {
+    it('keeps the port of CUxD (event server port + 1) when reconnecting', async () => {
       rpc.addInterface('CUxD', '127.0.0.1', 8701, '/')
       const iface = rpc.interfaces[0]
       const inits = recordInits(iface)
+      iface.client.methodCall = (method, params, cb) => cb(new Error('ping failed'))
       connectAndIdle(iface)
+      await new Promise(resolve => setImmediate(resolve))
       expect(inits.length).to.be(2)
       expect(inits[1]).to.be(inits[0])
       expect(inits[0]).to.match(/127\.0\.0\.1:9876$/)
@@ -276,19 +278,26 @@ describe('HomeKit-CCU RPC connection handling', () => {
     })
   })
 
-  it('does not start a second reconnect while the first waits for its answer', () => {
-    rpc.watchDogTimeout = 1
-    rpc.addInterface('CUxD', '127.0.0.1', 1, '/')
-    const iface = rpc.interfaces[0]
-    const calls = []
-    iface.initClient.methodCall = (method, params) => calls.push(params.length) // never answers
-    iface.lastMessage = 0
-    rpc.ccuWatchDog()
-    clearTimeout(rpc.watchDogTimer)
-    iface.lastMessage = 0
-    rpc.ccuWatchDog()
-    clearTimeout(rpc.watchDogTimer)
-    expect(calls).to.eql([1, 2]) // one stop (deregister) and one init
-    expect(iface.reconnecting).to.be(true)
-  })
+  for (const ifName of ['HmIP-RF', 'CUxD']) {
+    it(`does not start a second reconnect of ${ifName} while the first waits for its answer`, async () => {
+      rpc.watchDogTimeout = 1
+      rpc.addInterface(ifName, '127.0.0.1', 1, '/')
+      const iface = rpc.interfaces[0]
+      const calls = []
+      // CUxD is asked with a ping first; a failed ping makes the watchdog reconnect
+      // (for HmIP-RF client and initClient are one client: the stub of init below replaces this one)
+      iface.client.methodCall = (method, params, cb) => cb(new Error('ping failed'))
+      iface.initClient.methodCall = (method, params) => calls.push(params.length) // never answers
+      iface.lastMessage = 0
+      rpc.ccuWatchDog()
+      clearTimeout(rpc.watchDogTimer)
+      await new Promise(resolve => setImmediate(resolve))
+      iface.lastMessage = 0
+      rpc.ccuWatchDog()
+      clearTimeout(rpc.watchDogTimer)
+      await new Promise(resolve => setImmediate(resolve))
+      expect(calls).to.eql([1, 2]) // one stop (deregister) and one init
+      expect(iface.reconnecting).to.be(true)
+    })
+  }
 })
