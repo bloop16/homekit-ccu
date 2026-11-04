@@ -6,6 +6,9 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- HomeKit-CCU uses HAP-NodeJS 2.3.0, the HomeKit library. It does the handshakes of Apple devices with the crypto built into Node.js itself now ([homebridge/HAP-NodeJS#1135](https://github.com/homebridge/HAP-NodeJS/pull/1135)), so the add-on no longer does that itself, as it did since 0.2.1; the handshakes stay as fast. The new version also brings fixes of HAP-NodeJS, for example a malformed message from the video doorbell's data stream no longer stops the add-on, and a removed device no longer keeps its event registrations and controller storage.
+
 ### Fixed
 - The watchdog registered the CUxD interface again every 5 minutes when it had no events, although its events still arrived, so the syslog of the CCU filled with pairs of INIT messages ([#45](https://github.com/bloop16/homekit-ccu/issues/45)). A quiet CUxD is asked with a ping first now: when its answer arrives as an event within 10 seconds, the registration is kept; only a failed ping or no event registers it again. BidCos-RF and HmIP-RF are watched as before.
 - The file of a backup downloaded on the settings page was named day first and without leading zeros (`homekit-ccu-backup-31_10_2026_7_4_1.tar.gz`), so sorted by name the backups were not in the order of their time ([#42](https://github.com/bloop16/homekit-ccu/issues/42)). It is named year first with leading zeros now (`homekit-ccu-backup-2026-10-31_07-04-01.tar.gz`), in the local time of the CCU as before. Older backups can be restored as before.
