@@ -506,6 +506,7 @@
   "Which kind of device do you want to create?": "Welche Art von Gerät möchtest du anlegen?",
   "Choose another kind": "Andere Art wählen",
   "A special device with this name exists already.": "Ein besonderes Gerät mit diesem Namen gibt es schon.",
+  "Another channel of this type already has this name on this bridge.": "Ein anderer Kanal dieses Typs hat auf dieser Bridge schon diesen Namen.",
   "Video doorbell": "Video-Türklingel",
   "Garage door from sensors and actors": "Garagentor aus Sensoren und Aktoren",
   "Window with rotary handle and contact": "Fenster aus Drehgriff und Kontakt",
@@ -614,5 +615,17 @@
   "Yes, delete everything": "Ja, alles löschen",
   "HomeKit-CCU was not reset (%s).": "HomeKit-CCU wurde nicht zurückgesetzt (%s).",
   "This deletes the whole configuration of HomeKit-CCU: all HomeKit instances, devices, variables, programs and settings, and the HomeKit pairing of all instances. HomeKit-CCU then starts as after a new installation.": "Damit wird die gesamte Konfiguration von HomeKit-CCU gelöscht: alle HomeKit-Instanzen, Geräte, Variablen, Programme und Einstellungen sowie die HomeKit-Kopplung aller Instanzen. HomeKit-CCU startet danach wie nach einer Neuinstallation.",
-  "Remove the bridges of HomeKit-CCU from the Home app first, and add them again after the reset. Create a backup first if you may want the configuration back.": "Entferne zuerst die Bridges von HomeKit-CCU aus der Home-App und füge sie nach dem Zurücksetzen neu hinzu. Erstelle vorher eine Datensicherung, falls Du die Konfiguration eventuell zurückhaben möchtest."
+  "Remove the bridges of HomeKit-CCU from the Home app first, and add them again after the reset. Create a backup first if you may want the configuration back.": "Entferne zuerst die Bridges von HomeKit-CCU aus der Home-App und füge sie nach dem Zurücksetzen neu hinzu. Erstelle vorher eine Datensicherung, falls Du die Konfiguration eventuell zurückhaben möchtest.",
+  "unknown channel": "Den Kanal gibt es in der CCU nicht (mehr).",
+  "channel already in HomeKit": "Der Kanal ist schon in HomeKit.",
+  "service does not fit the channel": "Der Gerätetyp passt nicht zu diesem Kanal.",
+  "missing name": "Der Name fehlt.",
+  "missing instance": "Es ist keine HAP Instanz gewählt.",
+  "unknown instance": "Die HAP Instanz gibt es nicht (mehr).",
+  "invalid setting": "Ungültige Einstellung",
+  "invalid combination": "Diese Ausgänge lassen sich nicht zusammenfassen.",
+  "invalid payload": "Ungültige Anfrage.",
+  "invalid bridge key": "Ungültige Bridge in der Anfrage.",
+  "bridge name missing or not unique": "Eine neue Bridge braucht einen Namen, den keine andere hat.",
+  "error saving": "Fehler beim Speichern"
 }
