@@ -506,6 +506,7 @@
   "Which kind of device do you want to create?": "Welche Art von Gerät möchtest du anlegen?",
   "Choose another kind": "Andere Art wählen",
   "A special device with this name exists already.": "Ein besonderes Gerät mit diesem Namen gibt es schon.",
+  "Another channel of this type already has this name on this bridge.": "Ein anderer Kanal dieses Typs hat auf dieser Bridge schon diesen Namen.",
   "Video doorbell": "Video-Türklingel",
   "Garage door from sensors and actors": "Garagentor aus Sensoren und Aktoren",
   "Window with rotary handle and contact": "Fenster aus Drehgriff und Kontakt",
