@@ -6,6 +6,8 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-09
+
 ### Changed
 - HomeKit-CCU uses HAP-NodeJS 2.3.0, the HomeKit library. It does the handshakes of Apple devices with the crypto built into Node.js itself now ([homebridge/HAP-NodeJS#1135](https://github.com/homebridge/HAP-NodeJS/pull/1135)), so the add-on no longer does that itself, as it did since 0.2.1; the handshakes stay as fast. The new version also brings fixes of HAP-NodeJS, for example a malformed message from the video doorbell's data stream no longer stops the add-on, and a removed device no longer keeps its event registrations and controller storage.
 
