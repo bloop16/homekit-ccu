@@ -6,6 +6,9 @@ All notable changes to HomeKit-CCU are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- HomeKit-CCU uses HAP-NodeJS 2.3.0, the HomeKit library. It does the handshakes of Apple devices with the crypto built into Node.js itself now ([homebridge/HAP-NodeJS#1135](https://github.com/homebridge/HAP-NodeJS/pull/1135)), so the add-on no longer does that itself, as it did since 0.2.1; the handshakes stay as fast. The new version also brings fixes of HAP-NodeJS, for example a malformed message from the video doorbell's data stream no longer stops the add-on, and a removed device no longer keeps its event registrations and controller storage.
+
 ### Fixed
 - Two channels of the same type with the same name on one bridge, for example the outputs 3 and 4 of an HmIP-PSM both named after the plug, got the same accessory ID in Apple Home: the ID is made from the channel type and the name. The log only warned, and Apple Home mixed the two up, so switching one could switch or show the other. The second one is now left out of the bridge, with an error in the log naming both channels, and the settings page refuses such a name with *Another channel of this type already has this name on this bridge.* (*Ein anderer Kanal dieses Typs hat auf dieser Bridge schon diesen Namen.*). The IDs of all other accessories stay the same, so their rooms and automations in Apple Home are kept. A configuration that already has such a pair keeps the first channel; give the second one another name on the settings page.
 - When the settings page refused to save new devices, the new device dialog and the setup assistant showed the reason in English also on a German page, for example *channel already in HomeKit*. The reason is now shown in the language of the page, as in the other dialogs.
